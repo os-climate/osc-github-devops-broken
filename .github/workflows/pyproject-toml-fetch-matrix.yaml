@@ -12,7 +12,7 @@ on:
 
 jobs:
   parse-project-metadata:
-    name: "Capture Python project metadata"
+    name: "Parse project metadata"
     runs-on: "ubuntu-latest"
 
     # Map the job outputs to step outputs
