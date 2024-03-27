@@ -4,14 +4,18 @@ name: "🧪 Extract Python matrix versions"
 # yamllint disable-line rule:truthy
 on:
   workflow_call:
+    # Map the workflow outputs to job outputs
+    outputs:
+      matrix:
+        description: "Python versions extracted from pyproject.toml"
+        value: ${{ jobs.parse-project-metadata.outputs.matrix }}
 
 jobs:
   parse-project-metadata:
-    name: "Extract build metadata"
-
+    name: "Capture Python project metadata"
     runs-on: "ubuntu-latest"
-    # Don't run when pull request is merged
-    if: github.event.pull_request.merged == false
+
+    # Map the job outputs to step outputs
     outputs:
       matrix: ${{ steps.fetch-python-versions.outputs.matrix }}
 
@@ -30,3 +34,4 @@ jobs:
           echo "WARNING: expected output may not be valid JSON"
           fi
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "Job output: matrix = $matrix"
