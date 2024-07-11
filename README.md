@@ -15,3 +15,8 @@ documentation covering this topic.
 - <https://github.blog/2022-02-10-using-reusable-workflows-github-actions/>
 - <https://resources.github.com/learn/pathways/automation/intermediate/create-reusable-workflows-in-github-actions/>
 - <https://www.dhiwise.com/post/the-ultimate-guide-to-github-reusable-workflows-maximize-efficiency-and-collaboration>
+
+<!--
+[comment]: # SPDX-License-Identifier: Apache-2.0
+[comment]: # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+-->
