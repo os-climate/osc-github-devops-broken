@@ -10,14 +10,10 @@ on:
 
 jobs:
   get-python-versions:
-    runs-on: ubuntu-latest
-    outputs:
-      MATRIX: ${{ steps.parse-project-metadata.outputs.matrix }}
-
-    steps:
-      # yamllint disable-line rule:line-length
-      - uses: os-climate/devops-reusable-workflows/.github/workflows/pyproject-toml-fetch-matrix.yaml@main
-        id: parse-project-metadata
+    # runs-on: ubuntu-latest
+    # yamllint disable-line rule:line-length
+    uses: os-climate/devops-reusable-workflows/.github/workflows/pyproject-toml-fetch-matrix.yaml@main
+    name: "Determine Python versions"
 
   perform-builds:
     runs-on: ubuntu-latest
