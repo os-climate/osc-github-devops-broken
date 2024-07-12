@@ -3,34 +3,36 @@
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
 name: "🧱 Python Builds (Matrix)"
-description: "Builds Python packages"
 
-inputs:
-  validate:
-    description: "Validate packages with Twine"
-    required: false
-    default: true
+# yamllint disable-line rule:truthy
+on:
+  workflow_dispatch:
 
-runs:
-  using: "composite"
-  steps:
-    - name: "Determine Python versions"
-      id: parse-project-metadata
-      # yamllint disable-line rule:line-length
-      uses: os-climate/devops-reusable-workflows/.github/workflows/pyproject-toml-fetch-matrix.yaml@main
+jobs:
+  get-python-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      MATRIX: ${{ steps.parse-project-metadata.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
 
-  build:
-    name: "Build: Python Package"
-    needs: [parse-project-metadata]
-    runs-on: "ubuntu-latest"
+      - name: "Determine Python versions"
+        id: parse-project-metadata
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/workflows/pyproject-toml-fetch-matrix.yaml@main
+
+  perform-builds:
+    runs-on: ubuntu-latest
+    needs: [get-python-versions]
     continue-on-error: true
-    # Don't run when pull request is merged
-    if: github.event.pull_request.merged == false
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.parse-project-metadata.outputs.matrix) }}
-
+      # matrix: ${{ fromJson(needs.get-python-versions.outputs.matrix) }}
+    env:
+      MATRIX: ${{ fromJson(needs.get-python-versions.outputs.matrix) }}
     steps:
+      - uses: actions/checkout@v4
+
       - name: "Populate environment variables"
         id: setenv
         run: |
@@ -39,21 +41,18 @@ runs:
           datetime=$(date +'%Y%m%d%H%M')
           export datetime
           echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
-          vernum="${{ matrix.python-version }}.${datetime}"
+          vernum="${{ env.MATRIX }}.${datetime}"
           echo "vernum=${vernum}" >> "$GITHUB_OUTPUT"
 
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python ${{ matrix.python-version }}"
+      - name: "Set up Python ${{ env.MATRIX }}"
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ env.MATRIX }}
 
       - name: "Setup PDM for build commands"
         uses: pdm-project/setup-pdm@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ env.MATRIX }}
 
       - name: "Tag for test release"
         # Delete all local tags, then create a synthetic tag for testing
@@ -85,7 +84,6 @@ runs:
           fi
 
       - name: "Validating Artefacts with Twine"
-
         run: |
           echo "Validating artefacts with: twine check dist/*"
           pip install --upgrade twine
