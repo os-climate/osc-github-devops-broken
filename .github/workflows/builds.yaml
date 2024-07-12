@@ -13,13 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       MATRIX: ${{ steps.parse-project-metadata.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: "Determine Python versions"
+    steps:
+      # yamllint disable-line rule:line-length
+      - uses: os-climate/devops-reusable-workflows/.github/workflows/pyproject-toml-fetch-matrix.yaml@main
         id: parse-project-metadata
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/workflows/pyproject-toml-fetch-matrix.yaml@main
 
   perform-builds:
     runs-on: ubuntu-latest
