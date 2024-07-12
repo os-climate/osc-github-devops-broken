@@ -12,11 +12,8 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: "Checkout repository"
-      uses: actions/checkout@v4
-
-    - name: "Determine Python versions for matrix jobs"
-      id: parse-pyproject-toml
+    - id: parse-pyproject-toml
+      name: "Determine Python versions for matrix jobs"
       run: |
         set -o pipefail
         # set -xv
