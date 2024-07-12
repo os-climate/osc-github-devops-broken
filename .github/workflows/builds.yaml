@@ -12,7 +12,7 @@ jobs:
   get-python-versions:
     # runs-on: ubuntu-latest
     # yamllint disable-line rule:line-length
-    uses: os-climate/devops-reusable-workflows/.github/workflows/pyproject-toml-fetch-matrix.yaml@main
+    uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
     name: "Determine Python versions"
 
   perform-builds:
