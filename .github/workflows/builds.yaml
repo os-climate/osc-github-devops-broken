@@ -10,22 +10,27 @@ on:
 
 jobs:
   get-python-versions:
-    # yamllint disable-line rule:line-length
-    uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
-    name: "Determine Python versions"
-
-  perform-builds:
     runs-on: ubuntu-latest
-    needs: [get-python-versions]
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-      # matrix: ${{ fromJson(needs.get-python-versions.outputs.matrix) }}
-    env:
-      MATRIX: ${{ fromJson(needs.get-python-versions.outputs.matrix) }}
+    outputs:
+      matrix: ${{ steps.parse-project-metadata.outputs.python-matrix-versions }}
+
     steps:
       - uses: actions/checkout@v4
 
+      - name: "Populate environment variables"
+        id: parse-project-metadata
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
+
+  builds:
+    needs: [get-python-versions]
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.get-python-versions.outputs.matrix) }}
+
+    steps:
       - name: "Populate environment variables"
         id: setenv
         run: |
@@ -34,18 +39,21 @@ jobs:
           datetime=$(date +'%Y%m%d%H%M')
           export datetime
           echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
-          vernum="${{ env.MATRIX }}.${datetime}"
+          vernum="${{ matrix.python-version }}.${datetime}"
           echo "vernum=${vernum}" >> "$GITHUB_OUTPUT"
 
-      - name: "Set up Python ${{ env.MATRIX }}"
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python ${{ matrix.python-version }}"
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.MATRIX }}
+          python-version: ${{ matrix.python-version }}
 
       - name: "Setup PDM for build commands"
         uses: pdm-project/setup-pdm@v4
         with:
-          python-version: ${{ env.MATRIX }}
+          python-version: ${{ matrix.python-version }}
 
       - name: "Tag for test release"
         # Delete all local tags, then create a synthetic tag for testing
