@@ -14,6 +14,7 @@ runs:
   steps:
     - id: parse-pyproject-toml
       name: "Determine Python versions for matrix jobs"
+      shell: bash
       run: |
         set -o pipefail
         # set -xv
