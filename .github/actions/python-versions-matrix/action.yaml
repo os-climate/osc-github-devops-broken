@@ -12,8 +12,17 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - id: check-repo-content
+      name: "Check repository contains Python project"
+      shell: bash
+      run: |
+        if [ ! -f pyproject.toml ]; then
+          echo "python-project=true" >> "$GITHUB_OUTPUT"
+        fi
+
     - id: parse-pyproject-toml
       name: "Determine Python versions for matrix jobs"
+      if: ${{ needs.check-repo-content.outputs.python-project == 'true' }}
       shell: bash
       run: |
         set -o pipefail
