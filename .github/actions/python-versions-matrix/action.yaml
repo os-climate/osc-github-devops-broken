@@ -16,7 +16,7 @@ runs:
       name: "Check repository contains Python project"
       shell: bash
       run: |
-        if [ ! -f pyproject.toml ]; then
+        if [ -f pyproject.toml ]; then
           echo "python-project=true" >> "$GITHUB_OUTPUT"
         fi
 
