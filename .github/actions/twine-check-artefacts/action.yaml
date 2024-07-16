@@ -18,4 +18,4 @@ runs:
       shell: bash
       run: |
         pip install --upgrade twine
-        twine check $package-path
+        twine check {{ inputs.package-path }}
