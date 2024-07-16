@@ -6,10 +6,10 @@ name: "🧱 Python Builds (Matrix)"
 description: "Builds Python packages"
 
 inputs:
-  TWINE-CHECK:
-    description: "Validate packages with Twine"
+  package-path:
+    description: "Directory/folder path to Python build products"
     required: false
-    default: true
+    default: "dist/"
 
 runs:
   using: "composite"
@@ -89,5 +89,6 @@ runs:
 
       - name: "Validate Artefacts with Twine"
         id: twine-check-artefacts
-        if: ${{ inputs.twine-check}}
+        with:
+          package-path: ${{ inputs.package-path}}
         uses: os-climate/devops-reusable-workflows/.github/actions/twine-check-artefacts@main
