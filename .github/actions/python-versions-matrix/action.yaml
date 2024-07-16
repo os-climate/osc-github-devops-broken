@@ -22,7 +22,7 @@ runs:
 
     - id: parse-pyproject-toml
       name: "Determine Python versions for matrix jobs"
-      if: ${{ needs.check-repo-content.outputs.python-project == 'true' }}
+      if: ${{ steps.check-repo-content.outputs.python-project == 'true' }}
       shell: bash
       run: |
         set -o pipefail
