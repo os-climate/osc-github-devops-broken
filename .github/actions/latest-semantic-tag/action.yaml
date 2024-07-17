@@ -14,6 +14,7 @@ runs:
   steps:
     - name: "Report workflow environment"
       id: vars
+      shell: bash
       run: |
         echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
         echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
@@ -24,6 +25,7 @@ runs:
 
     - name: "Report/check output variables"
       id: output
+      shell: bash
       env:
         RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
       run: |
