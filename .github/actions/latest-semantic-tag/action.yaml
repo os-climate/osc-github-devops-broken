@@ -5,15 +5,9 @@
 name: "🏷️ Latest Semantic Tag"
 
 outputs:
-  TAG:
+  latest-tag:
     description: "Return the latest semantic tag from local repository"
-    value: ${{ steps.parse-tags.outputs.tag }}
-  GITHUB-REF-NAME:
-    description: "Returns workflow github.ref_name"
-    value: ${{ github.ref_name }}
-  GITHUB-HEAD-REF:
-    description: "Returns workflow github.head_ref"
-    value: ${{ github.head_ref }}
+    value: ${{ steps.parse-tags.outputs.latest-tag }}
 
 runs:
   using: "composite"
@@ -22,12 +16,12 @@ runs:
       name: "Determine latest semantic tag"
       shell: bash
       run: |
-        tag=$(git tag -l --sort=committerdate | grep -o 'v.*' | sort -r | head -1)
-        echo "tag=$tag" >> "$GITHUB_OUTPUT"
-        echo "Latest semantic tag = $tag"
-        github-ref-name=${{ github.ref_name }}
-        echo "github-ref-name=$github-ref-name" >> "$GITHUB_OUTPUT"
-        echo "Github github.ref_name: $github-ref-name"
-        github-head-ref=${{ github.head_ref }}
-        echo "github-head-ref=$github-head-ref" >> "$GITHUB_OUTPUT"
-        echo "Github github.head_ref: $github-head-ref"
+        echo "github.ref_name: ${{ github.ref_name }}"
+        echo "github.head_ref: ${{ github.head_ref }}"
+        LATEST_TAG=$(git tag -l --sort=committerdate | grep -o 'v.*' | sort -r | head -1)
+        if [ -z "$LATEST_TAG" ]; then
+          echo "No tags with semantic versioning were found in the repository"; exit 1
+        else
+          echo "latest-tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+          echo "Latest semantic tag = $LATEST_TAG"
+        fi
