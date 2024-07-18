@@ -52,6 +52,11 @@ runs:
           echo "GIT command path: $GIT_CMD"
         fi
         # Extract and report latest semantic tag
+        echo "Fetching tags..."
+        git fetch --tags
+        echo "Listing tags:"
+        git tag -l
+        echo "Parsing tags..."
         if ! (git tag -l | grep 'v*.*.*'); then
           echo "No semantic tags were found"
           echo "missing=true" >> $GITHUB_OUTPUT
@@ -60,3 +65,4 @@ runs:
         tag=$(git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1)
         echo "missing=false" >> $GITHUB_OUTPUT
         echo "tag=${tag}" >> $GITHUB_OUTPUT
+        echo "Latest tag: $tag"
