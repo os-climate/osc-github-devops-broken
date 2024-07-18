@@ -28,3 +28,5 @@ jobs:
         id: test-latest-semantic-tag
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/latest-semantic-tag@main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
