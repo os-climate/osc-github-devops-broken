@@ -26,6 +26,8 @@ runs:
         echo "Github github.ref_name: ${{ github.ref_name }}"
         echo "Github github.head_ref: ${{ github.head_ref }}"
         echo "Github tag from GITHUB_REF: $RELEASE_VERSION"
+        echo "Github workspace: ${{ github.workspace }}"
+        echo "Github workspace: $GITHUB_WORKSPACE"
 
     - name: "Validate previous step outputs"
       id: report-environment
@@ -47,6 +49,9 @@ runs:
           apt-get -y update
           apt-get -y install git
         fi
+        pwd
+        cd ${{ github.workspace }}"
+        pwd
         # Extract and report latest semantic tag
         if ! (git tag -l | grep 'v*.*.*'); then
           echo "No semantic tags were found"
