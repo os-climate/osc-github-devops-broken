@@ -37,12 +37,6 @@ runs:
       id: parse-tags
       shell: bash
       run: |
-        # Workaround for: https://github.com/actions/checkout/issues/1471
-        echo "Fetching tags..."
-        git fetch --tags
-        echo "Listing tags:"
-        git tag -l
-
         # Extract and report latest semantic tag
         echo "Parsing tags..."
         if ! (git tag -l | grep 'v*.*.*'); then
