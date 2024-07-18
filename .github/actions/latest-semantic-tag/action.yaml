@@ -12,10 +12,11 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: "Report workflow environment"
+    - name: "Report GitHub workflow environment"
       id: vars
       shell: bash
       run: |
+        # Report GitHub workflow environment
         echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
         echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
         # Report GitHub workflow environment
@@ -23,29 +24,19 @@ runs:
         echo "Github github.head_ref: ${{ github.head_ref }}"
         echo "Github tag from GITHUB_REF: $RELEASE_VERSION"
 
-    - name: "Report/check output variables"
+    - name: "Validate previous step outputs"
       id: output
       shell: bash
       env:
         RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
       run: |
+        # Validate previous step outputs
         echo "Release version: $RELEASE_VERSION"
         echo ${{ steps.vars.outputs.tag }}
 
     - id: parse-tags
-      name: "Determine latest semantic tag"
+      name: "Extract and report latest semantic tag"
       shell: bash
       run: |
-        set +vx
-        LATEST_TAG=$(git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1)
-        if [ -z "$LATEST_TAG" ]; then
-          echo "Could not parse tags"
-          echo "Listing all tags:"
-          git tag -l
-          echo "Latest tag returned as:"
-          git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1
-          exit 2
-        else
-          echo "tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
-          echo "Latest tag: $LATEST_TAG"
-        fi
+        # Extract and report latest semantic tag
+        git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1
