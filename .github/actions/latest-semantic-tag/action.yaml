@@ -25,7 +25,6 @@ runs:
 
     # Workaround for: https://github.com/actions/checkout/issues/1471
     - name: "🏷️ Fetch tags"
-      id: parse-tags
       shell: bash
       run: |
         # Workaround for: https://github.com/actions/checkout/issues/1471
