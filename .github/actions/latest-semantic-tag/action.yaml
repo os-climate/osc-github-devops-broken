@@ -26,7 +26,6 @@ runs:
 
     - name: "Validate previous step outputs"
       id: report-environment
-      needs: capture-environment
       shell: bash
       env:
         RELEASE_VERSION: ${{ steps.environment.outputs.ref-parse-tag }}
