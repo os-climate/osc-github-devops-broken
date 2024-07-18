@@ -31,7 +31,7 @@ runs:
         echo "Fetching tags..."
         git fetch --tags
         echo "Listing tags:"
-        git tag -l`
+        git tag -l
 
     - name: "🏷️ Parse tags"
       id: parse-tags
