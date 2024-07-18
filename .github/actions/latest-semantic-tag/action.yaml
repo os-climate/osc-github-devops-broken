@@ -53,8 +53,8 @@ runs:
         cd ${{ github.workspace }}
         pwd
         # Extract and report latest semantic tag
-        git tag -l || true
-        git tag -l | grep 'v*.*.*' || true
+        git tag -l
+        git tag -l | grep 'v*.*.*'
         if ! (git tag -l | grep 'v*.*.*'); then
           echo "No semantic tags were found"
           echo "missing=true" >> $GITHUB_OUTPUT
