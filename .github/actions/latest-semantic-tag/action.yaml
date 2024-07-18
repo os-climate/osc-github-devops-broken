@@ -37,7 +37,6 @@ runs:
       shell: bash
       run: |
         set +vx
-        set -o pipefail
         LATEST_TAG=$(git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1)
         if [ -z "$LATEST_TAG" ]; then
           echo "Could not parse tags"
