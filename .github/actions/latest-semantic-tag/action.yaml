@@ -53,10 +53,13 @@ runs:
         cd ${{ github.workspace }}
         pwd
         # Extract and report latest semantic tag
+        git tag -l || true
+        git tag -l | grep 'v*.*.*' || true
         if ! (git tag -l | grep 'v*.*.*'); then
           echo "No semantic tags were found"
           echo "missing=true" >> $GITHUB_OUTPUT
           echo "tag=v0.0.0" >> $GITHUB_OUTPUT
+          echo "GIT command path: $GIT_CMD"
         fi
         tag=$(git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1)
         echo "missing=false" >> $GITHUB_OUTPUT
