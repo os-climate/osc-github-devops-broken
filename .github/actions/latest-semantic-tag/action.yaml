@@ -8,6 +8,9 @@ outputs:
   latest-tag:
     description: "Return the latest semantic tag from repository"
     value: ${{ steps.parse-tags.outputs.tag }}
+  tag-missing:
+    description: "Flag set true if no semantic tags found"
+    value: ${{ steps.parse-tags.outputs.tag-missing }}
 
 runs:
   using: "composite"
@@ -41,20 +44,9 @@ runs:
         # Extract and report latest semantic tag
         if ! (git tag -l | grep 'v*.*.*'); then
           echo "No semantic tags were found; creating initial tag"
-          echo "create=true" >> $GITHUB_OUTPUT
+          echo "tag-missing=true" >> $GITHUB_OUTPUT
           echo "current-tag=v0.0.0" >> $GITHUB_OUTPUT
         fi
         current-tag=$(git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1)
-        echo "create=false" >> $GITHUB_OUTPUT
+        echo "tag-missing=false" >> $GITHUB_OUTPUT
         echo "current-tag=${current-tag}" >> $GITHUB_OUTPUT
-
-    - name: "🏷️ Create initial tag"
-      id: set-initial-tag
-      needs: parse-tags
-      if: steps.parse-tags.outputs.create == 'true'
-      # https://github.com/softprops/action-gh-release
-      uses: softprops/action-gh-release@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        prerelease: true
-        tag_name: v0.0.1
