@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main, master]
-    paths: .github/actions/**
+    paths: [".github/actions/**", ".github/workflows/**"]
 
 ### TESTS ###
 
@@ -17,7 +17,7 @@ jobs:
   test:
     name: "Testing: Composite Actions"
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event.workflow_dispatch
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: "Checkout repository"
