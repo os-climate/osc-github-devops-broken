@@ -41,6 +41,12 @@ runs:
       id: parse-tags
       shell: bash
       run: |
+        GIT_CMD=$(which git)
+        if [ -z "${GIT_CMD}" ]; then
+          echo "Installing GIT command"
+          apt-get -y update
+          apt-get -y install git
+        fi
         # Extract and report latest semantic tag
         if ! (git tag -l | grep 'v*.*.*'); then
           echo "No semantic tags were found"
