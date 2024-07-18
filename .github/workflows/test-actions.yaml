@@ -20,6 +20,9 @@ jobs:
     if: github.event_name == 'push' || github.event.workflow_dispatch
 
     steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
       - name: "latest-semantic-tag"
         id: test-latest-semantic-tag
         # yamllint disable-line rule:line-length
