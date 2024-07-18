@@ -18,8 +18,8 @@ jobs:
     name: "Testing: Composite Actions"
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    permissions:
-      contents: read
+    #permissions:
+    #  contents: read
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v4
@@ -30,5 +30,5 @@ jobs:
         id: test-latest-semantic-tag
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/latest-semantic-tag@main
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #env:
+        #  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
