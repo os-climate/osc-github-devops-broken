@@ -5,12 +5,12 @@
 name: "🏷️ Latest Semantic Tag"
 
 outputs:
-  latest-tag:
+  tag:
     description: "Return the latest semantic tag from repository"
     value: ${{ steps.parse-tags.outputs.tag }}
-  tag-missing:
+  missing:
     description: "Flag set true if no semantic tags found"
-    value: ${{ steps.parse-tags.outputs.tag-missing }}
+    value: ${{ steps.parse-tags.outputs.missing }}
 
 runs:
   using: "composite"
@@ -43,10 +43,10 @@ runs:
       run: |
         # Extract and report latest semantic tag
         if ! (git tag -l | grep 'v*.*.*'); then
-          echo "No semantic tags were found; creating initial tag"
-          echo "tag-missing=true" >> $GITHUB_OUTPUT
-          echo "current-tag=v0.0.0" >> $GITHUB_OUTPUT
+          echo "No semantic tags were found"
+          echo "missing=true" >> $GITHUB_OUTPUT
+          echo "tag=v0.0.0" >> $GITHUB_OUTPUT
         fi
-        current-tag=$(git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1)
-        echo "tag-missing=false" >> $GITHUB_OUTPUT
-        echo "current-tag=${current-tag}" >> $GITHUB_OUTPUT
+        tag=$(git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1)
+        echo "missing=false" >> $GITHUB_OUTPUT
+        echo "tag=${tag}" >> $GITHUB_OUTPUT
