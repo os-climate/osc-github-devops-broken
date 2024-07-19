@@ -20,18 +20,36 @@ runs:
       shell: bash
       run: |
         # Report GitHub workflow environment
-        echo "Github github.ref_name: ${{ github.ref_name }}"
-        echo "Github github.head_ref: ${{ github.head_ref }}"
+        echo "tagged=false" >> $GITHUB_OUTPUT
+        if [ ! -z "$GITHUB_REF" ]; then
+          echo "Github GITHUB_REF: $GITHUB_REF"
+        fi
+        if [ ! -z "$GITHUB_BASE_REF" ]; then
+          echo "Github GITHUB_BASE_REF: $GITHUB_BASE_REF"
+        fi
+        if [ ! -z "$GITHUB_HEAD_REF" ]; then
+          echo "Github GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
+        fi
+        if [ ! -z "$GITHUB_REF_NAME" ]; then
+          echo "Github GITHUB_REF_NAME: $GITHUB_REF_NAME"
+          if [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+ ]]; then
+            echo "tagged=true" >> $GITHUB_OUTPUT
+          fi
+        fi
+        if [ ! -z "$GITHUB_REF_TYPE" ]; then
+          echo "Github GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
+        fi
+        if [ ! -z "$GITHUB_EVENT_NAME" ]; then
+          echo "Github GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
+        fi
 
-    # Workaround for: https://github.com/actions/checkout/issues/1471
     - name: "🏷️ Fetch tags"
       shell: bash
+      if: steps.capture-environment.outputs.tagged == 'false'
       run: |
         # Workaround for: https://github.com/actions/checkout/issues/1471
         echo "Fetching tags..."
         git fetch --tags
-        echo "Listing tags:"
-        git tag -l
 
     - name: "🏷️ Parse tags"
       id: parse-tags
@@ -47,4 +65,4 @@ runs:
         tag=$(git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1)
         echo "missing=false" >> $GITHUB_OUTPUT
         echo "tag=${tag}" >> $GITHUB_OUTPUT
-        echo "Latest tag: $tag"
+        echo "Tag: $tag"
