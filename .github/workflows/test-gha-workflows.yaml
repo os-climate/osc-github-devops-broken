@@ -18,19 +18,18 @@ env:
 ### TESTS ###
 
 jobs:
-  repository:
-    name: "Check Repository Content"
+  identify-content:
+    name: "Identify Content"
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.python.outputs.matrixjson }}
-      python: ${{ steps.content.outputs.python }}
-      notebooks: ${{ steps.content.outputs.notebooks }}
+      python: ${{ steps.identify-content.outputs.python }}
+      notebooks: ${{ steps.identify-content.outputs.notebooks }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Inspect Files"
-        id: content
+      - name: "Identify Content"
+        id: identify-content
         run: |
           # Inspect files in repository
 
@@ -51,23 +50,33 @@ jobs:
             echo "notebooks=false" >> "$GITHUB_OUTPUT"
           fi
 
+  python-project:
+    name: "Python Project"
+    needs:
+      - identify-content
+    if: needs.identify-content.outputs.python  == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.python.outputs.matrixjson }}
+
+    steps:
+      - uses: actions/checkout@v4
+
       - name: "Extract Python Versioning"
         id: python
-        if: ${{ steps.content.outputs.python  == 'true' }}
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
 
-  builds:
-    name: "Python Builds"
+  python-build:
+    name: "Python Build"
     needs:
-      - repository
+      - python-project
     runs-on: "ubuntu-latest"
     continue-on-error: true
-    # if: needs.repository.outputs.python == true
 
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.repository.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v4
@@ -92,7 +101,7 @@ jobs:
       - name: "Validate Artefacts with Twine"
         id: python-twine-check
         with:
-          output-location: ${{ env.artefacts}}
+          artefacts: ${{ env.artefacts}}
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
   test:
