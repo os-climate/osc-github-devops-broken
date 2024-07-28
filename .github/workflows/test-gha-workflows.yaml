@@ -59,7 +59,8 @@ jobs:
 
   builds:
     name: "Python Builds"
-    needs: [repository]
+    needs:
+      - repository
     runs-on: "ubuntu-latest"
     continue-on-error: true
     if: needs.repository.outputs.python == true
