@@ -6,11 +6,11 @@ name: "🧱 Python Builds (Matrix)"
 description: "Builds Python packages"
 
 inputs:
-  package-path:
+  output-location:
     description: "Directory/folder path to Python build products"
     required: false
     default: "dist/"
-  matrix-versions:
+  versions-matrix:
     description: "Python version matrix as JSON"
     required: true
 
@@ -26,18 +26,18 @@ runs:
         datetime=$(date +'%Y%m%d%H%M')
         export datetime
         echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
-        vernum="${{ matrix.python-version }}.${datetime}"
+        vernum="${{ inputs.versions-matrix }}.${datetime}"
         echo "vernum=${vernum}" >> "$GITHUB_OUTPUT"
 
-    - name: "Set up Python ${{ matrix.python-version }}"
+    - name: "Set up Python ${{ inputs.versions-matrix }}"
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ inputs.versions-matrix }}
 
     - name: "Setup PDM for build commands"
       uses: pdm-project/setup-pdm@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ inputs.versions-matrix }}
 
     - name: "Performing build"
       shell: bash
@@ -62,7 +62,7 @@ runs:
     - name: "Validate Artefacts with Twine"
       id: twine-check-artefacts
       with:
-        package-path: ${{ inputs.package-path}}
+        output-location: ${{ inputs.output-location}}
       uses: os-climate/devops-reusable-workflows/.github/actions/twine-check-artefacts@main
 
     - name: "Determine Python versions"
@@ -91,21 +91,21 @@ runs:
           datetime=$(date +'%Y%m%d%H%M')
           export datetime
           echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
-          vernum="${{ matrix.python-version }}.${datetime}"
+          vernum="${{ inputs.versions-matrix }}.${datetime}"
           echo "vernum=${vernum}" >> "$GITHUB_OUTPUT"
 
       - name: "Checkout repository"
         uses: actions/checkout@v4
 
-      - name: "Set up Python ${{ matrix.python-version }}"
+      - name: "Set up Python ${{ inputs.versions-matrix }}"
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ inputs.versions-matrix }}
 
       - name: "Setup PDM for build commands"
         uses: pdm-project/setup-pdm@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ inputs.versions-matrix }}
 
       - name: "Tag for test release"
         # Delete all local tags, then create a synthetic tag for testing
@@ -141,5 +141,5 @@ runs:
       - name: "Validate Artefacts with Twine"
         id: twine-check-artefacts
         with:
-          package-path: ${{ inputs.package-path}}
+          output-location: ${{ inputs.output-location}}
         uses: os-climate/devops-reusable-workflows/.github/actions/twine-check-artefacts@main
