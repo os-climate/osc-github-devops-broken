@@ -10,10 +10,61 @@ inputs:
     description: "Directory/folder path to Python build products"
     required: false
     default: "dist/"
+  matrix-versions:
+    description: "Python version matrix as JSON"
+    required: true
 
 runs:
   using: "composite"
   steps:
+    - name: "Populate environment variables"
+      id: setenv
+      shell: bash
+      run: |
+        echo "Action triggered by user: ${GITHUB_TRIGGERING_ACTOR}"
+        set -x
+        datetime=$(date +'%Y%m%d%H%M')
+        export datetime
+        echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
+        vernum="${{ matrix.python-version }}.${datetime}"
+        echo "vernum=${vernum}" >> "$GITHUB_OUTPUT"
+
+    - name: "Set up Python ${{ matrix.python-version }}"
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: "Setup PDM for build commands"
+      uses: pdm-project/setup-pdm@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: "Performing build"
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f tox.ini ]; then
+          pip install tox tox-gh-actions
+          echo "Found file: tox.ini"
+          echo "Building with command: tox -e build"
+          tox -e build
+        elif [ -f pyproject.toml ]; then
+          echo "Found file: pyproject.toml"
+          echo "Building with command: pdm build"
+          pdm build
+        else
+          echo "Neither file found: tox.ini/pyproject.toml"
+          pip install --upgrade build
+          echo "Attempting build with: python -m build"
+          python -m build
+        fi
+
+    - name: "Validate Artefacts with Twine"
+      id: twine-check-artefacts
+      with:
+        package-path: ${{ inputs.package-path}}
+      uses: os-climate/devops-reusable-workflows/.github/actions/twine-check-artefacts@main
+
     - name: "Determine Python versions"
       id: parse-project-metadata
       # yamllint disable-line rule:line-length
