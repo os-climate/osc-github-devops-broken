@@ -7,7 +7,7 @@ description: "Build Python Project"
 
 inputs:
   artefacts:
-    description: "Path to Python build artefacts"
+    description: "Path for Python build artefacts"
     required: false
     default: "dist"
 
@@ -18,8 +18,10 @@ runs:
       id: setenv
       shell: bash
       run: |
-        echo "Action triggered by user: ${GITHUB_TRIGGERING_ACTOR}"
+        echo "Action triggered by: ${GITHUB_TRIGGERING_ACTOR}"
+        echo "Using build artefact path: ${{ inputs.artefacts }"
         datetime=$(date +'%Y%m%d%H%M')
+        echo "Using date and time stamp: $datetime"
         export datetime
         echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
 

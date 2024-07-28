@@ -9,10 +9,10 @@ on:
   workflow_dispatch:
   push:
     branches: [main, master]
-    paths: [".github/actions/**", ".github/workflows/**"]
+    # paths: [".github/actions/**", ".github/workflows/**"]
 
 env:
-  python-version: "3.10"
+  default-python: "3.10"
   artefacts: "dist"
 
 ### TESTS ###
@@ -87,7 +87,7 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-project-build@main
         with:
-          artefacts: "dist"
+          artefacts: ${{ env.artefacts}}
 
       - name: "Validate Artefacts with Twine"
         id: python-twine-check
@@ -96,25 +96,26 @@ jobs:
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
   test:
-    name: "Test: GitHub Actions/Workflows"
+    name: "Validate Actions/Workflows"
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v4
         with:
-          # Does not current work: https://github.com/actions/checkout/issues/1471
+          # Does not currently work: https://github.com/actions/checkout/issues/1471
           fetch-tags: true
+          # latest-semantic-tag currently contains a workaround for this behaviour
 
-      - name: "Action: latest-semantic-tag"
-        id: latest-semantic-tag
+      - name: "Action: semantic-tag-latest"
+        id: semantic-tag-latest
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/latest-semantic-tag@main
+        uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-latest@main
 
-      - name: "Action: increment-semantic-tag"
-        id: increment-semantic-tag
+      - name: "Action: semantic-tag-increment"
+        id: semantic-tag-increment
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/increment-semantic-tag@main
+        uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-increment@main
         with:
-          tag: "${{ steps.latest-semantic-tag.outputs.TAG }}"
+          tag: "${{ steps.semantic-tag-latest.outputs.TAG }}"
           type: "minor"
