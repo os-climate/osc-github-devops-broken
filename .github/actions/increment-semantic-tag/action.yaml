@@ -10,7 +10,7 @@ inputs:
     required: true
   type:
     description: "The type of increment to perform [ major|minor|patch ]"
-    required: false
+    required: true
     default: "patch"
 
 outputs:
@@ -22,9 +22,11 @@ runs:
   using: "composite"
   steps:
     - name: "🏷️ Increment tag"
-      id: increment
+      id: increment-tag
       shell: bash
       run: |
+        # Increment semantic tag
+
         TAG=${{ inputs.tag }}
         TYPE=${{ inputs.type }}
 
@@ -44,6 +46,8 @@ runs:
         # Validate supplied tag
         if ! [[ "$TAG" =~ $PATTERN ]]; then
           echo "Invalid semantic tag"; exit 1
+        else
+          echo "Supplied tag: $TAG"
         fi
 
         get_next_version() {
@@ -69,7 +73,7 @@ runs:
           esac
 
           NEXT_VERSION="$MAJOR.$MINOR.$PATCH"
-          echo "Incremented: $NEXT_VERSION"
+          echo "Incremented tag: $NEXT_VERSION"
         }
 
         get_next_version

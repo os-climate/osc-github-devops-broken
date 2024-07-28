@@ -56,7 +56,6 @@ runs:
       shell: bash
       run: |
         # Extract and report latest semantic tag
-        echo "Parsing tags..."
         if ! (git tag -l | grep 'v*.*.*' > /dev/null); then
           echo "No semantic tags were found"
           echo "missing=true" >> $GITHUB_OUTPUT
