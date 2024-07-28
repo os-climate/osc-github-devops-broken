@@ -63,7 +63,7 @@ jobs:
       - repository
     runs-on: "ubuntu-latest"
     continue-on-error: true
-    if: needs.repository.outputs.python == true
+    # if: needs.repository.outputs.python == true
 
     strategy:
       fail-fast: false
