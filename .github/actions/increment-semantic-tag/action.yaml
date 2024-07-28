@@ -39,7 +39,7 @@ runs:
         fi
 
         echo "Input tag: $TAG"
-        echo "Bump type: $TYPE"
+        echo "Increment type: $TYPE"
 
         if [[ "$TAG" == v* ]]; then
           echo "Converting tag to purely numeric equivalent"
