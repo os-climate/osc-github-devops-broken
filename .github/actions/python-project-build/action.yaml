@@ -11,6 +11,11 @@ inputs:
     required: false
     default: "dist"
 
+outputs:
+  publish:
+    description: "Set true when a production build"
+    value: ${{ steps.build.outputs.publish }}
+
 runs:
   using: "composite"
   steps:
@@ -26,6 +31,7 @@ runs:
         echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
 
     - name: "Performing build"
+      id: build
       shell: bash
       run: |
         python -m pip install --upgrade pip
@@ -43,4 +49,11 @@ runs:
           pip install --upgrade build
           echo "Attempting build with: python -m build"
           python -m build
+        fi
+
+        # Set flag to indicate production project build
+        if ! (ls ${{ inputs.artefacts }}/*.dev*.*); then
+          echo "publish=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "publish=false" >> "$GITHUB_OUTPUT"
         fi
