@@ -18,6 +18,8 @@ name: "🔐 CodeQL"
 on:
   pull_request:
     branches: ["main", "master"]
+  push:
+    branches: ["main", "master"]
   schedule:
     - cron: "39 20 * * 6"
 
