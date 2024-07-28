@@ -103,7 +103,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
-
+    permissions:
+      contents: write
+      # Required by SigStore signing action
+      id-token: write
     outputs:
       publish: ${{ steps.python-project-build.outputs.publish }}
 
