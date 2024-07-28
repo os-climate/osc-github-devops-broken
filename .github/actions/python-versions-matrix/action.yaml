@@ -185,4 +185,5 @@ runs:
           echo "WARNING: expected output may not be valid JSON"
         fi
         echo "matrixjson=$matrixjson" >> "$GITHUB_OUTPUT"
-        echo "Job output: matrixjson = $matrixjson"
+        echo "Job output:"
+        echo "  matrixjson = $matrixjson"
