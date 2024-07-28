@@ -84,7 +84,7 @@ repos:
     rev: v0.5.4
     hooks:
       - id: ruff
-        args: [--fix, --exit-non-zero-on-fix, --config=ruff.toml]
+        args: [--fix, --exit-non-zero-on-fix, --config=pyproject.toml]
       - id: ruff-format
 
   - repo: https://github.com/fsfe/reuse-tool
