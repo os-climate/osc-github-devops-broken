@@ -11,38 +11,88 @@ on:
     branches: [main, master]
     paths: [".github/actions/**", ".github/workflows/**"]
 
+env:
+  python-version: "3.10"
+  artefacts: "dist"
+
 ### TESTS ###
 
 jobs:
-  get-python-versions:
-    name: "Parse pyproject.toml File"
+  repository:
+    name: "Check Repository Content"
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.parse-project-metadata.outputs.python-matrix-versions }}
+      matrix: ${{ steps.python.outputs.matrixjson }}
+      python: ${{ steps.content.outputs.python }}
+      notebooks: ${{ steps.content.outputs.notebooks }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Populate environment variables"
-        id: parse-project-metadata
+      - name: "Inspect Files"
+        id: content
+        run: |
+          # Inspect files in repository
+
+          # Check if repository contains a Python project
+          if [ -f pyproject.toml ]; then
+            echo "Python project metadata found"
+            echo "python=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "python=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Check if repository contains Jupyter Notebooks
+          NOTEBOOKS=$(find . -name '*.ipynb' | wc -l )
+          if [ "$NOTEBOOKS" -ne 0 ]; then
+            echo "Jupyter notebooks found"
+            echo "notebooks=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "notebooks=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: "Extract Python Versioning"
+        id: python
+        if: ${{ steps.content.outputs.python  == 'true' }}
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
 
   builds:
-    name: "Python builds"
-    needs: [get-python-versions]
+    name: "Python Builds"
+    needs: [repository]
     runs-on: "ubuntu-latest"
     continue-on-error: true
-    # Don't run when pull request is merged
-    if: github.event.pull_request.merged == false
+    if:
+      # Don't run when pull request is merged
+      github.event.pull_request.merged == false && needs.repository.outputs.python == true
+
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.get-python-versions.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.repository.outputs.matrix) }}
+
     steps:
+      - uses: actions/checkout@v4
+
+      - name: "Setup Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Setup PDM for build commands"
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
       - name: "Build: Python project"
         id: perform-matrix-builds
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-matrix-builds@main
+
+      - name: "Validate Artefacts with Twine"
+        id: twine-check-artefacts
+        with:
+          output-location: ${{ env.artefacts}}
+        uses: os-climate/devops-reusable-workflows/.github/actions/twine-check-artefacts@main
 
   test:
     name: "Test: GitHub Actions/Workflows"

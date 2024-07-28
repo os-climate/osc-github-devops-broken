@@ -5,9 +5,9 @@
 name: "↗️ Extract Python Versions"
 
 outputs:
-  PYTHON-MATRIX-VERSIONS:
+  MATRIXJSON:
     description: "Return Python versions from pyproject.toml"
-    value: ${{ steps.parse-pyproject-toml.outputs.matrix }}
+    value: ${{ steps.parse-metadata.outputs.matrixjson }}
 
 runs:
   using: "composite"
@@ -20,7 +20,7 @@ runs:
           echo "python-project=true" >> "$GITHUB_OUTPUT"
         fi
 
-    - id: parse-pyproject-toml
+    - id: parse-metadata
       name: "Determine Python versions for matrix jobs"
       if: ${{ steps.check-repo-content.outputs.python-project == 'true' }}
       shell: bash
@@ -92,7 +92,7 @@ runs:
 
         # Main script entry point
 
-        python-matrix-versions() {
+        matrixjson() {
           # Process script arguments
           if [ $# -lt 1 ] || [ $# -gt 3 ]; then
               echo "Usage:    $0  unquoted|single|double [nocommas, brackets]"
@@ -177,12 +177,12 @@ runs:
           return_result "$PYTHON_VERSIONS"
         }
 
-        data=$(python-matrix-versions double brackets)
+        data=$(matrixjson double brackets)
         echo "Matrix versions extracted from pyproject.toml: $data"
-        matrix="{\"python-version\": $data}"
+        matrixjson="{\"python-version\": $data}"
         echo "Pretty formatted:"
-        if ! (echo "$matrix" | jq); then
-        echo "WARNING: expected output may not be valid JSON"
+        if ! (echo "$matrixjson" | jq); then
+          echo "WARNING: expected output may not be valid JSON"
         fi
-        echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
-        echo "Job output: matrix = $matrix"
+        echo "matrixjson=$matrixjson" >> "$GITHUB_OUTPUT"
+        echo "Job output: matrixjson = $matrixjson"
