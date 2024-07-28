@@ -62,9 +62,7 @@ jobs:
     needs: [repository]
     runs-on: "ubuntu-latest"
     continue-on-error: true
-    if:
-      # Don't run when pull request is merged
-      github.event.pull_request.merged == false && needs.repository.outputs.python == true
+    if: needs.repository.outputs.python == true
 
     strategy:
       fail-fast: false
@@ -106,11 +104,14 @@ jobs:
           fetch-tags: true
 
       - name: "Action: latest-semantic-tag"
-        id: test-latest-semantic-tag
+        id: latest-semantic-tag
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/latest-semantic-tag@main
 
       - name: "Action: increment-semantic-tag"
-        id: test-increment-semantic-tag
+        id: increment-semantic-tag
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/increment-semantic-tag@main
+        with:
+          tag: "${{ steps.latest-semantic-tag.outputs.TAG }}"
+          type: "minor"
