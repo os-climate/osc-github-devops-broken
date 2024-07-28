@@ -5,10 +5,10 @@
 name: "🧪 Twine check artefacts"
 
 inputs:
-  PACKAGE-PATH:
-    description: "Directory/folder path to Python build products"
+  ARTEFACTS:
+    description: "Directory/folder containing Python build artefacts"
     required: false
-    default: "dist/"
+    default: "dist"
 
 runs:
   using: "composite"
@@ -18,4 +18,4 @@ runs:
       shell: bash
       run: |
         pip install --upgrade twine
-        twine check ${{ inputs.package-path }}*
+        twine check ${{ inputs.artefacts }}/*
