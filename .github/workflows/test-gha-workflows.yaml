@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🧪 Test Composite Actions"
+name: "🧪 Test GitHub Actions/Workflows"
 
 # yamllint disable-line rule:truthy
 on:
@@ -15,6 +15,7 @@ on:
 
 jobs:
   get-python-versions:
+    name: "Parse pyproject.toml File"
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.parse-project-metadata.outputs.python-matrix-versions }}
@@ -27,8 +28,24 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
 
+  builds:
+    name: "Python builds"
+    needs: [get-python-versions]
+    runs-on: "ubuntu-latest"
+    continue-on-error: true
+    # Don't run when pull request is merged
+    if: github.event.pull_request.merged == false
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.get-python-versions.outputs.matrix) }}
+    steps:
+      - name: "Build: Python project"
+        id: perform-matrix-builds
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-matrix-builds@main
+
   test:
-    name: "Testing: Composite Actions"
+    name: "Test: GitHub Actions/Workflows"
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
@@ -38,12 +55,12 @@ jobs:
           # Does not current work: https://github.com/actions/checkout/issues/1471
           fetch-tags: true
 
-      - name: "latest-semantic-tag"
+      - name: "Action: latest-semantic-tag"
         id: test-latest-semantic-tag
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/latest-semantic-tag@main
 
-      - name: "increment-semantic-tag"
+      - name: "Action: increment-semantic-tag"
         id: test-increment-semantic-tag
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/increment-semantic-tag@main
