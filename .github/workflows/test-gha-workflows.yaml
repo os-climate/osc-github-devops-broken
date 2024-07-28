@@ -99,7 +99,7 @@ jobs:
     needs:
       - python-project
     runs-on: "ubuntu-latest"
-    continue-on-error: true
+    continue-on-error: false
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
@@ -152,6 +152,13 @@ jobs:
           artefacts: ${{ env.artefacts}}
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v4
+        if: matrix.python-version == env.default-python
+        with:
+          name: ${{ github.ref_name }}
+          path: ${{ env.artefacts }}
+
       - name: "Sign packages with Sigstore"
         uses: sigstore/gh-action-sigstore-python@v3.0.0
         env:
@@ -160,12 +167,6 @@ jobs:
           inputs: >-
             ./${{ env.artefacts }}/*.tar.gz
             ./${{ env.artefacts }}/*.whl
-
-      - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.ref_name }}
-          path: ${{ env.artefacts }}
 
   github:
     name: "📦 Publish to GitHub"
