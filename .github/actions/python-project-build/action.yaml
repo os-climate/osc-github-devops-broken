@@ -1,0 +1,44 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🧱 Python Build"
+description: "Build Python Project"
+
+inputs:
+  artefacts:
+    description: "Path to Python build artefacts"
+    required: false
+    default: "dist"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Populate environment variables"
+      id: setenv
+      shell: bash
+      run: |
+        echo "Action triggered by user: ${GITHUB_TRIGGERING_ACTOR}"
+        datetime=$(date +'%Y%m%d%H%M')
+        export datetime
+        echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
+
+    - name: "Performing build"
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f tox.ini ]; then
+          pip install tox tox-gh-actions
+          echo "Found file: tox.ini"
+          echo "Building with command: tox -e build"
+          tox -e build
+        elif [ -f pyproject.toml ]; then
+          echo "Found file: pyproject.toml"
+          echo "Building with command: pdm build"
+          pdm build
+        else
+          echo "Neither file found: tox.ini/pyproject.toml"
+          pip install --upgrade build
+          echo "Attempting build with: python -m build"
+          python -m build
+        fi
