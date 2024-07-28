@@ -228,7 +228,7 @@ jobs:
     name: "📦 Test PyPI publishing"
     # Only publish on tag pushes
     # if: startsWith(github.ref, 'refs/tags/')
-    if: vars.publish
+    if: vars.publish == 'true'
     needs: python-build
     runs-on: ubuntu-latest
     environment:
