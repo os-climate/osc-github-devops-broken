@@ -137,7 +137,7 @@ jobs:
 
       - name: "Build: Python Project"
         id: python-project-build
-        if: steps.semantic-tag-latest.outputs.tag-missing == 'false'
+        if: steps.semantic-tag-latest.outputs.missing == 'false'
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-project-build@main
         with:
