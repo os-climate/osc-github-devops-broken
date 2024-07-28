@@ -287,8 +287,52 @@ jobs:
             rm ${{ env.artefacts }}/*.sigstore*
           fi
 
-#      - name: "📦 Publish to PyPI"
-#        uses: pypa/gh-action-pypi-publish@release/v1
-#        with:
-#          verbose: true
-#          packages-dir: ${{ env.artefacts }}
+  #      - name: "📦 Publish to PyPI"
+  #        uses: pypa/gh-action-pypi-publish@release/v1
+  #        with:
+  #          verbose: true
+  #          packages-dir: ${{ env.artefacts }}
+
+  notebooks:
+    name: "Jupyter Notebooks"
+    needs:
+      - identify-content
+      - python-project
+    runs-on: "ubuntu-latest"
+    continue-on-error: false
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
+    # Don't run when pull request is merged, only if Jupyter Notebooks are present
+    if: github.event.pull_request.merged == 'false' && needs.identify-content.outputs.notebooks  == 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Setup Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Set up Python ${{ matrix.python-version }}"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Setup PDM for build commands"
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Testing Jupyter Notebooks"
+        run: |
+          echo "Testing notebooks using: pytest --nbmake -- **/test_*.ipynb"
+          pytest --nbmake -- **/test_*.ipynb
+
+      - name: Upload logs as artefacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-logs
+          path: /tmp/*.log
+          retention-days: 14
