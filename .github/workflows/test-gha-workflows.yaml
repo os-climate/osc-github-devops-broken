@@ -14,7 +14,7 @@ on:
 env:
   default-python: "3.10"
   artefacts: "dist"
-  publish: "false"
+  publish: "true"
 
 jobs:
   ### Test Individual Composite Actions ###
@@ -326,8 +326,9 @@ jobs:
 
       - name: "Testing Jupyter Notebooks"
         run: |
-          echo "Testing notebooks using: pytest --nbmake -- **/test_*.ipynb"
-          pytest --nbmake -- **/test_*.ipynb
+          echo "Testing notebooks with:"
+          echo "  pytest --nbmake -- **/*.ipynb"
+          pytest --nbmake -- **/*.ipynb
 
       - name: Upload logs as artefacts
         if: always()
