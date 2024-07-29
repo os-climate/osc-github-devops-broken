@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🧪 Test GitHub Actions/Workflows"
+name: "🤖 Repository DevOps Automation"
 
 # yamllint disable-line rule:truthy
 on:
@@ -47,7 +47,7 @@ jobs:
   ### Primary Python Workflow Testing ###
 
   identify-content:
-    name: "🔍 Identify Content"
+    name: "Identify Content"
     runs-on: ubuntu-latest
     outputs:
       python: ${{ steps.identify-content.outputs.python }}
@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "🔍 Identify Content"
+      - name: "Identify Content"
         id: identify-content
         run: |
           # Inspect files in repository
