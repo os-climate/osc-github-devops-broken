@@ -41,8 +41,15 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-increment@main
         with:
-          tag: "${{ steps.semantic-tag-latest.outputs.TAG }}"
+          tag: "${{ steps.semantic-tag-latest.outputs.tag }}"
           type: "minor"
+
+      - name: "Action: python-twine-check"
+        id: python-twine-check
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
+        with:
+          path: "tests/twine"
 
   ### Primary Python Workflow Testing ###
 
@@ -172,11 +179,11 @@ jobs:
         with:
           artefacts: ${{ env.artefacts}}
 
-      - name: "Validate Artefacts with Twine"
-        id: python-twine-check
-        with:
-          path: ${{ env.artefacts}}
-        uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
+      #- name: "Validate Artefacts with Twine"
+      #  id: python-twine-check
+      #  with:
+      #    path: ${{ env.artefacts}}
+      #  uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
       - name: "Store the distribution packages"
         uses: actions/upload-artifact@v4

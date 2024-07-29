@@ -60,6 +60,10 @@ runs:
         MAJOR=$(echo "$TAG" | sed -e "s#$REGEX#\1#")
         MINOR=$(echo "$TAG" | sed -e "s#$REGEX#\2#")
         PATCH=$(echo "$TAG" | sed -e "s#$REGEX#\3#")
+        echo "Extracted"
+        echo "  Major: $MAJOR"
+        echo "  Minor: $MINOR"
+        echo "  Patch: $PATCH"
 
         ### CONTENT RECENTLY ADDED ###
 
@@ -77,9 +81,5 @@ runs:
             ((PATCH += 1))
             ;;
         esac
-
-        echo "$MAJOR.$MINOR.$PATCH"
-
-        ### CONTENT REMOVED ###
 
         echo "tag=${TAG}" >> $GITHUB_OUTPUT
