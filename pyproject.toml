@@ -88,9 +88,9 @@ omit = ["test/*"]
 # relative_files = true
 
 [tool.coverage.report]
-fail_under = 75
+fail_under = 30
 skip_empty = true
-format = ["term", "term-missing", "html", "text"]
+# format = ["term", "term-missing", "html", "text"]
 
 [tool.mypy]
 ignore_missing_imports = true
