@@ -14,8 +14,8 @@ inputs:
     default: "patch"
 
 outputs:
-  TAG:
-    # A leading non-numeric "v" character will be stripped
+  INCREMENTED-TAG:
+    # Any single/leading non-numeric "v" character will be stripped
     description: "The incremented semantic tag [purely numeric]"
     value: ${{ steps.increment.outputs.tag }}
 
@@ -55,4 +55,30 @@ runs:
         else
           echo "Numeric tag: $TAG"
         fi
-        echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+        REGEX='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
+        MAJOR=$(echo "$TAG" | sed -e "s#$REGEX#\1#")
+        MINOR=$(echo "$TAG" | sed -e "s#$REGEX#\2#")
+        PATCH=$(echo "$TAG" | sed -e "s#$REGEX#\3#")
+
+        case "$TYPE" in
+        major)
+          ((MAJOR += 1))
+          ((MINOR = 0))
+          ((PATCH = 0))
+          ;;
+        minor)
+          ((MINOR += 1))
+          ((PATCH = 0))
+          ;;
+        patch)
+          ((PATCH += 1))
+          ;;
+        esac
+
+        echo "INCREMENTED_TAG=1.1.0" >> $GITHUB_OUTPUT
+
+        #INCREMENTED_TAG="$MAJOR.$MINOR.$PATCH"
+        #echo "Incremented tag: $INCREMENTED_TAG"
+        #echo "tag=${NEXT_VERSION}" >> $GITHUB_OUTPUT
+        #echo "tag=$INCREMENTED_TAG" >> $GITHUB_OUTPUT
