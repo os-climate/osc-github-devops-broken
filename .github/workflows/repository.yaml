@@ -51,6 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       python: ${{ steps.identify-content.outputs.python }}
+      notebooks: ${{ steps.identify-content.outputs.notebooks }}
 
     steps:
       - uses: actions/checkout@v4
@@ -58,12 +59,23 @@ jobs:
       - name: "Identify Content"
         id: identify-content
         run: |
+          # Inspect files in repository
+
           # Check if repository contains a Python project
           if [ -f pyproject.toml ]; then
             echo "Python project metadata found"
             echo "python=true" >> "$GITHUB_OUTPUT"
           else
             echo "python=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Check if repository contains Jupyter Notebooks
+          NOTEBOOKS=$(find . -name '*.ipynb' | wc -l )
+          if [ "$NOTEBOOKS" -ne 0 ]; then
+            echo "Jupyter notebooks found"
+            echo "notebooks=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "notebooks=false" >> "$GITHUB_OUTPUT"
           fi
 
   python-project:
@@ -73,33 +85,10 @@ jobs:
     if: needs.identify-content.outputs.python  == 'true'
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.versioning.outputs.matrixjson }}
-      lockfile: ${{ steps.dependencies.outputs.declared }}
-      notebooks: ${{ steps.content-checks.outputs.notebooks }}
+      matrix: ${{ steps.python.outputs.matrixjson }}
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: "Extract Python Versioning"
-        id: versioning
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
-
-      - name: "Check Dependencies Declared"
-        id: dependencies
-        uses: os-climate/devops-reusable-workflows/.github/actions/python-dependencies-declared@main
-
-      - name: "Identify Content"
-        id: content-checks
-        run: |
-          # Check if repository contains Jupyter Notebooks
-          NOTEBOOKS=$(find . -name '*.ipynb' | wc -l )
-          if [ "$NOTEBOOKS" -ne 0 ]; then
-            echo "Jupyter notebooks found"
-            echo "notebooks=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "notebooks=false" >> "$GITHUB_OUTPUT"
-          fi
 
       - name: "Set up Python ${{ env.default-python }}"
         uses: actions/setup-python@v5
@@ -121,13 +110,15 @@ jobs:
           update-strategy: eager
           # Whether to install PDM plugins before update
           install-plugins: "false"
-        env:
-          GH_TOKEN: ${{ github.token }}
 
       - name: "Export Dependencies"
         id: export-dependencies
-        if: steps.dependencies.outputs.declared == 'true'
         uses: os-climate/devops-reusable-workflows/.github/actions/python-export-dependencies@main
+
+      - name: "Extract Python Versioning"
+        id: python
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
 
   python-build:
     name: "Python Build"
@@ -144,7 +135,6 @@ jobs:
       id-token: write
     outputs:
       publish: ${{ steps.python-project-build.outputs.publish }}
-    if: needs.python-project.outputs.lockfile == 'true'
 
     steps:
       - uses: actions/checkout@v4
@@ -339,7 +329,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
     # Don't run when pull request is merged, only if Jupyter Notebooks are present
-    if: needs.python-project.outputs.notebooks  == 'true' && needs.python-project.outputs.lockfile == 'true'
+    if: needs.identify-content.outputs.notebooks  == 'true'
 
     steps:
       - uses: actions/checkout@v4
@@ -371,6 +361,8 @@ jobs:
         run: |
           echo "Testing notebooks with:"
           echo "  pytest --nbmake -- **/*.ipynb"
+          ls
+          find . -name '*.ipynb'
           pytest --nbmake -- **/*.ipynb
 
       - name: "Upload Logs"
@@ -386,7 +378,7 @@ jobs:
     needs:
       - identify-content
       - python-project
-    if: needs.identify-content.outputs.python  == 'true' && needs.python-project.outputs.lockfile == 'true'
+    if: needs.identify-content.outputs.python  == 'true'
     runs-on: "ubuntu-latest"
     continue-on-error: true
     strategy:
