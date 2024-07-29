@@ -31,6 +31,13 @@ jobs:
           fetch-tags: true
           # latest-semantic-tag currently contains a workaround for this behaviour
 
+      - name: "Action: python-twine-check"
+        id: python-twine-check
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
+        with:
+          path: "tests/twine"
+
       - name: "Action: semantic-tag-latest"
         id: semantic-tag-latest
         # yamllint disable-line rule:line-length
@@ -43,13 +50,6 @@ jobs:
         with:
           tag: "${{ steps.semantic-tag-latest.outputs.tag }}"
           type: "minor"
-
-      - name: "Action: python-twine-check"
-        id: python-twine-check
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
-        with:
-          path: "tests/twine"
 
   ### Primary Python Workflow Testing ###
 
