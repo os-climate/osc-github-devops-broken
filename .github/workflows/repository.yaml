@@ -20,23 +20,23 @@ jobs:
   ### Test Individual Composite Actions ###
 
   test:
-    name: "Validate Actions/Workflows"
+    name: "🤖 Validate Actions/Workflows"
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: "Checkout repository"
+      - name: "🧳 Checkout Repository"
         uses: actions/checkout@v4
         with:
           # Does not currently work: https://github.com/actions/checkout/issues/1471
           fetch-tags: true
           # latest-semantic-tag currently contains a workaround for this behaviour
 
-      - name: "Action: semantic-tag-latest"
+      - name: "✅ Action: semantic-tag-latest"
         id: semantic-tag-latest
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-latest@main
 
-      - name: "Action: semantic-tag-increment"
+      - name: "✅  Action: semantic-tag-increment"
         id: semantic-tag-increment
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-increment@main
@@ -47,7 +47,7 @@ jobs:
   ### Primary Python Workflow Testing ###
 
   identify-content:
-    name: "Identify Content"
+    name: "🔍 Identify Content"
     runs-on: ubuntu-latest
     outputs:
       python: ${{ steps.identify-content.outputs.python }}
@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Identify Content"
+      - name: "🔍 Identify Content"
         id: identify-content
         run: |
           # Inspect files in repository
@@ -79,7 +79,7 @@ jobs:
           fi
 
   python-project:
-    name: "Python Project"
+    name: "🐍 Python Project"
     needs:
       - identify-content
     if: needs.identify-content.outputs.python  == 'true'
@@ -90,13 +90,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Extract Python Versioning"
+      - name: "♻️ Update Dependencies"
+        id: update-dependencies
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-update-dependencies@main
+
+      - name: "🚚 Export Dependencies"
+        id: export-dependencies
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-export-dependencies@main
+
+      - name: "🐍 Extract Python Versioning"
         id: python
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
 
   python-build:
-    name: "Python Build"
+    name: "🧱 Python Build"
     needs:
       - python-project
     runs-on: "ubuntu-latest"
@@ -114,7 +122,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Setup Python"
+      - name: "🐍 Set up Python ${{ matrix.python-version }}"
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -139,7 +147,7 @@ jobs:
           prerelease: true
           tag_name: v0.0.1
 
-      - name: "Build: Python Project"
+      - name: "🛠️ Build: Python Project"
         id: python-project-build
         if: steps.semantic-tag-latest.outputs.missing == 'false'
         # yamllint disable-line rule:line-length
@@ -147,20 +155,20 @@ jobs:
         with:
           artefacts: ${{ env.artefacts}}
 
-      - name: "Validate Artefacts with Twine"
+      - name: "🔍 Validate Artefacts with Twine"
         id: python-twine-check
         with:
           artefacts: ${{ env.artefacts}}
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
-      - name: Store the distribution packages
+      - name: "🏬 Store the distribution packages"
         uses: actions/upload-artifact@v4
         if: matrix.python-version == env.default-python
         with:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
 
-      - name: "Sign packages with Sigstore"
+      - name: "✍🏼 Sign packages with Sigstore"
         uses: sigstore/gh-action-sigstore-python@v3.0.0
         if: matrix.python-version == env.default-python
         env:
@@ -187,7 +195,7 @@ jobs:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
 
-      - name: "🌥️ Set environment variables"
+      - name: "🌥️ Set Environment Variables"
         id: setenv
         run: |
           # vernum="${{ env.default-python }}.$(date +'%Y%m%d%H%M')"
@@ -225,7 +233,7 @@ jobs:
             ${{ env.artefacts }}/*.sigstore*
 
   testpypi:
-    name: "📦 Test PyPI publishing"
+    name: "📦 Test Package Publishing"
     # Only publish on tag pushes
     # if: startsWith(github.ref, 'refs/tags/')
     if: vars.publish == 'true'
@@ -237,13 +245,13 @@ jobs:
       # IMPORTANT: mandatory for trusted publishing
       id-token: write
     steps:
-      - name: "⬇ Download build artefacts"
+      - name: "⬇️ Download build artefacts"
         uses: actions/download-artifact@v4
         with:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
 
-      - name: "Validate build artefacts"
+      - name: "🔍 Validate Build Artefacts"
         id: files
         run: |
           if [ -f ${{ env.artefacts }}/buildvars.txt ]; then
@@ -253,7 +261,7 @@ jobs:
             rm ${{ env.artefacts }}/*.sigstore*
           fi
 
-      - name: "Publish to test PyPI"
+      - name: "📦 Test Package Publishing"
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
@@ -261,7 +269,7 @@ jobs:
           packages-dir: ${{ env.artefacts }}
 
   pypi:
-    name: "📦 Publish to PyPI"
+    name: "📦 Publish Package"
     # Only publish on tag pushes
     if:
       startsWith(github.ref, 'refs/tags/') &&
@@ -275,7 +283,7 @@ jobs:
       # IMPORTANT: mandatory for trusted publishing
       id-token: write
     steps:
-      - name: "⬇ Download build artefacts"
+      - name: "⬇️ Download build artefacts"
         uses: actions/download-artifact@v4
         with:
           name: ${{ github.ref_name }}
@@ -294,7 +302,7 @@ jobs:
   #          packages-dir: ${{ env.artefacts }}
 
   notebooks:
-    name: "Jupyter Notebooks"
+    name: "🗒️ Jupyter Notebooks"
     needs:
       - identify-content
       - python-project
@@ -314,17 +322,17 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Set up Python ${{ matrix.python-version }}"
+      - name: "🐍 Set up Python ${{ matrix.python-version }}"
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Setup PDM for build commands"
+      - name: "➕ Install/Setup PDM"
         uses: pdm-project/setup-pdm@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Install Dependencies"
+      - name: "⛓️ Install Dependencies"
         run: |
           python -m pip install --upgrade pip
           pdm export -o requirements.txt
@@ -332,13 +340,13 @@ jobs:
           pip install .
           pip install pytest nbmake
 
-      - name: "Testing Jupyter Notebooks"
+      - name: "🗒️  Testing Jupyter Notebooks"
         run: |
           echo "Testing notebooks with:"
           echo "  pytest --nbmake -- **/*.ipynb"
           pytest --nbmake -- **/*.ipynb
 
-      - name: Upload logs as artefacts
+      - name: "⬆️ Upload Logs"
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -347,7 +355,7 @@ jobs:
           retention-days: 14
 
   security:
-    name: "Security Audit"
+    name: "🔐 Security Audit"
     needs:
       - identify-content
       - python-project
@@ -359,20 +367,20 @@ jobs:
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
 
     steps:
-      - name: "Checkout repository"
+      - name: "🧳 Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: "🐍 Set up Python ${{ matrix.python-version }}"
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Setup PDM for build commands"
+      - name: "➕ Install/Setup PDM"
         uses: pdm-project/setup-pdm@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Install dependencies"
+      - name: "⛓️ Install Dependencies"
         run: |
           pip install --upgrade pip
           pdm lock
@@ -382,5 +390,5 @@ jobs:
           pip install --upgrade setuptools
           pdm list --graph
 
-      - name: "Run: pip-audit"
+      - name: "🔐 Security Audit"
         uses: pypa/gh-action-pip-audit@v1.0.8

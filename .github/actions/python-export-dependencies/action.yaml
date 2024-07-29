@@ -1,0 +1,13 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🚚 Export Python Dependencies"
+description: "Creates requirements.txt from pyproject.toml using PDM"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "🚚 Export Dependencies"
+      run: |
+        pdm export --without-hashes -o requirements.txt
