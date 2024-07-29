@@ -78,8 +78,9 @@ runs:
           ;;
         esac
 
-        echo "INCREMENTED_TAG=1.1.0" >> $GITHUB_OUTPUT
+        INCREMENTED="$MAJOR.$MINOR.$PATCH"
 
         ### CONTENT REMOVED ###
 
+        echo "Incremented: ${INCREMENTED}"
         echo "tag=${TAG}" >> $GITHUB_OUTPUT
