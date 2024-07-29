@@ -324,6 +324,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: "Install Dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pdm export -o requirements.txt
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install .
+          pip install pytest nbmake
+
       - name: "Testing Jupyter Notebooks"
         run: |
           echo "Testing notebooks with:"
@@ -337,3 +345,42 @@ jobs:
           name: debug-logs
           path: /tmp/*.log
           retention-days: 14
+
+  security:
+    name: "Security Audit"
+    needs:
+      - identify-content
+      - python-project
+    if: needs.identify-content.outputs.python  == 'true'
+    runs-on: "ubuntu-latest"
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Setup PDM for build commands"
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Install dependencies"
+        run: |
+          pip install --upgrade pip
+          pdm lock
+          pdm export -o requirements.txt
+          python -m pip install -r requirements.txt
+          python -m pip install .
+          pip install --upgrade setuptools
+          pdm list --graph
+
+      - name: "Run: pip-audit"
+        uses: pypa/gh-action-pip-audit@v1.0.8
