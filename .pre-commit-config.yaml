@@ -8,7 +8,7 @@ ci:
 exclude: |
   (?x)^(
       docs\/conf.py|
-      dco-signoffs/$
+      dco-signoffs/$|
   )$
 
 repos:
