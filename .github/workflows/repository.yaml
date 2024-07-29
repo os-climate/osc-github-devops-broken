@@ -90,9 +90,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Update Dependencies"
-        id: update-dependencies
-        uses: os-climate/devops-reusable-workflows/.github/actions/python-update-dependencies@main
+      - name: "Set up Python ${{ env.default-python }}"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.default-python }}
+
+      - name: "Setup PDM Build Tool"
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ env.default-python }}
+
+      - name: "Update Python dependencies"
+        uses: pdm-project/update-deps-action@v1
+        with:
+          sign-off-commit: "true"
+          token: ${{ secrets.GH_TOKEN }}
+          commit-message: "Chore: Update dependencies and pdm.lock [skip ci]"
+          pr-title: "Update Python module dependencies"
+          update-strategy: eager
+          # Whether to install PDM plugins before update
+          install-plugins: "false"
 
       - name: "Export Dependencies"
         id: export-dependencies
