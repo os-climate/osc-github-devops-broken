@@ -5,7 +5,7 @@
 name: "📦 Twine Check Artefacts"
 
 inputs:
-  ARTEFACTS:
+  PATH:
     description: "Directory/folder containing Python build artefacts"
     required: false
     default: "dist"
@@ -17,5 +17,8 @@ runs:
       name: "Check Artefacts with Twine"
       shell: bash
       run: |
+        # Run twine check against build artefacts
         pip install --upgrade twine
-        twine check ${{ inputs.artefacts }}/*
+        echo "Path provided: ${{ inputs.path }}"
+        echo "Running: twine check ${{ inputs.path }}/*"
+        twine check ${{ inputs.path }}/*

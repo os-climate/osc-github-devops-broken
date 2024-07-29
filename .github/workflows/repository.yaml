@@ -175,7 +175,7 @@ jobs:
       - name: "Validate Artefacts with Twine"
         id: python-twine-check
         with:
-          artefacts: ${{ env.artefacts}}
+          path: ${{ env.artefacts}}
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
       - name: "Store the distribution packages"
@@ -363,7 +363,10 @@ jobs:
           echo "  pytest --nbmake -- **/*.ipynb"
           ls
           find . -name '*.ipynb'
-          pytest --nbmake -- **/*.ipynb
+          pytest --nbmake src/*/*.ipynb --cov=src/devops_reusable_workflows
+          # Might need an __init__.py file in tests folder?
+          # https://stackoverflow.com/questions/47287721/coverage-py-warning-no-data-was-collected-no-data-collected
+          # pytest --nbmake tests/test_*.ipynb --cov=tests
 
       - name: "Upload Logs"
         if: always()
