@@ -80,6 +80,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: "Extract Python Versioning"
+        id: versioning
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
+
       - name: "Check Dependencies Declared"
         id: dependencies
         uses: os-climate/devops-reusable-workflows/.github/actions/python-dependencies-declared@main
@@ -116,15 +121,13 @@ jobs:
           update-strategy: eager
           # Whether to install PDM plugins before update
           install-plugins: "false"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: "Export Dependencies"
         id: export-dependencies
+        if: steps.dependencies.outputs.declared == 'true'
         uses: os-climate/devops-reusable-workflows/.github/actions/python-export-dependencies@main
-
-      - name: "Extract Python Versioning"
-        id: versioning
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
 
   python-build:
     name: "Python Build"
