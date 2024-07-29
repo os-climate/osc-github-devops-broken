@@ -6,13 +6,13 @@ name: "🧱 Python Build"
 description: "Build Python Project"
 
 inputs:
-  artefacts:
-    description: "Path for Python build artefacts"
+  ARTEFACTS:
+    description: "Path to Python build artefacts"
     required: false
     default: "dist"
 
 outputs:
-  publish:
+  PUBLISH:
     description: "Set true when a production build"
     value: ${{ steps.build.outputs.publish }}
 
@@ -30,7 +30,7 @@ runs:
         export datetime
         echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
 
-    - name: "Performing build"
+    - name: "Performing Build"
       id: build
       shell: bash
       run: |

@@ -5,9 +5,28 @@
 name: "♻️ Python Update Dependencies"
 description: "Updates pdm.lock from pyproject.toml"
 
+inputs:
+  PYTHON-VERSION:
+    description: "Python version to use with PDM"
+    required: false
+    default: "3.10"
+
 runs:
   using: "composite"
   steps:
+    - name: "Check Python Project Metadata"
+      shell: bash
+      run: |
+        if [ ! -f pyproject.toml ]; them
+          echo "The required Python project metadata is missing"
+          echo "Error: pyproject.toml was not found"; exit 1
+        fi
+
+    - name: "Setup PDM Build Tool"
+      uses: pdm-project/setup-pdm@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+
     - name: "Update Python dependencies"
       uses: pdm-project/update-deps-action@v1
       with:
@@ -18,7 +37,3 @@ runs:
         update-strategy: eager
         # Whether to install PDM plugins before update
         install-plugins: "false"
-
-    - name: "Export Dependencies"
-      run: |
-        pdm export --without-hashes -o requirements.txt

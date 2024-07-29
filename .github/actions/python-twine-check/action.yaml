@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🧪 Twine Check Artefacts"
+name: "📦 Twine Check Artefacts"
 
 inputs:
   ARTEFACTS:

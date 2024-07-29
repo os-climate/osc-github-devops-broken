@@ -5,9 +5,29 @@
 name: "🚚 Export Python Dependencies"
 description: "Creates requirements.txt from pyproject.toml using PDM"
 
+inputs:
+  PYTHON-VERSION:
+    description: "Python version to use with PDM"
+    required: false
+    default: "3.10"
+
 runs:
   using: "composite"
   steps:
-    - name: "🚚 Export Dependencies"
+    - name: "Check Python Project Metadata"
+      shell: bash
+      run: |
+        if [ ! -f pyproject.toml ]; them
+          echo "The required Python project metadata is missing"
+          echo "Error: pyproject.toml was not found"; exit 1
+        fi
+
+    - name: "Setup PDM Build Tool"
+      uses: pdm-project/setup-pdm@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: "Export Dependencies"
+      shell: bash
       run: |
         pdm export --without-hashes -o requirements.txt

@@ -5,31 +5,31 @@
 name: "🏷️ Increment Semantic Tag"
 
 inputs:
-  tag:
+  TAG:
     description: "The existing semantic tag to be incremented"
     required: true
-  type:
+  TYPE:
     description: "Increment to perform [major|minor|patch]"
     required: false
     default: "patch"
 
 outputs:
-  incremented:
+  INCREMENTED-TAG:
     # Any single/leading non-numeric "v" character will be stripped
     description: "The incremented semantic tag [purely numeric]"
-    value: ${{ steps.increment-tag.outputs.incremented }}
+    value: ${{ steps.increment.outputs.tag }}
 
 runs:
   using: "composite"
   steps:
-    - name: "🏷️ Increment tag"
-      id: increment-tag
+    - name: "Increment tag"
+      id: increment
       shell: bash
       run: |
         # Increment semantic tag
 
-        TAG=${{ inputs.tag }}
-        TYPE=${{ inputs.type }}
+        TAG=${{ inputs.TAG }}
+        TYPE=${{ inputs.TYPE }}
 
         # Validate increment type
         if	[ ! "$TYPE" = "major" ] && \
@@ -76,6 +76,9 @@ runs:
           ;;
         esac
 
-        NEXT_VERSION="$MAJOR.$MINOR.$PATCH"
-        echo "Incremented tag: $NEXT_VERSION"
-        echo "incremented=${NEXT_VERSION}" >> $GITHUB_OUTPUT
+        echo "INCREMENTED_TAG=1.1.0" >> $GITHUB_OUTPUT
+
+        #INCREMENTED_TAG="$MAJOR.$MINOR.$PATCH"
+        #echo "Incremented tag: $INCREMENTED_TAG"
+        #echo "tag=${NEXT_VERSION}" >> $GITHUB_OUTPUT
+        #echo "tag=$INCREMENTED_TAG" >> $GITHUB_OUTPUT
