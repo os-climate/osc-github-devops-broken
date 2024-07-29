@@ -1,0 +1,24 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "♻️ Python Update Dependencies"
+description: "Updates pdm.lock from pyproject.toml"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Update Python dependencies"
+      uses: pdm-project/update-deps-action@v1
+      with:
+        sign-off-commit: "true"
+        token: ${{ secrets.GH_TOKEN }}
+        commit-message: "Chore: Update dependencies and pdm.lock [skip ci]"
+        pr-title: "Update Python module dependencies"
+        update-strategy: eager
+        # Whether to install PDM plugins before update
+        install-plugins: "false"
+
+    - name: "Export Dependencies"
+      run: |
+        pdm export --without-hashes -o requirements.txt
