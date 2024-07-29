@@ -304,7 +304,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
     # Don't run when pull request is merged, only if Jupyter Notebooks are present
-    if: github.event.pull_request.merged == 'false' && needs.identify-content.outputs.notebooks  == 'true'
+    if: needs.identify-content.outputs.notebooks  == 'true'
 
     steps:
       - uses: actions/checkout@v4
