@@ -6,12 +6,12 @@ name: "🧪 Test/Validate GitHub Actions"
 
 # yamllint disable-line rule:truthy
 on:
-  workflow_dispatch:
   pull_request:
     types: [opened, reopened, edited, synchronize]
+    paths: [".github/**", ".github/actions/**", ".github/workflows/**"]
     branches:
       - "*"
-      - "!update-devops-tooling"
+      - "!update-tooling"
 
 env:
   DEFAULT-PYTHON: "3.10"
@@ -25,7 +25,7 @@ jobs:
   test:
     name: "Validate Individual Actions"
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     continue-on-error: true
     steps:
       - name: "Checkout Repository"
