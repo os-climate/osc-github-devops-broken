@@ -19,7 +19,7 @@ jobs:
     if: github.event.pull_request.merged == true
     name: "Rebuild Documentation"
     runs-on: ubuntu-latest
-    continue-on-error: true
+    continue-on-error: false
 
     permissions:
       # IMPORTANT: mandatory for documentation updates; used in final step
