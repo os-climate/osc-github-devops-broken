@@ -24,6 +24,7 @@ jobs:
     name: "Validate Individual Actions"
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    continue-on-error: true
     steps:
       - name: "🧳 Checkout Repository"
         uses: actions/checkout@v4
@@ -265,9 +266,18 @@ jobs:
       # IMPORTANT: mandatory for trusted publishing
       id-token: write
     steps:
+      - name: "Check Test PyPI for Project"
+        id: url-check
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/url-validity-check@main
+        with:
+          prefix: "https://https://test.pypi.org/project"
+          string: "/ITR"
+          suffix: "/"
+
       - name: "Download build artefacts"
         uses: actions/download-artifact@v4
-        if: env.publish == 'true'
+        if: env.publish == 'true' && steps.url-check.outputs.valid == 'true'
         with:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
