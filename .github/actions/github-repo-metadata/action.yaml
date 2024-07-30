@@ -12,6 +12,9 @@ outputs:
   REPOSITORY:
     description: "Returns the name of the GitHub repository"
     value: ${{ steps.github.outputs.repository }}
+  TAGGED:
+    description: "Set true if semantic tags are present"
+    value: ${{ steps.github.outputs.tagged }}
 
 runs:
   using: "composite"
@@ -21,6 +24,8 @@ runs:
       shell: bash
       run: |
         # GitHub Repository Metadata
+        echo "tagged=false" >> $GITHUB_OUTPUT
+
         echo "GitHub Owner: $GITHUB_REPOSITORY_OWNER"
         echo "owner=${GITHUB_REPOSITORY_OWNER}" >> "$GITHUB_OUTPUT"
 
@@ -28,25 +33,25 @@ runs:
         echo "GitHub Repository: ${REPOSITORY}"
         echo "repository=${REPOSITORY}" >> "$GITHUB_OUTPUT"
 
-        echo ### Action/Workflow Environment ###
+        echo "### Action/Workflow Environment ###"
         if [ ! -z "$GITHUB_REF" ]; then
-          echo "Github GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_REF: $GITHUB_REF"
         fi
         if [ ! -z "$GITHUB_BASE_REF" ]; then
-          echo "Github GITHUB_BASE_REF: $GITHUB_BASE_REF"
+          echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
         fi
         if [ ! -z "$GITHUB_HEAD_REF" ]; then
-          echo "Github GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
+          echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
         fi
         if [ ! -z "$GITHUB_REF_NAME" ]; then
-          echo "Github GITHUB_REF_NAME: $GITHUB_REF_NAME"
+          echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
           if [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+ ]]; then
             echo "tagged=true" >> $GITHUB_OUTPUT
           fi
         fi
         if [ ! -z "$GITHUB_REF_TYPE" ]; then
-          echo "Github GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
+          echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
         fi
         if [ ! -z "$GITHUB_EVENT_NAME" ]; then
-          echo "Github GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
+          echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
         fi
