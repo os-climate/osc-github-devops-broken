@@ -50,7 +50,7 @@ runs:
       shell: bash
       run: |
         # Check URL for Validity
-        if (wget ${{ inputs.PREFIX }}${{ inputs.STRING }}${{ inputs.SUFFIX }})
+        if (wget ${{ inputs.PREFIX }}${{ inputs.STRING }}${{ inputs.SUFFIX }}); then
           echo "URL/location WAS found and valid"
           echo "$WGET_CMD ${{ inputs.PREFIX }}${{ inputs.STRING }}${{ inputs.SUFFIX }}"
           echo "valid=true" >> "$GITHUB_OUTPUT"
