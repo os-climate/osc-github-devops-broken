@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🔍 Check URL for Validity"
+name: "🌍 Check URL for Validity"
 description: "Check URL for Validity"
 
 inputs:
@@ -31,11 +31,16 @@ runs:
       id: prerequiresites
       shell: bash
       run: |
-        # Verify tooling is avialable
+        # Verify tooling is available
         WGET_CMD=$(which wget)
         if [ ! -x $WGET_CMD ]; then
           apt-get update
           apt-get -y install wget
+          WGET_CMD=$(which wget)
+          if [ ! -x $WGET_CMD ]; then
+            echo "Unable to find/install WGET commend"
+            echo "Check instance type and OS environment"; exit 1
+          fi
         else
           echo "WGET command found: $WGET_CMD"
         fi
@@ -44,7 +49,8 @@ runs:
       id: check
       shell: bash
       run: |
-        "$WGET_CMD" ${{ inputs.PREFIX }}${{ inputs.STRING }}${{ inputs.SUFFIX }}
+        # Run WGET and check URL
+        wget ${{ inputs.PREFIX }}${{ inputs.STRING }}${{ inputs.SUFFIX }}
         # Set flag to indicate production project build
         if ! (ls ${{ inputs.artefacts }}/*.dev*.*); then
           echo "URL/location WAS found and valid"
