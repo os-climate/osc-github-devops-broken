@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🛠️ Get Repository Metadata"
+name: "🛠️ GitHub Repository Metadata"
 description: "Get GitHub Organisation and Repository Names"
 
 outputs:
-  ORGANISATION:
+  OWNER:
     description: "Returns the name of the GitHub organisation"
     value: ${{ steps.github.outputs.organisation }}
   REPOSITORY:
@@ -16,17 +16,14 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: "Get GitHub Repository Metadata"
+    - name: "GitHub Repository Metadata"
       id: github
       shell: bash
       run: |
-        # Print GitHub environment
-        echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
-        echo "GITHUB_REPOSITORY_OWNER: $GITHUB_REPOSITORY_OWNER"
-        # Write action output
-        echo "REPO_ORG=${GITHUB_REPOSITORY}" >> $GITHUB_ENV
-        echo "GitHub Organisation: ${REPO_ORG}"
-        echo "organisation=${REPO_ORG}" >> "$GITHUB_OUTPUT"
-        echo "REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" >> $GITHUB_ENV
-        echo "GitHub Repository: ${REPO_NAME}"
-        echo "repository=${REPO_NAME}" >> "$GITHUB_OUTPUT"
+        # GitHub Repository Metadata
+        echo "GitHub owner: $GITHUB_REPOSITORY_OWNER"
+        echo "owner=${GITHUB_REPOSITORY_OWNER}" >> "$GITHUB_OUTPUT"
+
+        REPOSITORY=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
+        echo "GitHub Repository: ${REPOSITORY}"
+        echo "repository=${REPOSITORY}" >> "$GITHUB_OUTPUT"
