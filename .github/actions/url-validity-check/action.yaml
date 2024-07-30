@@ -49,10 +49,8 @@ runs:
       id: check
       shell: bash
       run: |
-        # Run WGET and check URL
-        wget ${{ inputs.PREFIX }}${{ inputs.STRING }}${{ inputs.SUFFIX }}
-        # Set flag to indicate production project build
-        if ! (ls ${{ inputs.artefacts }}/*.dev*.*); then
+        # Check URL for Validity
+        if (wget ${{ inputs.PREFIX }}${{ inputs.STRING }}${{ inputs.SUFFIX }})
           echo "URL/location WAS found and valid"
           echo "$WGET_CMD ${{ inputs.PREFIX }}${{ inputs.STRING }}${{ inputs.SUFFIX }}"
           echo "valid=true" >> "$GITHUB_OUTPUT"
