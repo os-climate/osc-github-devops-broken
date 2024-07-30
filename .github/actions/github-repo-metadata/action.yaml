@@ -22,6 +22,8 @@ runs:
       run: |
         # Get GitHub Repository Metadata
         echo "REPO_ORG=${GITHUB_REPOSITORY}" >> $GITHUB_ENV
+        echo "GitHub Organisation: ${REPO_ORG}"
         echo "organisation=${REPO_ORG}" >> "$GITHUB_OUTPUT"
         echo "REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" >> $GITHUB_ENV
+        echo "GitHub Repository: ${REPO_NAME}"
         echo "repository=${REPO_NAME}" >> "$GITHUB_OUTPUT"
