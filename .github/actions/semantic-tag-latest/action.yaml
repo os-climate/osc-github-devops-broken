@@ -17,7 +17,6 @@ runs:
   steps:
     - name: "Fetch Tags"
       shell: bash
-      if: steps.capture-environment.outputs.tagged == 'false'
       run: |
         # Workaround for: https://github.com/actions/checkout/issues/1471
         echo "Fetching tags..."
