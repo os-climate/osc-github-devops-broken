@@ -6,11 +6,12 @@ name: "🧪 Test/Validate GitHub Actions"
 
 # yamllint disable-line rule:truthy
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, reopened, edited, synchronize]
-    paths: [".github/**", ".github/actions/**", ".github/workflows/**"]
     branches:
       - "*"
+      - "!update-devops-tooling"
 
 env:
   DEFAULT-PYTHON: "3.10"
