@@ -7,7 +7,7 @@ name: "📦 Twine Check Artefacts"
 inputs:
   PATH:
     description: "Directory/folder containing Python build artefacts"
-    required: false
+    required: true
     default: "dist"
 
 runs:

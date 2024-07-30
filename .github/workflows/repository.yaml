@@ -21,7 +21,7 @@ jobs:
   ### Test Individual Composite Actions ###
 
   test:
-    name: "Validate Actions/Workflows"
+    name: "Validate Individual Actions"
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
@@ -177,13 +177,9 @@ jobs:
         if: steps.semantic-tag-latest.outputs.missing == 'false'
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-project-build@main
-        with:
-          artefacts: ${{ env.artefacts}}
 
       - name: "Validate Artefacts with Twine"
         id: python-twine-check
-        with:
-          path: ${{ env.artefacts}}
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
       - name: "Store the distribution packages"
@@ -216,7 +212,6 @@ jobs:
     steps:
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
-
         with:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
