@@ -1,0 +1,27 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🛠️ Get Repository Metadata"
+description: "Get GitHub Organisation and Repository Names"
+
+outputs:
+  ORGANISATION:
+    description: "Returns the name of the GitHub organisation"
+    value: ${{ steps.github.outputs.organisation }}
+  REPOSITORY:
+    description: "Returns the name of the GitHub repository"
+    value: ${{ steps.github.outputs.repository }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Get GitHub Repository Metadata"
+      id: github
+      shell: bash
+      run: |
+        # Get GitHub Repository Metadata
+        echo "REPO_ORG=${GITHUB_REPOSITORY}" >> $GITHUB_ENV
+        echo "organisation=${REPO_ORG}" >> "$GITHUB_OUTPUT"
+        echo "REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" >> $GITHUB_ENV
+        echo "repository=${REPO_NAME}" >> "$GITHUB_OUTPUT"

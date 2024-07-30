@@ -63,3 +63,8 @@ jobs:
           prefix: "https://test.pypi.org/project"
           string: "/ITR"
           suffix: "/"
+
+      - name: "Action: github-repo-metadata"
+        id: github-repo-metadata
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/github-repo-metadata@main
