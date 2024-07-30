@@ -14,6 +14,7 @@ on:
 env:
   DEFAULT-PYTHON: "3.10"
   ARTEFACTS: "dist"
+  # Configures publishing to PyPI
   PUBLISH: "true"
 
 jobs:
@@ -179,11 +180,11 @@ jobs:
         with:
           artefacts: ${{ env.artefacts}}
 
-      #- name: "Validate Artefacts with Twine"
-      #  id: python-twine-check
-      #  with:
-      #    path: ${{ env.artefacts}}
-      #  uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
+      - name: "Validate Artefacts with Twine"
+        id: python-twine-check
+        with:
+          path: ${{ env.artefacts}}
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
       - name: "Store the distribution packages"
         uses: actions/upload-artifact@v4
@@ -210,11 +211,12 @@ jobs:
     permissions:
       # IMPORTANT: mandatory to publish artefacts
       contents: write
-    # Ensure development builds are NOT uploaded when build naming is b0rked
+    # Ensure development builds are NOT uploaded when build naming is broken
     if: github.ref_name != 'main'
     steps:
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
+
         with:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
@@ -260,7 +262,6 @@ jobs:
     name: "Test Package Publishing"
     # Only publish on tag pushes
     # if: startsWith(github.ref, 'refs/tags/')
-    if: vars.publish == 'true'
     needs: python-build
     runs-on: ubuntu-latest
     environment:
@@ -271,6 +272,7 @@ jobs:
     steps:
       - name: "Download build artefacts"
         uses: actions/download-artifact@v4
+        if: env.publish == 'true'
         with:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
