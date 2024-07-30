@@ -56,6 +56,4 @@ runs:
         if [ ! -z "$GITHUB_EVENT_NAME" ]; then
           echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
         fi
-        if [ "$TAGGED" == "true" ]; then
-          echo "GitHub event contained tags: $TAGGED"
-        fi
+        echo "GitHub event contained tags: $TAGGED"
