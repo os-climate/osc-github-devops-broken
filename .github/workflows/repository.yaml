@@ -9,7 +9,6 @@ on:
   workflow_dispatch:
   push:
     branches: [main, master]
-    # paths: [".github/actions/**", ".github/workflows/**"]
 
 env:
   DEFAULT-PYTHON: "3.10"
@@ -18,43 +17,6 @@ env:
   PUBLISH: "true"
 
 jobs:
-  ### Test Individual Composite Actions ###
-
-  test:
-    name: "Validate Individual Actions"
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    continue-on-error: true
-    steps:
-      - name: "🧳 Checkout Repository"
-        uses: actions/checkout@v4
-        with:
-          # Does not currently work: https://github.com/actions/checkout/issues/1471
-          fetch-tags: true
-          # latest-semantic-tag currently contains a workaround for this behaviour
-
-      - name: "Action: python-twine-check"
-        id: python-twine-check
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
-        with:
-          path: "tests/twine"
-
-      - name: "Action: semantic-tag-latest"
-        id: semantic-tag-latest
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-latest@main
-
-      - name: "Action: semantic-tag-increment"
-        id: semantic-tag-increment
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-increment@main
-        with:
-          tag: "${{ steps.semantic-tag-latest.outputs.tag }}"
-          type: "minor"
-
-  ### Primary Python Workflow Testing ###
-
   identify-content:
     name: "Identify Content"
     runs-on: ubuntu-latest
@@ -271,7 +233,7 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/url-validity-check@main
         with:
-          prefix: "https://https://test.pypi.org/project"
+          prefix: "https://test.pypi.org/project"
           string: "/ITR"
           suffix: "/"
 
