@@ -8,7 +8,7 @@ description: "Build Python Project"
 inputs:
   ARTEFACTS:
     description: "Path to Python build artefacts"
-    required: false
+    required: true
     default: "dist"
 
 outputs:
