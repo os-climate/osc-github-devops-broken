@@ -17,57 +17,40 @@ env:
   PUBLISH: "true"
 
 jobs:
-  identify-content:
-    name: "Identify Content"
+  classify-content:
+    name: "Classify Repository"
     runs-on: ubuntu-latest
     outputs:
-      python: ${{ steps.identify-content.outputs.python }}
-      notebooks: ${{ steps.identify-content.outputs.notebooks }}
+      python: ${{ steps.classify.outputs.python }}
+      notebooks: ${{ steps.classify.outputs.notebooks }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Identify Content"
-        id: identify-content
-        run: |
-          # Inspect files in repository
+      - name: "Inspect Content"
+        id: classify
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/repository-classify-content@main
 
-          # Check if repository contains a Python project
-          if [ -f pyproject.toml ]; then
-            echo "Python project metadata found"
-            echo "python=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "python=false" >> "$GITHUB_OUTPUT"
-          fi
-
-          # Check if repository contains Jupyter Notebooks
-          NOTEBOOKS=$(find . -name '*.ipynb' | wc -l )
-          if [ "$NOTEBOOKS" -ne 0 ]; then
-            echo "Jupyter notebooks found"
-            echo "notebooks=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "notebooks=false" >> "$GITHUB_OUTPUT"
-          fi
-
-  workflow-metadata:
+  workflow-capture-metadata:
     name: "Gather Workflow Metadata"
     runs-on: ubuntu-latest
     outputs:
-      owner: ${{ steps.gather.outputs.owner }}
-      repository: ${{ steps.gather.outputs.repository }}
-      tagged: ${{ steps.gather.outputs.tagged }}
+      owner: ${{ steps.set.outputs.owner }}
+      repository: ${{ steps.set.outputs.repository }}
+      tagged: ${{ steps.set.outputs.tagged }}
 
     steps:
-      # - name: "Gather Workflow Metadata"
-      - id: gather
+      - name: "Set Outputs"
+        id: set
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/workflow-metadata@main
+        uses: os-climate/devops-reusable-workflows/.github/actions/workflow-capture-metadata@main
 
   python-project:
     name: "Python Project"
     needs:
-      - identify-content
-    if: needs.identify-content.outputs.python  == 'true'
+      - classify-content
+    if: needs.classify-content.outputs.python  == 'true'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.python.outputs.matrixjson }}
@@ -81,43 +64,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Set up Python ${{ env.default-python }}"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.default-python }}
-
-      - name: "Setup PDM Build Tool"
-        uses: pdm-project/setup-pdm@v4
-        with:
-          python-version: ${{ env.default-python }}
-
-      # ToDo: Should we be using our own action here?
-
-      - name: "Update Python dependencies"
-        uses: pdm-project/update-deps-action@v1.9
-        with:
-          sign-off-commit: "true"
-          token: ${{ secrets.GH_TOKEN }}
-          commit-message: "Chore: Update dependencies and pdm.lock [skip ci]"
-          pr-title: "Update Python module dependencies"
-          update-strategy: eager
-          # Whether to install PDM plugins before update
-          install-plugins: "false"
-
-      - name: "Export Dependencies"
-        id: export-dependencies
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/python-export-dependencies@main
-
       - name: "Extract Python Versioning"
         id: python
+        with:
+          python-version: ${{ env.default-python }}
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
+
+  python-deps-update:
+    name: "Python Dependencies"
+    needs:
+      - classify-content
+      - workflow-capture-metadata
+    if: needs.classify-content.outputs.python  == 'true'
+    runs-on: "ubuntu-latest"
+    permissions:
+      # IMPORTANT: mandatory to raise the PR
+      id-token: write
+      pull-requests: write
+      repository-projects: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Update Python Dependencies"
+        id: update-dependencies
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-update-dependencies@main
 
   python-build:
     name: "Python Build"
     needs:
-      - workflow-metadata
+      - workflow-capture-metadata
       - python-project
     runs-on: "ubuntu-latest"
     continue-on-error: false
@@ -245,7 +223,7 @@ jobs:
     # Only publish on tag pushes
     # if: startsWith(github.ref, 'refs/tags/')
     needs:
-      - workflow-metadata
+      - workflow-capture-metadata
       - python-build
     runs-on: ubuntu-latest
     environment:
@@ -261,7 +239,7 @@ jobs:
         with:
           prefix: "https://test.pypi.org/project"
           # Use project name, e.g. "/ITR"
-          string: "/${{ needs.workflow-metadata.outputs.repository }}"
+          string: "/${{ needs.workflow-capture-metadata.outputs.repository }}"
           suffix: "/"
 
       - name: "Download build artefacts"
@@ -324,7 +302,7 @@ jobs:
   notebooks:
     name: "Jupyter Notebooks"
     needs:
-      - identify-content
+      - classify-content
       - python-project
     runs-on: "ubuntu-latest"
     continue-on-error: false
@@ -332,7 +310,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
     # Don't run when pull request is merged, only if Jupyter Notebooks are present
-    if: needs.identify-content.outputs.notebooks  == 'true'
+    if: needs.classify-content.outputs.notebooks  == 'true'
 
     steps:
       - uses: actions/checkout@v4
@@ -382,9 +360,9 @@ jobs:
   security:
     name: "Security Audit"
     needs:
-      - identify-content
+      - classify-content
       - python-project
-    if: needs.identify-content.outputs.python  == 'true'
+    if: needs.classify-content.outputs.python  == 'true'
     runs-on: "ubuntu-latest"
     continue-on-error: true
     strategy:
