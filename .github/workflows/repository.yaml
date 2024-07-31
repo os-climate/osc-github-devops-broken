@@ -85,8 +85,10 @@ jobs:
         with:
           python-version: ${{ env.default-python }}
 
+      # ToDo: Should we be using our own action here?
+
       - name: "Update Python dependencies"
-        uses: pdm-project/update-deps-action@v1
+        uses: pdm-project/update-deps-action@v1.9
         with:
           sign-off-commit: "true"
           token: ${{ secrets.GH_TOKEN }}
