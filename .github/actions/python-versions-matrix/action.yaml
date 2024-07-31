@@ -144,9 +144,10 @@ runs:
           fi
 
           # Extract Python version string(s) from source
+          # Note: excludes any lines containing comments (#)
           if [ -f "$REPO_DIR"/"$FILE_SOURCE" ]; then
               PYTHON_VERSIONS=$(grep "Programming Language :: Python :: " \
-                  "$REPO_DIR"/"$FILE_SOURCE" | \
+                  "$REPO_DIR"/"$FILE_SOURCE" | grep -v '#' | \
                   sed "s/Programming Language :: Python :: //g" | \
                   sed 's/"3 :: Only",//g' | \
                   sed 's/"3",//g' | \

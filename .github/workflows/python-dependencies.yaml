@@ -16,7 +16,7 @@ on:
 jobs:
   update:
     name: "Run: pdm-project/update-deps-action"
-    uses: os-climate/devops-reusable-workflows/.github/workflows/python-dependencies-reusable@main
+    uses: os-climate/devops-reusable-workflows/.github/workflows/python-dependencies-reusable.yaml@main
     with:
       sign-off-commit: "true"
       # token: ${{ secrets.GH_TOKEN }}
