@@ -24,7 +24,7 @@ jobs:
   ### Test Individual Composite Actions ###
 
   test:
-    name: "Individual Tests"
+    # name: "Individual Tests"
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     continue-on-error: true
@@ -34,7 +34,7 @@ jobs:
         with:
           # Does not currently work: https://github.com/actions/checkout/issues/1471
           fetch-tags: true
-          # latest-semantic-tag currently contains a workaround for this behaviour
+          # The semantic-tag-latest action  currently contains a workaround for this behaviour
 
       - name: "Action: python-twine-check"
         id: python-twine-check

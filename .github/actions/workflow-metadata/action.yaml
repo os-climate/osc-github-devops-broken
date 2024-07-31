@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🛠️ GitHub Repository Metadata"
-description: "Get GitHub Organisation and Repository Names"
+name: "🛠️ Gather Workflow Metadata"
+description: "Populates Variables with GitHub Repository/Workflow Metadata"
 
 outputs:
   OWNER:
@@ -19,8 +19,8 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: "GitHub Repository Metadata"
-      id: github
+    # - name: "GitHub Repository Metadata"
+    - id: github
       shell: bash
       run: |
         # GitHub Repository Metadata

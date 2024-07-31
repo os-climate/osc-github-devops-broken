@@ -27,11 +27,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Gather Workflow Metadata"
-        id: github-metadata
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/github-repo-metadata@main
-
       - name: "Identify Content"
         id: identify-content
         run: |
@@ -258,7 +253,7 @@ jobs:
         with:
           prefix: "https://test.pypi.org/project"
           # Use project name, e.g. "/ITR"
-          string: ${{ needs.workflow-metadata.outputs.repository }}
+          string: "/${{ needs.workflow-metadata.outputs.repository }}"
           suffix: "/"
 
       - name: "Download build artefacts"

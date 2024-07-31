@@ -28,8 +28,19 @@ runs:
       run: |
         # Increment semantic tag
 
+        #SHELLCODESTART
+
         TAG=${{ inputs.TAG }}
         TYPE=${{ inputs.TYPE }}
+        if [ -z "$TAG" ] && [ -z "$TYPE" ]; then
+          echo "Running from shell script outside GitHub"
+          if [ $# -ne 2 ]; then
+            echo "Usage:  $0 [tag] [increment-type]"; exit 1
+          else
+            TAG="$1"
+            TYPE="$2"
+          fi
+        fi
 
         # Validate increment type
         if	[ ! "$TYPE" = "major" ] && \
@@ -85,3 +96,5 @@ runs:
         INCREMENTED="$MAJOR.$MINOR.$PATCH"
         echo "Incremented: $INCREMENTED"
         echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+        #SHELLCODEEND
