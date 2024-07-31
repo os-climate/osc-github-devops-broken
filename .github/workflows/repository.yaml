@@ -21,9 +21,6 @@ jobs:
     name: "Identify Content"
     runs-on: ubuntu-latest
     outputs:
-      owner: ${{ steps.github-metadata.outputs.owner }}
-      repository: ${{ steps.github-metadata.outputs.repository }}
-      tagged: ${{ steps.github-metadata.outputs.tagged }}
       python: ${{ steps.identify-content.outputs.python }}
       notebooks: ${{ steps.identify-content.outputs.notebooks }}
 
@@ -56,6 +53,20 @@ jobs:
           else
             echo "notebooks=false" >> "$GITHUB_OUTPUT"
           fi
+
+  workflow-metadata:
+    name: "Gather Workflow Metadata"
+    runs-on: ubuntu-latest
+    outputs:
+      owner: ${{ steps.gather.outputs.owner }}
+      repository: ${{ steps.gather.outputs.repository }}
+      tagged: ${{ steps.gather.outputs.tagged }}
+
+    steps:
+      # - name: "Gather Workflow Metadata"
+      - id: gather
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/workflow-metadata@main
 
   python-project:
     name: "Python Project"
@@ -103,6 +114,7 @@ jobs:
   python-build:
     name: "Python Build"
     needs:
+      - workflow-metadata
       - python-project
     runs-on: "ubuntu-latest"
     continue-on-error: false
@@ -229,7 +241,9 @@ jobs:
     name: "Test Package Publishing"
     # Only publish on tag pushes
     # if: startsWith(github.ref, 'refs/tags/')
-    needs: python-build
+    needs:
+      - workflow-metadata
+      - python-build
     runs-on: ubuntu-latest
     environment:
       name: testpypi
@@ -244,7 +258,7 @@ jobs:
         with:
           prefix: "https://test.pypi.org/project"
           # Use project name, e.g. "/ITR"
-          string: needs.identify-content.outputs.repository
+          string: ${{ needs.workflow-metadata.outputs.repository }}
           suffix: "/"
 
       - name: "Download build artefacts"
