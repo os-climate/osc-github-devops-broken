@@ -69,7 +69,7 @@ jobs:
           string: "/ITR"
           suffix: "/"
 
-      - name: "Action: github-repo-metadata"
-        id: github-repo-metadata
+      - name: "Action: workflow-capture-metadata"
+        id: workflow-capture-metadata
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/github-repo-metadata@main
+        uses: os-climate/devops-reusable-workflows/.github/actions/workflow-capture-metadata@main
