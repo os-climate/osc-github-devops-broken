@@ -1,0 +1,43 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🔍 Classify Repository Content"
+description: "Scans repository content and identifies further actions"
+
+outputs:
+  PYTHON:
+    description: "Repository contains a Python project using pyproject.toml"
+    value: ${{ steps.classification.outputs.python }}
+  NOTEBOOKS:
+    description: "Repository contains Python Jupyter Notebooks"
+    value: ${{ steps.classification.outputs.notebooks }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Setting Output Variables"
+    - id: classification
+      shell: bash
+      run: |
+        # Setting Output Variables
+
+        #SHELLCODESTART
+
+        if [ -f pyproject.toml ]; then
+          echo "Python project metadata found"
+          echo "python=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "python=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        # Check if repository contains Jupyter Notebooks
+        NOTEBOOKS=$(find . -name '*.ipynb' | wc -l )
+        if [ "$NOTEBOOKS" -ne 0 ]; then
+          echo "Jupyter notebooks found"
+          echo "notebooks=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "notebooks=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        #SHELLCODEEND
