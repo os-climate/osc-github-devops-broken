@@ -34,7 +34,7 @@ jobs:
         with:
           # Does not currently work: https://github.com/actions/checkout/issues/1471
           fetch-tags: true
-          # latest-semantic-tag currently contains a workaround for this behaviour
+          # The semantic-tag-latest action  currently contains a workaround for this behaviour
 
       - name: "Action: python-twine-check"
         id: python-twine-check

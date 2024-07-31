@@ -18,7 +18,7 @@ runs:
     - name: "Fetch Tags"
       shell: bash
       run: |
-        # Workaround for: https://github.com/actions/checkout/issues/1471
+        # Workaround for: https://github.com/actions/checkout/issues/1471
         echo "Fetching tags..."
         git fetch --tags
 
@@ -26,11 +26,11 @@ runs:
       id: parse-tags
       shell: bash
       run: |
-        # Extract and report latest semantic tag
+        # Extract and report latest semantic tag
         if ! (git tag -l | grep 'v*.*.*' > /dev/null); then
           echo "No semantic tags were found"
           echo "missing=true" >> $GITHUB_OUTPUT
-          # Set a placeholder value for the tag
+          # Set a placeholder value for the tag
           echo "tag=v0.0.0" >> $GITHUB_OUTPUT
         fi
         tag=$(git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1)
