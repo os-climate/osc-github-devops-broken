@@ -21,11 +21,19 @@ jobs:
     name: "Identify Content"
     runs-on: ubuntu-latest
     outputs:
+      owner: ${{ steps.github-metadata.outputs.owner }}
+      repository: ${{ steps.github-metadata.outputs.repository }}
+      tagged: ${{ steps.github-metadata.outputs.tagged }}
       python: ${{ steps.identify-content.outputs.python }}
       notebooks: ${{ steps.identify-content.outputs.notebooks }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: "Gather Workflow Metadata"
+        id: github-metadata
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/github-repo-metadata@main
 
       - name: "Identify Content"
         id: identify-content
@@ -84,6 +92,7 @@ jobs:
 
       - name: "Export Dependencies"
         id: export-dependencies
+        # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-export-dependencies@main
 
       - name: "Extract Python Versioning"
@@ -234,7 +243,8 @@ jobs:
         uses: os-climate/devops-reusable-workflows/.github/actions/url-validity-check@main
         with:
           prefix: "https://test.pypi.org/project"
-          string: "/ITR"
+          # Use project name, e.g. "/ITR"
+          string: needs.identify-content.outputs.repository
           suffix: "/"
 
       - name: "Download build artefacts"
