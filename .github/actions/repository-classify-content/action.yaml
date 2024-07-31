@@ -17,7 +17,7 @@ runs:
   using: "composite"
   steps:
     - name: "Setting Output Variables"
-    - id: classification
+      id: classification
       shell: bash
       run: |
         # Setting Output Variables
