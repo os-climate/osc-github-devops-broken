@@ -12,8 +12,9 @@ on:
   pull_request:
     types: [opened, reopened, edited, synchronize, closed]
     branches:
-      - "**"
+      - "**/**"
       - "!update-devops-tooling"
+      - "!**/update-pdm-lock"
 
 env:
   DEFAULT-PYTHON: "3.10"
