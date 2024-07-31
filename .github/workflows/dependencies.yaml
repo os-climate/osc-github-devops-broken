@@ -51,4 +51,3 @@ jobs:
           update-strategy: eager
           # Whether to install PDM plugins before update
           install-plugins: "false"
-          base: ${{ github.head_ref }}
