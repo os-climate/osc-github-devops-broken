@@ -232,8 +232,13 @@ jobs:
           if [ -f ${{ env.artefacts }}/buildvars.txt ]; then
             rm ${{ env.artefacts }}/buildvars.txt
           fi
-          if (ls ${{ env.artefacts }}/*.sigstore*); then
+          # Remove any files in artefacts location related to SigStore signing
+          if test -n "$(find ${{ env.artefacts }} -maxdepth 1 -name '**.sigstore*' -print -quit)"
+          then
+            echo "Found SigStore signing artefacts to purge"
             rm ${{ env.artefacts }}/*.sigstore*
+          else
+            echo "No SigStore signing artefacts to purge"
           fi
 
       - name: "Test Package Publishing"
