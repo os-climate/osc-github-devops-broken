@@ -69,27 +69,6 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
 
-  python-deps-update:
-    name: "Python Dependencies"
-    needs:
-      - classify-content
-      - workflow-capture-metadata
-    if: needs.classify-content.outputs.python  == 'true'
-    runs-on: "ubuntu-latest"
-    permissions:
-      # IMPORTANT: mandatory to raise the PR
-      id-token: write
-      pull-requests: write
-      repository-projects: write
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: "Update Python Dependencies"
-        id: update-dependencies
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/workflows/python-dependencies-reusable@main
-
   python-build:
     name: "Python Build"
     needs:

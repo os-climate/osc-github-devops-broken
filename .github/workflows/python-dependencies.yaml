@@ -16,15 +16,12 @@ on:
 jobs:
   update:
     name: "Run: pdm-project/update-deps-action"
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Update Python Dependencies"
-        uses: os-climate/devops-reusable-workflows/.github/workflows/python-dependencies-reusable@main
-        with:
-          sign-off-commit: "true"
-          token: ${{ secrets.GH_TOKEN }}
-          commit-message: "Chore: Update dependencies and pdm.lock [skip ci]"
-          pr-title: "Update Python Dependencies"
-          update-strategy: eager
-          # Whether to install PDM plugins before update
-          install-plugins: "false"
+    uses: os-climate/devops-reusable-workflows/.github/workflows/python-dependencies-reusable@main
+    with:
+      sign-off-commit: "true"
+      # token: ${{ secrets.GH_TOKEN }}
+      commit-message: "Chore: Update dependencies and pdm.lock [skip ci]"
+      pr-title: "Update Python Dependencies"
+      update-strategy: eager
+      # Whether to install PDM plugins before update
+      install-plugins: "false"
