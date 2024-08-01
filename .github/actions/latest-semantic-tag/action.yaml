@@ -1,0 +1,29 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🏷️ Latest Semantic Tag"
+
+outputs:
+  latest-tag:
+    description: "Return the latest semantic tag from local repository"
+    value: ${{ steps.parse-tags.outputs.latest-tag }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: parse-tags
+      name: "Determine latest semantic tag"
+      shell: bash
+      run: |
+        echo "github.ref_name: ${{ github.ref_name }}"
+        echo "github.head_ref: ${{ github.head_ref }}"
+        LATEST_TAG=$(git tag -l --sort=committerdate | grep -o 'v.*' | sort -r | head -1)
+        if [ -z "$LATEST_TAG" ]; then
+          echo "No tags with semantic versioning were found in the repository"; exit 1
+        else
+          echo "latest-tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+          echo "Latest semantic tag = $LATEST_TAG"
+          echo "github.ref_name: ${{ github.ref_name }}"
+          echo "github.head_ref: ${{ github.head_ref }}"
+        fi
