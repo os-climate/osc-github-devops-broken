@@ -12,9 +12,9 @@ outputs:
   REPOSITORY:
     description: "Returns the name of the GitHub repository"
     value: ${{ steps.github.outputs.repository }}
-  TAG-TRIGGER:
+  TAGPUSH:
     description: "Set true if semantic tags were an event/trigger"
-    value: ${{ steps.github.outputs.tag-trigger }}
+    value: ${{ steps.github.outputs.tagpush }}
 
 runs:
   using: "composite"
@@ -24,8 +24,8 @@ runs:
       shell: bash
       run: |
         # GitHub Repository Metadata
-        TAG-TRIGGER="false"
-        echo "tag-trigger=${TAG-TRIGGER}" >> $GITHUB_OUTPUT
+        TAGPUSH="false"
+        echo "tagpush=${TAGPUSH}" >> $GITHUB_OUTPUT
 
         echo ### Repository Data ###
         echo "GitHub Owner: $GITHUB_REPOSITORY_OWNER"
@@ -51,7 +51,7 @@ runs:
         if [ ! -z "$GITHUB_REF_NAME" ]; then
           echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
           if [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+ ]]; then
-            echo "tag-trigger=${TAG-TRIGGER}" >> $GITHUB_OUTPUT
+            echo "tagpush=${TAGPUSH}" >> $GITHUB_OUTPUT
           fi
         fi
         if [ ! -z "$GITHUB_REF_TYPE" ]; then
@@ -62,4 +62,4 @@ runs:
         fi
         echo "### Derived Data ###
 
-        echo "GitHub event/triggered by tags: $TAG-TRIGGER"
+        echo "GitHub event/triggered by tags: $TAGPUSH"
