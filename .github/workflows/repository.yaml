@@ -12,10 +12,11 @@ on:
 
 env:
   DEFAULT-PYTHON: "3.10"
-  ARTEFACTS: "dist"
+  BUILD_ARTEFACTS: "dist"
   # Configures publishing to PyPI
   PYPI-PUBLISHING: "true"
-  GITHUB-RELEASE-DEV: "true"
+  # Create GitHub releases for all builds, not just production builds
+  GITHUB-RELEASE-ALWAYS: "true"
 
 jobs:
   classify-content:
@@ -119,28 +120,31 @@ jobs:
         if: steps.semantic-tag-latest.outputs.missing == 'false'
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-project-build@main
+        with:
+          artefact-output-path: "dist"
+          purge-output-path: "true"
 
       - name: "Validate artefacts with Twine"
         id: python-twine-check
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
-      - name: "Store the build artefacts"
+      - name: "Uplioad build artefacts"
         uses: actions/upload-artifact@v4
         if: matrix.python-version == env.default-python
         with:
           name: ${{ github.ref_name }}
-          path: ${{ env.artefacts }}
+          path: ${{ env.build-artefacts }}
 
       - name: "Sign packages with SigStore"
         uses: sigstore/gh-action-sigstore-python@v3.0.0
         if: matrix.python-version == env.default-python
         env:
-          package-path: ${{ env.artefacts }}
+          package-path: ${{ env.build-artefacts }}
         with:
           inputs: >-
-            ./${{ env.artefacts }}/*.tar.gz
-            ./${{ env.artefacts }}/*.whl
+            ./${{ env.build-artefacts }}/*.tar.gz
+            ./${{ env.build-artefacts }}/*.whl
 
   github:
     name: "Publish to GitHub"
@@ -157,10 +161,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ github.ref_name }}
-          path: ${{ env.artefacts }}
+          path: ${{ env.build-artefacts }}
 
       - name: "Publish DEVELOPMENT artefacts to GitHub"
-        if: (startsWith(github.ref, 'refs/tags/') != true) && (env.github-dev-release == 'true')
+        if: (startsWith(github.ref, 'refs/tags/') != true) && (env.github-release-always == 'true')
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -169,9 +173,9 @@ jobs:
           name: "Test/Development Build: ${{ github.ref_name }}"
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
-            ${{ env.artefacts }}/*.tar.gz
-            ${{ env.artefacts }}/*.whl
-            ${{ env.artefacts }}/*.sigstore*
+            ${{ env.build-artefacts }}/*.tar.gz
+            ${{ env.build-artefacts }}/*.whl
+            ${{ env.build-artefacts }}/*.sigstore*
 
       - name: "Publish PRODUCTION artefacts to GitHub"
         if: startsWith(github.ref, 'refs/tags/')
@@ -183,9 +187,9 @@ jobs:
           name: "Test/Development Build: ${{ github.ref_name }}"
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
-            ${{ env.artefacts }}/*.tar.gz
-            ${{ env.artefacts }}/*.whl
-            ${{ env.artefacts }}/*.sigstore*
+            ${{ env.build-artefacts }}/*.tar.gz
+            ${{ env.build-artefacts }}/*.whl
+            ${{ env.build-artefacts }}/*.sigstore*
 
   testpypi:
     name: "Test Package Publishing"
@@ -206,26 +210,26 @@ jobs:
         if: env.pypi-publishing == 'true'
         with:
           name: ${{ github.ref_name }}
-          path: ${{ env.artefacts }}
+          path: ${{ env.build-artefacts }}
 
       - name: "Manicure artefacts directory"
         id: files
         run: |
           # Remove file types unsupported by the Python Package Index
-          if [ ! -d ${{ env.artefacts }} ]; then
-            echo "Early exit; build artefacts path NOT found: ${{ env.artefacts }}"
+          if [ ! -d ${{ env.build-artefacts }} ]; then
+            echo "Early exit; build artefacts path NOT found: ${{ env.build-artefacts }}"
             exit 0
           fi
-          if [ -f ${{ env.artefacts }}/buildvars.txt ]; then
-            rm ${{ env.artefacts }}/buildvars.txt
+          if [ -f ${{ env.build-artefacts }}/buildvars.txt ]; then
+            rm ${{ env.build-artefacts }}/buildvars.txt
           else
             echo "No buildvars.txt file to purge"
           fi
           # Remove outputs related to SigStore signing
-          if test -n "$(find ${{ env.artefacts }} -maxdepth 1 -name '**.sigstore*' -print -quit)"
+          if test -n "$(find ${{ env.build-artefacts }} -maxdepth 1 -name '**.sigstore*' -print -quit)"
           then
             echo "Found SigStore signing artefacts to purge"
-            rm ${{ env.artefacts }}/*.sigstore*
+            rm ${{ env.build-artefacts }}/*.sigstore*
           else
             echo "No SigStore signing artefacts to purge"
           fi
@@ -246,7 +250,7 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
           verbose: true
-          packages-dir: ${{ env.artefacts }}
+          packages-dir: ${{ env.build-artefacts }}
 
   pypi:
     name: "Publish Package"
@@ -267,19 +271,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ github.ref_name }}
-          path: ${{ env.artefacts }}
+          path: ${{ env.build-artefacts }}
 
       - name: "Remove files unsupported by PyPi"
         run: |
-          if (ls ${{ env.artefacts }}/*.sigstore*); then
-            rm ${{ env.artefacts }}/*.sigstore*
+          if (ls ${{ env.build-artefacts }}/*.sigstore*); then
+            rm ${{ env.build-artefacts }}/*.sigstore*
           fi
 
       - name: "Publish to PyPI"
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           verbose: true
-          packages-dir: ${{ env.artefacts }}
+          packages-dir: ${{ env.build-artefacts }}
 
   notebooks:
     name: "Jupyter Notebooks"
