@@ -125,7 +125,7 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
-      - name: "Store the distribution packages"
+      - name: "Store the build artefacts"
         uses: actions/upload-artifact@v4
         if: matrix.python-version == env.default-python
         with:
@@ -201,19 +201,9 @@ jobs:
       # IMPORTANT: mandatory for trusted publishing
       id-token: write
     steps:
-      - name: "Check presence in test PyPI"
-        id: url-check
-        # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/url-validity-check@main
-        with:
-          prefix: "https://test.pypi.org/project"
-          # Use project name, e.g. "/ITR"
-          string: "/${{ needs.workflow-capture-metadata.outputs.repository }}"
-          suffix: "/"
-
       - name: "Download build artefacts"
         uses: actions/download-artifact@v4
-        if: env.pypi-publishing == 'true' && steps.url-check.outputs.valid == 'true'
+        if: env.pypi-publishing == 'true'
         with:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
@@ -240,8 +230,19 @@ jobs:
             echo "No SigStore signing artefacts to purge"
           fi
 
+      - name: "Check presence in test PyPI"
+        id: url-check
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/url-validity-check@main
+        with:
+          prefix: "https://test.pypi.org/project"
+          # Use project name, e.g. "/ITR"
+          string: "/${{ needs.workflow-capture-metadata.outputs.repository }}"
+          suffix: "/"
+
       - name: "Test package publishing"
         uses: pypa/gh-action-pypi-publish@release/v1
+        if: steps.url-check.outputs.valid == 'true'
         with:
           repository-url: https://test.pypi.org/legacy/
           verbose: true
@@ -313,20 +314,23 @@ jobs:
 
       - name: "Install package dependencies"
         run: |
+          # Install build dependencies
           python -m pip install --upgrade pip
           pdm export -o requirements.txt
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install .
           pip install pytest nbmake
 
-      - name: "Testing Jupyter Notebooks"
+      - name: "Testing Jupyter notebooks"
         run: |
-          echo "Testing notebooks with:"
+          echo "Testing Jupyter notebooks"
+          pip install pytest nbmake
+          echo "Using command:"
           echo "  pytest --nbmake -- **/*.ipynb"
-          ls
-          find . -name '*.ipynb'
+          # Consider enabling the line below when debugging/testing
+          # find . -name '*.ipynb'
           pytest --nbmake src/*/*.ipynb --cov=src/devops_reusable_workflows
-          # Might need an __init__.py file in tests folder?
+          # Might need an __init__.py file in tests folder for notebooks there to be tested?
           # https://stackoverflow.com/questions/47287721/coverage-py-warning-no-data-was-collected-no-data-collected
           # pytest --nbmake tests/test_*.ipynb --cov=tests
 
