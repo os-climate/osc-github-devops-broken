@@ -6,7 +6,7 @@
 
 This project is part of the OS-Climate and FINOS projects.
 
-### osc-devops-reusable-workflows
+### Python tool: osc-devops-reusable-workflows
 
 This repository contains a number of reusable workflows. The purpose of these
 is to provide small pieces of reusable functionality which may be helpful to
@@ -19,14 +19,18 @@ package index repository and is installable with the Python "pip" command. The
 dummy sample project ensures Python packages can be built, tested and published
 using the supplied GitHub composite actions, reusable workflows, and workflows.
 
-Further documentation will be supplied here shortly.
+Relevant link to the Python package index installable:
 
-In the meantime, GitHub provides some general documentation covering relevant topics:
+[osc-devops-reusable-workflows](https://pypi.org/project/osc-devops-reusable-workflows)
 
-- <https://docs.github.com/en/actions/using-workflows/reusing-workflows>
-- <https://github.blog/2022-02-10-using-reusable-workflows-github-actions/>
-- <https://resources.github.com/learn/pathways/automation/intermediate/create-reusable-workflows-in-github-actions/>
-- <https://www.dhiwise.com/post/the-ultimate-guide-to-github-reusable-workflows-maximize-efficiency-and-collaboration>
+Further detailed documentation will be supplied here once development is complete.
+
+In the meantime, here is some general documentation covering the relevant topics:
+
+- [Reusing workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)
+- [How to start using reusable workflows with GitHub Actions](https://github.blog/2022-02-10-using-reusable-workflows-github-actions/)
+- [Create reusable workflows in GitHub Actions](https://resources.github.com/learn/pathways/automation/intermediate/create-reusable-workflows-in-github-actions/)
+- [The Ultimate Guide to GitHub Reusable Workflows](https://www.dhiwise.com/post/the-ultimate-guide-to-github-reusable-workflows-maximize-efficiency-and-collaboration)
 
 <!--
 [comment]: # SPDX-License-Identifier: Apache-2.0
