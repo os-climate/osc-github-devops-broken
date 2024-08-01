@@ -27,7 +27,7 @@ runs:
         TAGPUSH="false"
         echo "tagpush=${TAGPUSH}" >> $GITHUB_OUTPUT
 
-        echo ### Repository Data ###
+        echo "### Repository Data ###"
         echo "GitHub Owner: $GITHUB_REPOSITORY_OWNER"
         echo "owner=${GITHUB_REPOSITORY_OWNER}" >> "$GITHUB_OUTPUT"
         REPOSITORY=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
@@ -35,9 +35,10 @@ runs:
         echo "repository=${REPOSITORY}" >> "$GITHUB_OUTPUT"
 
         if [ ! -z "$GITHUB_TRIGGERING_ACTOR" ]; then
-          echo "### User Data ###
+          echo "### User Data ###"
           echo "User responsible: $GITHUB_TRIGGERING_ACTOR [GITHUB_TRIGGERING_ACTOR]"
         fi
+
         echo "### Action/Workflow Environment ###"
         if [ ! -z "$GITHUB_REF" ]; then
           echo "GITHUB_REF: $GITHUB_REF"
@@ -60,6 +61,6 @@ runs:
         if [ ! -z "$GITHUB_EVENT_NAME" ]; then
           echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
         fi
-        echo "### Derived Data ###
 
+        echo "### Derived Data ###
         echo "GitHub event/triggered by tags: $TAGPUSH"
