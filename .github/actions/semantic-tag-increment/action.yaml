@@ -56,7 +56,7 @@ runs:
         echo "Input tag: $TAG"
         echo "Increment type: $TYPE"
 
-        # Strip the leading "v" charachter, if present
+        # If present, strip the leading "v" character
         if [[ "$TAG" == v* ]]; then
           TAG="${TAG:1}"
         fi
@@ -96,7 +96,11 @@ runs:
 
         TAG="$MAJOR.$MINOR.$PATCH"
         echo "Tag incremented: $TAG [v$TAG]"
-        echo "tag=${TAG}" >> $GITHUB_OUTPUT
-        echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
+
+        # Allows for testing from a local shell
+        if [ -n "$GITHUB_OUTPUT" ]; then
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
+        fi
 
         #SHELLCODEEND
