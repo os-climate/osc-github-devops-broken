@@ -62,5 +62,5 @@ runs:
           echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
         fi
 
-        echo "### Derived Data ###
+        echo "### Derived Data ###"
         echo "GitHub event/triggered by tags: $TAGPUSH"
