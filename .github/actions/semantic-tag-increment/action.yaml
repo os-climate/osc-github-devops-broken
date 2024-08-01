@@ -94,7 +94,7 @@ runs:
         esac
 
         TAG="$MAJOR.$MINOR.$PATCH"
-        echo "Incremented value: $TAG"
+        echo "Incremented tag: $TAG [v$TAG]"
         echo "tag=${TAG}" >> $GITHUB_OUTPUT
         echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
 
