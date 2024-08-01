@@ -42,31 +42,31 @@ runs:
       shell: bash
       run: |
         # Check target path for build products
-        if [ ! -d ${{ inputs.artefact-output-path }} ]; then
-          if (mkdir -p ${{ inputs.artefact-output-path }}); then
-            echo "Created target path for build products: ${{ inputs.artefact-output-path }}"
+        if [ ! -d ${{ inputs.artefact_output_path }} ]; then
+          if (mkdir -p ${{ inputs.artefact_output_path }}); then
+            echo "Created target path for build products: ${{ inputs.artefact_output_path }}"
           else
-            echo "Failed to create directory for build products: ${{ inputs.artefact-output-path }}"
+            echo "Failed to create directory for build products: ${{ inputs.artefact_output_path }}"
             exit 1
           fi
         else
           echo "Specified directory for artefacts is valid"
-          FILES=$(ls ${{ inputs.artefact-output-path }} | wc -l)
+          FILES=$(ls ${{ inputs.artefact_output_path }} | wc -l)
           if [ "$FILES" -gt 0 ]; then
-            echo "target-populated=true" >> "$GITHUB_OUTPUT"
+            echo "target_populated=true" >> "$GITHUB_OUTPUT"
             echo "Content already exists in target directory:"
-            ls -l
+            ls -l ${{ inputs.artefact_output_path }}
           fi
         fi
 
     - name: "Clean build target directory"
       id: clean-target
       shell: bash
-      if: steps.check-target.outputs.target-populated == 'true' && inputs.purge-output-path == 'true'
+      if: steps.check-target.outputs.target_populated == 'true' && inputs.purge_output_path == 'true'
       run: |
         # Clean target path for build products
-        echo "Running command: rm -f ${{ inputs.artefact-output-path }}/*"
-        rm -f "${{ inputs.artefact-output-path }}/*"
+        echo "Running command: rm -f ${{ inputs.artefact_output_path }}/*"
+        rm -f "${{ inputs.artefact_output_path }}/*"
 
     - name: "Perform Python project build"
       id: perform-build
@@ -76,8 +76,8 @@ runs:
         python -m pip install -q --upgrade pip
         if [ -f pyproject.toml ]; then
           echo "Found file: pyproject.toml"
-          echo "Building with command: pdm build --dest ${{ inputs.artefact-output-path }}"
-          pdm build --dest ${{ inputs.artefact-output-path }}
+          echo "Building with command: pdm build --dest ${{ inputs.artefact_output_path }}"
+          pdm build --dest ${{ inputs.artefact_output_path }}
         elif [ -f tox.ini ]; then
           echo "Found TOX configuration file: tox.ini"
           echo "Attempting to install TOX..."
@@ -89,15 +89,15 @@ runs:
           echo "Neither file found: tox.ini/pyproject.toml"
           echo "Attempting build with: python -m build"
           pip -q --upgrade install build
-          python -m build --outdir ${{ inputs.artefact-output-path }}
+          python -m build --outdir ${{ inputs.artefact_output_path }}
         fi
 
         # Set build type based on artefact naming
-        if test -n "$(find ${{ inputs.artefact-output-path }} -maxdepth 1 -name '**.dev*' -print -quit)"; then
+        if test -n "$(find ${{ inputs.artefact_output_path }} -maxdepth 1 -name '**.dev*' -print -quit)"; then
           echo "Artefact naming indicates development build"
-          echo "build-type=development" >> "$GITHUB_ENV"
-          echo "build-type=development" >> "$GITHUB_OUTPUT"
+          echo "build_type=development" >> "$GITHUB_ENV"
+          echo "build_type=development" >> "$GITHUB_OUTPUT"
         else
-          echo "build-type=production" >> "$GITHUB_ENV"
-          echo "build-type=production" >> "$GITHUB_OUTPUT"
+          echo "build_type=production" >> "$GITHUB_ENV"
+          echo "build_type=production" >> "$GITHUB_OUTPUT"
         fi
