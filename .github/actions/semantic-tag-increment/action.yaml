@@ -56,6 +56,7 @@ runs:
         echo "Input tag: $TAG"
         echo "Increment type: $TYPE"
 
+        # Strip the leading "v" charachter, if present
         if [[ "$TAG" == v* ]]; then
           TAG="${TAG:1}"
         fi
@@ -65,7 +66,7 @@ runs:
 
         # Validate supplied (and parsed) tag
         if ! [[ "$TAG" =~ $PATTERN ]]; then
-          echo "Invalid semantic tag"; exit 1
+          echo "ERROR: invalid semantic tag"; exit 1
         else
           echo "Numeric value: $TAG"
         fi
@@ -94,7 +95,7 @@ runs:
         esac
 
         TAG="$MAJOR.$MINOR.$PATCH"
-        echo "Incremented tag: $TAG [v$TAG]"
+        echo "Tag incremented: $TAG [v$TAG]"
         echo "tag=${TAG}" >> $GITHUB_OUTPUT
         echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
 
