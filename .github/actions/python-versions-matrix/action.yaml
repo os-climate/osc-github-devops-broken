@@ -6,27 +6,29 @@ name: "↗️ Extract Python Versions"
 
 outputs:
   MATRIXJSON:
-    description: "Return Python versions from pyproject.toml"
+    description: "Extract and store Python versions from pyproject.toml as JSON"
     value: ${{ steps.parse-metadata.outputs.matrixjson }}
 
 runs:
   using: "composite"
   steps:
     - id: check-repo-content
-      name: "Check repository contains Python project"
+      name: "Check for project metadata file: pyproject.toml"
       shell: bash
       run: |
+        # Check for project metadata file: pyproject.toml
         if [ -f pyproject.toml ]; then
+          echo "Found project metadata file: pyproject.toml"
           echo "python-project=true" >> "$GITHUB_OUTPUT"
         fi
 
     - id: parse-metadata
-      name: "Determine Python versions for matrix jobs"
+      name: "Extract Python versions for matrix jobs"
       if: ${{ steps.check-repo-content.outputs.python-project == 'true' }}
       shell: bash
       run: |
+        # Extract Python versions for matrix jobs
         set -o pipefail
-        # set -xv
 
         # Define variables
 
