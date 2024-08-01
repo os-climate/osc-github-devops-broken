@@ -5,28 +5,31 @@
 [![🔐 CodeQL](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml) [![Dependabot Updates](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates) [![PyPI](https://img.shields.io/pypi/v/pdm?logo=python&logoColor=%23cccccc)](https://pypi.org/project/osc-devops-reusable-workflows)
 <!-- prettier-ignore-end -->
 
-## Part of the OS-Climate Family of Projects
+## devops-reusable-workflows
 
-This project is part of the OS-Climate and FINOS projects.
+A set of composite actions and reusable workflows for OS-Climate Python projects.
 
-### Python tool: osc-devops-reusable-workflows
+### This project is part of the OS-Climate and FINOS projects
 
-This repository contains a number of reusable workflows. The purpose of these
-is to provide small pieces of reusable functionality which may be helpful to
-the OS-Climate community and other projects. Right now, the current focus is on
-Python and the tooling around Python projects, since that is the language
-currently used for the vast majority of our hosted repositories.
+This repository contains a number of GitHub composite actions, reusable workflows,
+and workflows. The purpose of these is to provide small modular components and
+larger pieces of shared DevOps functionality which may be helpful to the OS-Climate
+community, and indeed other open-source projects. Right now, the current focus is\
+on Python and the tooling around Python projects, since that is the language
+currently used for the vast majority of OS-Climate projects and repositories.
 
-The repository contains some sample Python code which is published to the Python
+### osc-devops-reusable-workflows
+
+The repository also contains some sample Python code which is published to the Python
 package index repository and is installable with the Python "pip" command. The
 dummy sample project ensures Python packages can be built, tested and published
 using the supplied GitHub composite actions, reusable workflows, and workflows.
 
-Relevant link to the Python package index installable:
+Relevant link to the Python package index project page:
 
 [osc-devops-reusable-workflows](https://pypi.org/project/osc-devops-reusable-workflows)
 
-Further detailed documentation will be supplied here once development is complete.
+Detailed documentation will be supplied here, once further development is done.
 
 In the meantime, here is some general documentation covering the relevant topics:
 
