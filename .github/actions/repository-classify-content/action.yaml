@@ -16,11 +16,11 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: "Setting Output Variables"
+    - name: "Check content, set output variables"
       id: classification
       shell: bash
       run: |
-        # Setting Output Variables
+        # Check content, set output variables
 
         #SHELLCODESTART
 

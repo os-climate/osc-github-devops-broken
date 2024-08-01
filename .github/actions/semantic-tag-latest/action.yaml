@@ -21,18 +21,21 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: "Fetch Tags"
+    - name: "Fetch tags"
       shell: bash
       run: |
         # Workaround for: https://github.com/actions/checkout/issues/1471
         echo "Fetching tags..."
         git fetch --tags
 
-    - name: "Parse Tags"
+    - name: "Parse tags"
       id: parse-tags
       shell: bash
       run: |
         # Extract and report latest semantic tag
+
+        #SHELLCODESTART
+
         if ! (git tag -l | grep 'v*.*.*' > /dev/null); then
           echo "No semantic tags were found"
           echo "missing=true" >> $GITHUB_OUTPUT
@@ -40,9 +43,9 @@ runs:
           echo "tag=v0.0.0" >> $GITHUB_OUTPUT
           echo "vtag=v0.0.0" >> $GITHUB_OUTPUT
         fi
-        tag=$(git tag -l --sort=committerdate | grep -o '*.*.*' | sort -r | head -1)
+        TAG=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | sort -r | head -1)
 
-        # Strip the leading "v" charachter, if present
+        # If present, strip the leading "v" character
         if [[ "$TAG" == v* ]]; then
           TAG="${TAG:1}"
         fi
@@ -58,6 +61,12 @@ runs:
         fi
 
         echo "Tag: $TAG [v$TAG]"
-        echo "missing=false" >> $GITHUB_OUTPUT
-        echo "tag=${tag}" >> $GITHUB_OUTPUT
-        echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
+
+        # Allows for testing from a local shell
+        if [ -n "$GITHUB_OUTPUT" ]; then
+          echo "missing=false" >> $GITHUB_OUTPUT
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
+        fi
+
+        #SHELLCODEEND
