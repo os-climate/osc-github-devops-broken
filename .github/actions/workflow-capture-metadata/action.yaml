@@ -12,9 +12,9 @@ outputs:
   REPOSITORY:
     description: "Returns the name of the GitHub repository"
     value: ${{ steps.github.outputs.repository }}
-  TAGGED:
-    description: "Set true if semantic tags are present"
-    value: ${{ steps.github.outputs.tagged }}
+  TAG-TRIGGER:
+    description: "Set true if semantic tags were an event/trigger"
+    value: ${{ steps.github.outputs.tag-trigger }}
 
 runs:
   using: "composite"
@@ -24,17 +24,19 @@ runs:
       shell: bash
       run: |
         # GitHub Repository Metadata
-        TAGGED="false"
-        echo "tagged=${TAGGED}" >> $GITHUB_OUTPUT
+        TAG-TRIGGER="false"
+        echo "tag-trigger=${TAG-TRIGGER}" >> $GITHUB_OUTPUT
 
+        echo ### Repository Data ###
         echo "GitHub Owner: $GITHUB_REPOSITORY_OWNER"
         echo "owner=${GITHUB_REPOSITORY_OWNER}" >> "$GITHUB_OUTPUT"
-
         REPOSITORY=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
         echo "GitHub Repository: ${REPOSITORY}"
         echo "repository=${REPOSITORY}" >> "$GITHUB_OUTPUT"
+
         if [ ! -z "$GITHUB_TRIGGERING_ACTOR" ]; then
-          echo "Action/workflow trigger: $GITHUB_TRIGGERING_ACTOR [GITHUB_TRIGGERING_ACTOR]"
+          echo "### User Data ###
+          echo "User responsible: $GITHUB_TRIGGERING_ACTOR [GITHUB_TRIGGERING_ACTOR]"
         fi
         echo "### Action/Workflow Environment ###"
         if [ ! -z "$GITHUB_REF" ]; then
@@ -49,7 +51,7 @@ runs:
         if [ ! -z "$GITHUB_REF_NAME" ]; then
           echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
           if [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+ ]]; then
-            echo "tagged=${TAGGED}" >> $GITHUB_OUTPUT
+            echo "tag-trigger=${TAG-TRIGGER}" >> $GITHUB_OUTPUT
           fi
         fi
         if [ ! -z "$GITHUB_REF_TYPE" ]; then
@@ -58,4 +60,6 @@ runs:
         if [ ! -z "$GITHUB_EVENT_NAME" ]; then
           echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
         fi
-        echo "GitHub event contained tags: $TAGGED"
+        echo "### Derived Data ###
+
+        echo "GitHub event/triggered by tags: $TAG-TRIGGER"
