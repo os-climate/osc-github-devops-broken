@@ -42,7 +42,7 @@ jobs:
       tagged: ${{ steps.set.outputs.tagged }}
 
     steps:
-      - name: "Set Outputs"
+      - name: "Capture workflow metadata"
         id: set
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/workflow-capture-metadata@main
@@ -65,7 +65,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Extract Python Versioning"
+      - name: "Extract Python versioning"
         id: python
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
@@ -95,7 +95,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Setup PDM Build Tool"
+      - name: "Install PDM tooling"
         uses: pdm-project/setup-pdm@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -114,13 +114,13 @@ jobs:
           prerelease: true
           tag_name: v0.0.1
 
-      - name: "Build: Python Project"
+      - name: "Build: Python project"
         id: python-project-build
         if: steps.semantic-tag-latest.outputs.missing == 'false'
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-project-build@main
 
-      - name: "Validate Artefacts with Twine"
+      - name: "Validate artefacts with Twine"
         id: python-twine-check
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
@@ -132,7 +132,7 @@ jobs:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
 
-      - name: "Sign packages with Sigstore"
+      - name: "Sign packages with SigStore"
         uses: sigstore/gh-action-sigstore-python@v3.0.0
         if: matrix.python-version == env.default-python
         env:
@@ -158,13 +158,6 @@ jobs:
         with:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
-
-      - name: "Set Environment Variables"
-        id: setenv
-        run: |
-          # vernum="${{ env.default-python }}.$(date +'%Y%m%d%H%M')"
-          datetime="$(date +'%Y%m%d%H%M')"
-          echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
 
       - name: "Publish DEVELOPMENT artefacts to GitHub"
         if: (startsWith(github.ref, 'refs/tags/') != true) && (env.github-dev-release == 'true')
@@ -208,7 +201,7 @@ jobs:
       # IMPORTANT: mandatory for trusted publishing
       id-token: write
     steps:
-      - name: "Check Test PyPI for Project"
+      - name: "Check presence in test PyPI"
         id: url-check
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/url-validity-check@main
@@ -220,18 +213,25 @@ jobs:
 
       - name: "Download build artefacts"
         uses: actions/download-artifact@v4
-        if: env.publish == 'true' && steps.url-check.outputs.valid == 'true'
+        if: env.pypi-publishing == 'true' && steps.url-check.outputs.valid == 'true'
         with:
           name: ${{ github.ref_name }}
           path: ${{ env.artefacts }}
 
-      - name: "Validate Build Artefacts"
+      - name: "Manicure artefacts directory"
         id: files
         run: |
+          # Remove file types unsupported by the Python Package Index
+          if [ ! -d ${{ env.artefacts }} ]; then
+            echo "Early exit; build artefacts path NOT found: ${{ env.artefacts }}"
+            exit 0
+          fi
           if [ -f ${{ env.artefacts }}/buildvars.txt ]; then
             rm ${{ env.artefacts }}/buildvars.txt
+          else
+            echo "No buildvars.txt file to purge"
           fi
-          # Remove any files in artefacts location related to SigStore signing
+          # Remove outputs related to SigStore signing
           if test -n "$(find ${{ env.artefacts }} -maxdepth 1 -name '**.sigstore*' -print -quit)"
           then
             echo "Found SigStore signing artefacts to purge"
@@ -240,7 +240,7 @@ jobs:
             echo "No SigStore signing artefacts to purge"
           fi
 
-      - name: "Test Package Publishing"
+      - name: "Test package publishing"
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
@@ -274,11 +274,11 @@ jobs:
             rm ${{ env.artefacts }}/*.sigstore*
           fi
 
-  #      - name: "Publish to PyPI"
-  #        uses: pypa/gh-action-pypi-publish@release/v1
-  #        with:
-  #          verbose: true
-  #          packages-dir: ${{ env.artefacts }}
+      - name: "Publish to PyPI"
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
+          packages-dir: ${{ env.artefacts }}
 
   notebooks:
     name: "Jupyter Notebooks"
@@ -306,12 +306,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Install/Setup PDM"
+      - name: "Install PDM tooling"
         uses: pdm-project/setup-pdm@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Install Dependencies"
+      - name: "Install package dependencies"
         run: |
           python -m pip install --upgrade pip
           pdm export -o requirements.txt
@@ -350,9 +350,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
-
     steps:
-      - name: "Checkout Repository"
+      - name: "CheckoutrRepository"
         uses: actions/checkout@v4
 
       - name: "Set up Python ${{ matrix.python-version }}"
@@ -360,12 +359,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Install/Setup PDM"
+      - name: "Install PDM tooling"
         uses: pdm-project/setup-pdm@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Install Dependencies"
+      - name: "Install dependencies"
         run: |
           pip install --upgrade pip
           pdm lock
@@ -375,5 +374,5 @@ jobs:
           pip install --upgrade setuptools
           pdm list --graph
 
-      - name: "Security Audit"
+      - name: "Perform package auditing"
         uses: pypa/gh-action-pip-audit@v1.0.8
