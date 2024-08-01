@@ -70,7 +70,7 @@ runs:
         MAJOR=$(echo "$TAG" | sed -e "s#$REGEX#\1#")
         MINOR=$(echo "$TAG" | sed -e "s#$REGEX#\2#")
         PATCH=$(echo "$TAG" | sed -e "s#$REGEX#\3#")
-        echo "Extracted: Major: $MAJOR  Minor: $MINOR  Patch: $PATCH""
+        echo "Extracted: Major: $MAJOR  Minor: $MINOR  Patch: $PATCH"
 
         ### CONTENT RECENTLY ADDED ###
 
