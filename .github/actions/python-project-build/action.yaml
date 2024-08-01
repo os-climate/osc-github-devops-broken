@@ -51,7 +51,7 @@ runs:
           fi
         else
           echo "Specified directory for artefacts is valid"
-          FILES=$(ls ${{ inputs.artefact-output-path }})
+          FILES=$(ls ${{ inputs.artefact-output-path }} | wc -l)
           if [ "$FILES" -gt 0 ]; then
             echo "target-populated=true" >> "$GITHUB_OUTPUT"
             echo "Content already exists in target directory:"
