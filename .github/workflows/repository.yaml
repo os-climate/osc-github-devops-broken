@@ -14,7 +14,8 @@ env:
   DEFAULT-PYTHON: "3.10"
   ARTEFACTS: "dist"
   # Configures publishing to PyPI
-  PUBLISH: "true"
+  PYPI-PUBLISHING: "true"
+  GITHUB-RELEASE-DEV: "true"
 
 jobs:
   classify-content:
@@ -107,7 +108,6 @@ jobs:
       - name: "Create initial tag"
         id: set-initial-tag
         if: steps.semantic-tag-latest.outputs.tag-missing == 'true'
-        # https://github.com/softprops/action-gh-release
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -122,6 +122,7 @@ jobs:
 
       - name: "Validate Artefacts with Twine"
         id: python-twine-check
+        # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
       - name: "Store the distribution packages"
@@ -150,7 +151,7 @@ jobs:
       # IMPORTANT: mandatory to publish artefacts
       contents: write
     # Ensure development builds are NOT uploaded when build naming is broken
-    if: github.ref_name != 'main'
+    # if: github.ref_name != 'main'
     steps:
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
@@ -166,8 +167,7 @@ jobs:
           echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
 
       - name: "Publish DEVELOPMENT artefacts to GitHub"
-        if: startsWith(github.ref, 'refs/tags/') != true
-        # https://github.com/softprops/action-gh-release
+        if: (startsWith(github.ref, 'refs/tags/') != true) && (env.github-dev-release == 'true')
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -182,7 +182,6 @@ jobs:
 
       - name: "Publish PRODUCTION artefacts to GitHub"
         if: startsWith(github.ref, 'refs/tags/')
-        # https://github.com/softprops/action-gh-release
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -331,13 +330,14 @@ jobs:
           # https://stackoverflow.com/questions/47287721/coverage-py-warning-no-data-was-collected-no-data-collected
           # pytest --nbmake tests/test_*.ipynb --cov=tests
 
-      - name: "Upload Logs"
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-logs
-          path: /tmp/*.log
-          retention-days: 14
+      # TEMP DISABLED - NEED TO CHECK - WHERE ARE THESE LOGS GENERATED???
+      # - name: "Upload Logs"
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: debug-logs
+      #     path: /tmp/*.log
+      #     retention-days: 14
 
   security:
     name: "Security Audit"
