@@ -95,7 +95,9 @@ jobs:
             ERRORS="true"
           fi
           if [ "$ERRORS" = "true" ]; then
-            echo "Logic implementing tag handling needs checking"; exit 1
+            echo "ERROR: check tag manipulation action/code"; exit 1
+          else
+            echo "All tag check tests passed, no errors found"
           fi
 
       - name: "Action: url-validity-check"

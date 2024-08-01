@@ -6,8 +6,14 @@ name: "🏷️ Latest Semantic Tag"
 
 outputs:
   TAG:
+    # A leading non-numeric "v" character will be stripped
     description: "Return the latest semantic tag from repository"
     value: ${{ steps.parse-tags.outputs.tag }}
+  VTAG:
+    # A leading non-numeric "v" character will be stripped
+    description: "The incremented semantic tag [with prefix] e.g. v1.2.3"
+    value: ${{ steps.increment.outputs.tag }}
+
   MISSING:
     description: "Flag set true if no semantic tags found"
     value: ${{ steps.parse-tags.outputs.missing }}
@@ -32,8 +38,26 @@ runs:
           echo "missing=true" >> $GITHUB_OUTPUT
           # Set a placeholder value for the tag
           echo "tag=v0.0.0" >> $GITHUB_OUTPUT
+          echo "vtag=v0.0.0" >> $GITHUB_OUTPUT
         fi
-        tag=$(git tag -l --sort=committerdate | grep -o 'v*.*.*' | sort -r | head -1)
+        tag=$(git tag -l --sort=committerdate | grep -o '*.*.*' | sort -r | head -1)
+
+        # Strip the leading "v" charachter, if present
+        if [[ "$TAG" == v* ]]; then
+          TAG="${TAG:1}"
+        fi
+
+        # Regular expression to match semantic tag
+        PATTERN="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$"
+
+        # Validate supplied (and parsed) tag
+        if ! [[ "$TAG" =~ $PATTERN ]]; then
+          echo "ERROR: invalid semantic tag"; exit 1
+        else
+          echo "Numeric value: $TAG"
+        fi
+
+        echo "Tag: $TAG [v$TAG]"
         echo "missing=false" >> $GITHUB_OUTPUT
         echo "tag=${tag}" >> $GITHUB_OUTPUT
-        echo "Tag: $tag"
+        echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
