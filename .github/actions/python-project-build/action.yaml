@@ -6,53 +6,78 @@ name: "🧱 Python Build"
 description: "Build Python Project"
 
 inputs:
-  ARTEFACTS:
-    description: "Path to Python build artefacts"
+  ARTEFACT_OUTPUT_PATH:
+    description: "Output path/location for build artefacts"
     required: true
     default: "dist"
+  PURGE_OUTPUT_PATH:
+    description: "Purge target path prior to builds"
+    required: true
+    default: false
 
 outputs:
-  BUILD:
+  DATETIME_STAMP:
+    description: "Date/time stamp at build time"
+    value: ${{ steps.parameters.outputs.datetime }}
+  BUILD_TYPE:
     description: "Build [production|development]"
-    value: ${{ steps.build.outputs.publish }}
-  DATETIME:
-    description: "Date and time stamp for build"
-    value: ${{ steps.setenv.outputs.datetime }}
+    value: ${{ steps.perform-build.outputs.publish }}
 
 runs:
   using: "composite"
   steps:
-    - name: "Populate environment variables"
-      id: setenv
+    - name: "Set build parameters/variables"
+      id: parameters
       shell: bash
       run: |
+        # Set build parameters/variables
         echo "Action triggered by: ${GITHUB_TRIGGERING_ACTOR}"
-        echo "Using build artefact path: ${{ inputs.artefacts }}"
-        if [ ! -d ${{ inputs.artefacts }} ]; then
-          echo -n "Creating directory for artefacts: ${{ inputs.artefacts }} "
-          if (mkdir -p ${{ inputs.artefacts }}); then
-            echo "SUCCESS"
-          else
-            echo "FAILED"
-            echo "Error: could not create output directory for build artefacts"
-            exit 1
-          fi
-        fi
         datetime=$(date +'%Y-%m-%d-%H%M')
         echo "Build date and time stamp: $datetime"
         echo "datetime=$datetime" >> "$GITHUB_ENV"
         echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
 
-    - name: "Perform package build"
-      id: build
+    - name: "Check target/path for build products"
+      id: check-target
+      shell: bash
+      run: |
+        # Check target path for build products
+        if [ ! -d ${{ inputs.artefact-output-path }} ]; then
+          if (mkdir -p ${{ inputs.artefact-output-path }}); then
+            echo "Created target path for build products: ${{ inputs.artefact-output-path }}"
+          else
+            echo "Failed to create directory for build products: ${{ inputs.artefact-output-path }}"
+            exit 1
+          fi
+        else
+          echo "Specified directory for artefacts is valid"
+          FILES=$(ls ${{ inputs.artefact-output-path }})
+          if [ "$FILES" -gt 0 ]; then
+            echo "target-populated=true" >> "$GITHUB_OUTPUT"
+            echo "Content already exists in target directory:"
+            ls -l
+          fi
+        fi
+
+    - name: "Clean build target directory"
+      id: clean-target
+      shell: bash
+      if: steps.check-target.outputs.target-populated == 'true' && inputs.purge-output-path == 'true'
+      run: |
+        # Clean target path for build products
+        echo "Running command: rm -f ${{ inputs.artefact-output-path }}/*"
+        rm -f "${{ inputs.artefact-output-path }}/*"
+
+    - name: "Perform Python project build"
+      id: perform-build
       shell: bash
       run: |
         # Perform package build
         python -m pip install -q --upgrade pip
         if [ -f pyproject.toml ]; then
           echo "Found file: pyproject.toml"
-          echo "Building with command: pdm build"
-          pdm build --dest ${{ inputs.artefacts }}
+          echo "Building with command: pdm build --dest ${{ inputs.artefact-output-path }}"
+          pdm build --dest ${{ inputs.artefact-output-path }}
         elif [ -f tox.ini ]; then
           echo "Found TOX configuration file: tox.ini"
           echo "Attempting to install TOX..."
@@ -64,15 +89,15 @@ runs:
           echo "Neither file found: tox.ini/pyproject.toml"
           echo "Attempting build with: python -m build"
           pip -q --upgrade install build
-          python -m build --outdir ${{ inputs.artefacts }}
+          python -m build --outdir ${{ inputs.artefact-output-path }}
         fi
 
         # Set build type based on artefact naming
-        if test -n "$(find ${{ inputs.artefacts }} -maxdepth 1 -name '**.dev*' -print -quit)"; then
+        if test -n "$(find ${{ inputs.artefact-output-path }} -maxdepth 1 -name '**.dev*' -print -quit)"; then
           echo "Artefact naming indicates development build"
-          echo "build=development" >> "$GITHUB_ENV"
-          echo "build=development" >> "$GITHUB_OUTPUT"
+          echo "build-type=development" >> "$GITHUB_ENV"
+          echo "build-type=development" >> "$GITHUB_OUTPUT"
         else
-          echo "build=production" >> "$GITHUB_ENV"
-          echo "build=production" >> "$GITHUB_OUTPUT"
+          echo "build-type=production" >> "$GITHUB_ENV"
+          echo "build-type=production" >> "$GITHUB_OUTPUT"
         fi
