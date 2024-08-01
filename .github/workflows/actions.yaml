@@ -82,7 +82,7 @@ jobs:
         run: |
           # Check output from: semantic-tag-increment
           ERRORS="false"
-          if [ "${{ steps.semantic-tag-increment-patch.outputs.tag }}" != "v2.9.7" ]; then
+          if [ "${{ steps.semantic-tag-increment-patch.outputs.tag }}" != "2.9.7" ]; then
             echo "Errors with: semantic-tag-increment [patch]"
             ERRORS="true"
           fi
@@ -90,7 +90,7 @@ jobs:
             echo "Errors with: semantic-tag-increment [minor]"
             ERRORS="true"
           fi
-          if [ "${{ steps.semantic-tag-increment-major.outputs.tag }}" != "1.0.0" ]; then
+          if [ "${{ steps.semantic-tag-increment-major.outputs.tag }}" != "2.0.0" ]; then
             echo "Errors with: semantic-tag-increment [major]"
             ERRORS="true"
           fi
