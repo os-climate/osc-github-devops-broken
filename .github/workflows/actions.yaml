@@ -52,13 +52,50 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-latest@main
 
-      - name: "Action: semantic-tag-increment"
-        id: semantic-tag-increment
+      - name: "Action: semantic-tag-increment [patch]"
+        id: semantic-tag-increment-patch
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-increment@main
         with:
-          tag: "${{ steps.semantic-tag-latest.outputs.tag }}"
+          tag: "v2.9.6"
+          type: "patch"
+
+      - name: "Action: semantic-tag-increment [minor]"
+        id: semantic-tag-increment-minor
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-increment@main
+        with:
+          tag: "v0.1.2"
           type: "minor"
+
+      - name: "Action: semantic-tag-increment [major]"
+        id: semantic-tag-increment-major
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-increment@main
+        with:
+          tag: "v1.2.3"
+          type: "major"
+
+      - name: "Validate Incremented Tags"
+        shell: bash
+        run: |
+          # Check output from: semantic-tag-increment
+          ERRORS="false"
+          if [ "${{ steps.semantic-tag-increment-patch.outputs.tag }}" != "v2.9.7" ]; then
+            echo "Errors with: semantic-tag-increment [patch]"
+            ERRORS="true"
+          fi
+          if [ "${{ steps.semantic-tag-increment-minor.outputs.tag }}" != "0.2.0" ]; then
+            echo "Errors with: semantic-tag-increment [minor]"
+            ERRORS="true"
+          fi
+          if [ "${{ steps.semantic-tag-increment-major.outputs.tag }}" != "1.0.0" ]; then
+            echo "Errors with: semantic-tag-increment [major]"
+            ERRORS="true"
+          fi
+          if [ "$ERRORS" = "true" ]; then
+            echo "Logic implementing tag handling needs checking"; exit 1
+          fi
 
       - name: "Action: url-validity-check"
         id: url-validity-check
