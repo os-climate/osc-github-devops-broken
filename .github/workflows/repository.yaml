@@ -20,7 +20,7 @@ env:
 
 jobs:
   classify-content:
-    name: "Classify Repository"
+    name: "Inspect Repository"
     runs-on: ubuntu-latest
     outputs:
       python: ${{ steps.classify.outputs.python }}
@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Inspect Content"
+      - name: "Classify content"
         id: classify
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/repository-classify-content@main
@@ -121,15 +121,15 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-project-build@main
         with:
-          artefact-output-path: "dist"
-          purge-output-path: "true"
+          artefact_output_path: "dist"
+          purge_output_path: "true"
 
       - name: "Validate artefacts with Twine"
         id: python-twine-check
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
 
-      - name: "Uplioad build artefacts"
+      - name: "Upload build artefacts"
         uses: actions/upload-artifact@v4
         if: matrix.python-version == env.default-python
         with:
