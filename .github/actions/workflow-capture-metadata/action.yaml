@@ -34,11 +34,9 @@ runs:
         echo "GitHub Repository: ${REPOSITORY}"
         echo "repository=${REPOSITORY}" >> "$GITHUB_OUTPUT"
         if [ ! -z "$GITHUB_TRIGGERING_ACTOR" ]; then
-          echo "Action/workflow trigger:"
-          echo "$GITHUB_TRIGGERING_ACTOR [GITHUB_TRIGGERING_ACTOR]"
+          echo "Action/workflow trigger: $GITHUB_TRIGGERING_ACTOR [GITHUB_TRIGGERING_ACTOR]"
         fi
         echo "### Action/Workflow Environment ###"
-        if [
         if [ ! -z "$GITHUB_REF" ]; then
           echo "GITHUB_REF: $GITHUB_REF"
         fi
