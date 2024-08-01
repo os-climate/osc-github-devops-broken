@@ -23,7 +23,7 @@ jobs:
   ### Test Individual Composite Actions ###
 
   test:
-    name: "Synthetic Tests"
+    name: "Standalone Synthetic Tests"
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     steps:
