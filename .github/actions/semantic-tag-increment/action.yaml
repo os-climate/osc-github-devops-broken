@@ -16,7 +16,11 @@ inputs:
 outputs:
   TAG:
     # A leading non-numeric "v" character will be stripped
-    description: "The incremented semantic tag [purely numeric]"
+    description: "The incremented semantic tag [purely numeric] e.g. 1.2.3"
+    value: ${{ steps.increment.outputs.tag }}
+  VTAG:
+    # A leading non-numeric "v" character will be stripped
+    description: "The incremented semantic tag [with prefix] e.g. v1.2.3"
     value: ${{ steps.increment.outputs.tag }}
 
 runs:
@@ -63,20 +67,20 @@ runs:
         if ! [[ "$TAG" =~ $PATTERN ]]; then
           echo "Invalid semantic tag"; exit 1
         else
-          echo "Numeric tag: $TAG"
+          echo "Numeric value: $TAG"
         fi
 
         REGEX='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z-]*\)'
         MAJOR=$(echo "$TAG" | sed -e "s#$REGEX#\1#")
         MINOR=$(echo "$TAG" | sed -e "s#$REGEX#\2#")
         PATCH=$(echo "$TAG" | sed -e "s#$REGEX#\3#")
-        echo "Extracted: Major: $MAJOR  Minor: $MINOR  Patch: $PATCH"
+        echo "Current versioning [ major: $MAJOR  minor: $MINOR  patch: $PATCH ]"
 
         ### CONTENT RECENTLY ADDED ###
 
         case "$TYPE" in
           major)
-            MAJOR=$((MAJOR+1)
+            MAJOR=$((MAJOR+1))
             MINOR="0"
             PATCH="0"
             ;;
@@ -89,8 +93,9 @@ runs:
             ;;
         esac
 
-        INCREMENTED="$MAJOR.$MINOR.$PATCH"
-        echo "Incremented: $INCREMENTED"
+        TAG="$MAJOR.$MINOR.$PATCH"
+        echo "Incremented value: $TAG"
         echo "tag=${TAG}" >> $GITHUB_OUTPUT
+        echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
 
         #SHELLCODEEND
