@@ -105,7 +105,7 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-latest@main
 
-      - name: "Create initial tag"
+      - name: "Create initial v0.0.1 tag [conditional]"
         id: set-initial-tag
         if: steps.semantic-tag-latest.outputs.tag-missing == 'true'
         uses: softprops/action-gh-release@v2
