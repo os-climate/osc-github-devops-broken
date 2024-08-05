@@ -2,11 +2,13 @@
 
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable-next-line MD013 -->
-[![🔐 CodeQL](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml) [![Dependabot Updates](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates) [![PyPI](https://img.shields.io/pypi/v/pdm?logo=python&logoColor=%23cccccc)](https://pypi.org/project/osc-devops-reusable-workflows) [![pdm-managed](https://img.shields.io/endpoint?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fpdm-project%2F.github%2Fbadge.json)](https://pdm-project.org) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![🧪 GitHub Actions CI/CD workflow tests badge]][GHA workflow runs list]
-[![pre-commit.ci status badge]][pre-commit.ci results page]
+[![PyPI](https://img.shields.io/pypi/v/pdm?logo=python&logoColor=%23cccccc)](https://pypi.org/project/osc-devops-reusable-workflows) [![pdm-managed](https://img.shields.io/endpoint?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fpdm-project%2F.github%2Fbadge.json)](https://pdm-project.org) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
+<!-- markdownlint-disable-next-line MD013 -->
+[![🧪 GitHub Actions CI/CD workflow tests badge]][GHA workflow runs list] [![pre-commit.ci status badge]][pre-commit.ci results page] [![Dependabot Updates](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates) [![🔐 CodeQL](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml)
 <!-- prettier-ignore-end -->
 
-## A set of composite actions and reusable workflows for OS-Climate Python projects
+## Composite actions and reusable workflows for Python projects
 
 ### OS-Climate and FINOS are both Linux Foundation projects
 
@@ -46,6 +48,10 @@ In the meantime, here is some general documentation covering the relevant topics
 <!--
 [comment]: # SPDX-License-Identifier: Apache-2.0
 [comment]: # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+-->
+
+<!--
+[comment]: # Section below is sourced by the badges displayed under the project heading
 -->
 
 [🧪 GitHub Actions CI/CD workflow tests badge]: https://github.com/os-climate/devops-reusable-workflows/actions/workflows/repository.yaml/badge.svg?branch=main&event=push
