@@ -248,7 +248,23 @@ jobs:
 
       - name: "Test package publishing"
         uses: pypa/gh-action-pypi-publish@release/v1
+        # Primary/default method uses trusted publishing
         if: steps.url-check.outputs.valid == 'true'
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          # Show checksum values
+          print-hash: true
+          packages-dir: ${{ env.BUILD_ARTEFACTS }}
+          # We already validate earlier in the pipeline
+          verify-metadata: false
+          # Test releases are always debugged
+          verbose: true
+
+      - name: "Test package publishing"
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # Fallback method uses static organisation credentials
+        # Used initially when trusted publishing is unavailable
+        if: steps.url-check.outputs.valid == 'false'
         with:
           repository-url: https://test.pypi.org/legacy/
           # Show checksum values
@@ -262,7 +278,6 @@ jobs:
           # Defined/stored in 1Password
           user: osclimate
           password: ${{ secrets.OSC_PYPI_TEST }}
-
   pypi:
     name: "Publish Package"
     # Only publish on tag pushes
@@ -270,7 +285,7 @@ jobs:
       startsWith(github.ref, 'refs/tags/') &&
       needs.python-build.outputs.publish == 'true'
       # contains(github.event.head_commit.message, '[release]')
-    needs: [python-build, testpypi]
+    needs: [python-build, workflow-capture-metadata, testpypi]
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -284,14 +299,39 @@ jobs:
           name: ${{ github.ref_name }}
           path: ${{ env.BUILD_ARTEFACTS }}
 
-      - name: "Remove files unsupported by PyPi"
+      - name: "Remove unsupported artefacts/files"
         run: |
+          # Remove unsupported artefacts/files
           if (ls ${{ env.BUILD_ARTEFACTS }}/*.sigstore*); then
             rm ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
           fi
 
+      - name: "Check presence in PyPI"
+        id: url-check
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/url-validity-check@main
+        with:
+          prefix: "https://pypi.org/project"
+          # Use project name, e.g. "/ITR"
+          string: "/${{ needs.workflow-capture-metadata.outputs.repository }}"
+          suffix: "/"
+
       - name: "Publish to PyPI"
         uses: pypa/gh-action-pypi-publish@release/v1
+        # Primary/default method uses trusted publishing
+        if: steps.url-check.outputs.valid == 'true'
+        with:
+          # Show checksum values
+          print-hash: true
+          packages-dir: ${{ env.BUILD_ARTEFACTS }}
+          # We already validate earlier in the pipeline
+          verify-metadata: false
+
+      - name: "Publish to PyPI"
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # Fallback method uses static organisation credentials
+        # Used initially when trusted publishing is unavailable
+        if: steps.url-check.outputs.valid == 'false'
         with:
           # Show checksum values
           print-hash: true
@@ -337,20 +377,22 @@ jobs:
       - name: "Install package dependencies"
         run: |
           # Install build dependencies
-          python -m pip install --upgrade pip
+          python -m pip install -q --upgrade pip
           pdm export -o requirements.txt
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install .
-          pip install pytest nbmake
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          pip install -q .
+          pip install -q pytest nbmake
 
       - name: "Testing Jupyter notebooks"
         run: |
-          echo "Testing Jupyter notebooks"
-          pip install pytest nbmake
-          echo "Using command:"
-          echo "  pytest --nbmake -- **/*.ipynb"
+          # Testing Jupyter notebooks
+          echo "Installing required dependencies"
+          pip install --upgrade -q pytest nbmake
           # Consider enabling the line below when debugging/testing
           # find . -name '*.ipynb'
+          echo "Running command: pytest --nbmake -- **/*.ipynb"
           pytest --nbmake src/*/*.ipynb --cov=src/devops_reusable_workflows
           # Might need an __init__.py file in tests folder for notebooks there to be tested?
           # https://stackoverflow.com/questions/47287721/coverage-py-warning-no-data-was-collected-no-data-collected
@@ -392,12 +434,12 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          pip install --upgrade pip
+          pip install -q --upgrade pip
           pdm lock
           pdm export -o requirements.txt
-          python -m pip install -r requirements.txt
-          python -m pip install .
-          pip install --upgrade setuptools
+          python -m pip install -q -r requirements.txt
+          python -m pip install -q .
+          pip install --upgrade -q setuptools
           pdm list --graph
 
       - name: "Perform package auditing"
