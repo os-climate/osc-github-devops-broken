@@ -249,8 +249,17 @@ jobs:
         if: steps.url-check.outputs.valid == 'true'
         with:
           repository-url: https://test.pypi.org/legacy/
-          verbose: true
+          # Show checksum values
+          print-hash: true
           packages-dir: ${{ env.build-artefacts }}
+          # We already validate earlier in the pipeline
+          verify-metadata: false
+          # Test releases are always debugged
+          verbose: true
+          # Organisation secret/variable
+          # Defined/stored in 1Password
+          user: osclimate
+          password: ${{ secrets.OSC_PYPI_TEST }}
 
   pypi:
     name: "Publish Package"
@@ -282,8 +291,15 @@ jobs:
       - name: "Publish to PyPI"
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          verbose: true
+          # Show checksum values
+          print-hash: true
           packages-dir: ${{ env.build-artefacts }}
+          # We already validate earlier in the pipeline
+          verify-metadata: false
+          # Organisation secret/variable
+          # Defined/stored in 1Password
+          user: osclimate
+          password: ${{ secrets.OSC_PYPI_PROD }}
 
   notebooks:
     name: "Jupyter Notebooks"
