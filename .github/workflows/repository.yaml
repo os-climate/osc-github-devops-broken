@@ -253,7 +253,7 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
           # Show checksum values
-          print-hash: true
+          print_hash: true
           packages-dir: ${{ env.BUILD_ARTEFACTS }}
           # We already validate earlier in the pipeline
           verify-metadata: false
@@ -268,7 +268,7 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
           # Show checksum values
-          print-hash: true
+          print_hash: true
           packages-dir: ${{ env.BUILD_ARTEFACTS }}
           # We already validate earlier in the pipeline
           verify-metadata: false
@@ -276,8 +276,7 @@ jobs:
           verbose: true
           # Organisation secret/variable
           # Defined/stored in 1Password
-          user: osclimate
-          password: ${{ secrets.OSC_PYPI_TEST }}
+          password: ${{ secrets.OSC_GITHUB_PYPI_TEST_TOKEN }}
   pypi:
     name: "Publish Package"
     # Only publish on tag pushes
@@ -322,7 +321,7 @@ jobs:
         if: steps.url-check.outputs.valid == 'true'
         with:
           # Show checksum values
-          print-hash: true
+          print_hash: true
           packages-dir: ${{ env.BUILD_ARTEFACTS }}
           # We already validate earlier in the pipeline
           verify-metadata: false
@@ -334,14 +333,13 @@ jobs:
         if: steps.url-check.outputs.valid == 'false'
         with:
           # Show checksum values
-          print-hash: true
+          print_hash: true
           packages-dir: ${{ env.BUILD_ARTEFACTS }}
           # We already validate earlier in the pipeline
           verify-metadata: false
           # Organisation secret/variable
           # Defined/stored in 1Password
-          user: osclimate
-          password: ${{ secrets.OSC_PYPI_PROD }}
+          password: ${{ secrets.OSC_GITHUB_PYPI_TOKEN }}
 
   notebooks:
     name: "Jupyter Notebooks"
