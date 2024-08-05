@@ -50,5 +50,5 @@ In the meantime, here is some general documentation covering the relevant topics
 
 [🧪 GitHub Actions CI/CD workflow tests badge]: https://github.com/os-climate/devops-reusable-workflows/actions/workflows/repository.yaml/badge.svg?branch=main&event=push
 [GHA workflow runs list]: https://github.com/os-climate/devops-reusable-workflows/actions/workflows/repository.yaml?query=branch%3Amain
-[pre-commit.ci results page]: https://results.pre-commit.ci/latest/github/os-climate/gh-action-pypi-publish/unstable/v1
-[pre-commit.ci status badge]: https://results.pre-commit.ci/badge/github/os-climate/gh-action-pypi-publish/unstable/v1.svg
+[pre-commit.ci results page]: https://results.pre-commit.ci/latest/github/os-climate/devops-reusable-workflows/main
+[pre-commit.ci status badge]: https://results.pre-commit.ci/badge/github/os-climate/devops-reusable-workflows/main.svg
