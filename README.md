@@ -2,14 +2,20 @@
 
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable-next-line MD013 -->
-[![🔐 CodeQL](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml) [![Dependabot Updates](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates) [![PyPI](https://img.shields.io/pypi/v/pdm?logo=python&logoColor=%23cccccc)](https://pypi.org/project/osc-devops-reusable-workflows)
+[![🔐 CodeQL](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml) [![Dependabot Updates](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates) [![PyPI](https://img.shields.io/pypi/v/pdm?logo=python&logoColor=%23cccccc)](https://pypi.org/project/osc-devops-reusable-workflows) [![pdm-managed](https://img.shields.io/endpoint?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fpdm-project%2F.github%2Fbadge.json)](https://pdm-project.org)
 <!-- prettier-ignore-end -->
 
-## devops-reusable-workflows
+## Repository: devops-reusable-workflows
 
 A set of composite actions and reusable workflows for OS-Climate Python projects.
 
-### This project is part of the OS-Climate and FINOS projects
+### Part of OS-Climate and FINOS, both Linux Foundation projects
+
+[https://www.linuxfoundation.org/](https://www.linuxfoundation.org/)
+[https://os-climate.org/](https://os-climate.org/)
+[https://www.finos.org/](https://www.finos.org/)
+
+### Description
 
 This repository contains a number of GitHub composite actions, reusable workflows,
 and workflows. The purpose of these is to provide small modular components and
@@ -18,7 +24,7 @@ community, and indeed other open-source projects. Right now, the current focus i
 on Python and the tooling around Python projects, since that is the language
 currently used for the vast majority of OS-Climate projects and repositories.
 
-### osc-devops-reusable-workflows
+### Python Template Code
 
 The repository also contains some sample Python code which is published to the Python
 package index repository and is installable with the Python "pip" command. The
