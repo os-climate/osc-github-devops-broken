@@ -11,12 +11,14 @@ on:
     branches: [main, master]
 
 env:
-  DEFAULT-PYTHON: "3.10"
+  DEFAULT_PYTHON: "3.10"
   BUILD_ARTEFACTS: "dist"
   # Configures publishing to PyPI
-  PYPI-PUBLISHING: "true"
+  PYPI_PUBLISHING: "true"
   # Create GitHub releases for all builds, not just production builds
-  GITHUB-RELEASE-ALWAYS: "true"
+  GITHUB_RELEASE_ALWAYS: "true"
+  # Create an initial tag, if missing
+  CREATE_MISSING_TAG: "true"
 
 jobs:
   classify-content:
@@ -108,7 +110,7 @@ jobs:
 
       - name: "Create initial v0.0.1 tag [conditional]"
         id: set-initial-tag
-        if: steps.semantic-tag-latest.outputs.tag-missing == 'true'
+        if: steps.semantic-tag-latest.outputs.tag-missing == 'true' && env.CREATE_MISSING_TAG
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -131,20 +133,20 @@ jobs:
 
       - name: "Upload build artefacts"
         uses: actions/upload-artifact@v4
-        if: matrix.python-version == env.default-python
+        if: matrix.python-version == env.DEFAULT_PYTHON
         with:
           name: ${{ github.ref_name }}
-          path: ${{ env.build-artefacts }}
+          path: ${{ env.BUILD_ARTEFACTS }}
 
       - name: "Sign packages with SigStore"
         uses: sigstore/gh-action-sigstore-python@v3.0.0
-        if: matrix.python-version == env.default-python
+        if: matrix.python-version == env.DEFAULT_PYTHON
         env:
-          package-path: ${{ env.build-artefacts }}
+          package-path: ${{ env.BUILD_ARTEFACTS }}
         with:
           inputs: >-
-            ./${{ env.build-artefacts }}/*.tar.gz
-            ./${{ env.build-artefacts }}/*.whl
+            ./${{ env.BUILD_ARTEFACTS }}/*.tar.gz
+            ./${{ env.BUILD_ARTEFACTS }}/*.whl
 
   github:
     name: "Publish to GitHub"
@@ -161,10 +163,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ github.ref_name }}
-          path: ${{ env.build-artefacts }}
+          path: ${{ env.BUILD_ARTEFACTS }}
 
       - name: "Publish DEVELOPMENT artefacts to GitHub"
-        if: (startsWith(github.ref, 'refs/tags/') != true) && (env.github-release-always == 'true')
+        if: (startsWith(github.ref, 'refs/tags/') != true) && (env.GITHUB_RELEASE_ALWAYS == 'true')
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -173,9 +175,9 @@ jobs:
           name: "Test/Development Build: ${{ github.ref_name }}"
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
-            ${{ env.build-artefacts }}/*.tar.gz
-            ${{ env.build-artefacts }}/*.whl
-            ${{ env.build-artefacts }}/*.sigstore*
+            ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
+            ${{ env.BUILD_ARTEFACTS }}/*.whl
+            ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
 
       - name: "Publish PRODUCTION artefacts to GitHub"
         if: startsWith(github.ref, 'refs/tags/')
@@ -187,9 +189,9 @@ jobs:
           name: "Test/Development Build: ${{ github.ref_name }}"
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
-            ${{ env.build-artefacts }}/*.tar.gz
-            ${{ env.build-artefacts }}/*.whl
-            ${{ env.build-artefacts }}/*.sigstore*
+            ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
+            ${{ env.BUILD_ARTEFACTS }}/*.whl
+            ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
 
   testpypi:
     name: "Test Package Publishing"
@@ -207,29 +209,29 @@ jobs:
     steps:
       - name: "Download build artefacts"
         uses: actions/download-artifact@v4
-        if: env.pypi-publishing == 'true'
+        if: env.PYPI_PUBLISHING == 'true'
         with:
           name: ${{ github.ref_name }}
-          path: ${{ env.build-artefacts }}
+          path: ${{ env.BUILD_ARTEFACTS }}
 
       - name: "Manicure artefacts directory"
         id: files
         run: |
           # Remove file types unsupported by the Python Package Index
-          if [ ! -d ${{ env.build-artefacts }} ]; then
-            echo "Early exit; build artefacts path NOT found: ${{ env.build-artefacts }}"
+          if [ ! -d ${{ env.BUILD_ARTEFACTS }} ]; then
+            echo "Early exit; build artefacts path NOT found: ${{ env.BUILD_ARTEFACTS }}"
             exit 0
           fi
-          if [ -f ${{ env.build-artefacts }}/buildvars.txt ]; then
-            rm ${{ env.build-artefacts }}/buildvars.txt
+          if [ -f ${{ env.BUILD_ARTEFACTS }}/buildvars.txt ]; then
+            rm ${{ env.BUILD_ARTEFACTS }}/buildvars.txt
           else
             echo "No buildvars.txt file to purge"
           fi
           # Remove outputs related to SigStore signing
-          if test -n "$(find ${{ env.build-artefacts }} -maxdepth 1 -name '**.sigstore*' -print -quit)"
+          if test -n "$(find ${{ env.BUILD_ARTEFACTS }} -maxdepth 1 -name '**.sigstore*' -print -quit)"
           then
             echo "Found SigStore signing artefacts to purge"
-            rm ${{ env.build-artefacts }}/*.sigstore*
+            rm ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
           else
             echo "No SigStore signing artefacts to purge"
           fi
@@ -251,7 +253,7 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           # Show checksum values
           print-hash: true
-          packages-dir: ${{ env.build-artefacts }}
+          packages-dir: ${{ env.BUILD_ARTEFACTS }}
           # We already validate earlier in the pipeline
           verify-metadata: false
           # Test releases are always debugged
@@ -280,12 +282,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ github.ref_name }}
-          path: ${{ env.build-artefacts }}
+          path: ${{ env.BUILD_ARTEFACTS }}
 
       - name: "Remove files unsupported by PyPi"
         run: |
-          if (ls ${{ env.build-artefacts }}/*.sigstore*); then
-            rm ${{ env.build-artefacts }}/*.sigstore*
+          if (ls ${{ env.BUILD_ARTEFACTS }}/*.sigstore*); then
+            rm ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
           fi
 
       - name: "Publish to PyPI"
@@ -293,7 +295,7 @@ jobs:
         with:
           # Show checksum values
           print-hash: true
-          packages-dir: ${{ env.build-artefacts }}
+          packages-dir: ${{ env.BUILD_ARTEFACTS }}
           # We already validate earlier in the pipeline
           verify-metadata: false
           # Organisation secret/variable
