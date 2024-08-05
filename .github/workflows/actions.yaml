@@ -39,6 +39,11 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/repository-classify-content@main
 
+      - name: "Action: python-versions-matrix"
+        id: python-versions-matrix
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
+
       - name: "Action: python-twine-check"
         id: python-twine-check
         # yamllint disable-line rule:line-length

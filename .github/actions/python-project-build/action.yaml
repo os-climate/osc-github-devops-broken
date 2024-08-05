@@ -22,9 +22,6 @@ outputs:
   BUILD_TYPE:
     description: "Build [production|development]"
     value: ${{ steps.perform-build.outputs.publish }}
-  VERSIONING:
-    description: "Versioning type from pyproject.toml [static|dynamic]"
-    value: ${{ steps.perform-build.outputs.versioning }}
 
 runs:
   using: "composite"
@@ -103,13 +100,4 @@ runs:
         else
           echo "build_type=production" >> "$GITHUB_ENV"
           echo "build_type=production" >> "$GITHUB_OUTPUT"
-        fi
-
-        # Set static or dynamic version flag, based on pyproject.toml directive
-        if (grep -q 'dynamic = \["version"\]' pyproject.toml); then
-          echo "Dynamic versioning set in pyproject.toml"
-          echo "versioning=dynamic" >> "$GITHUB_OUTPUT"
-        else
-          echo "Static versioning set in pyproject.toml"
-          echo "versioning=static" >> "$GITHUB_OUTPUT"
         fi
