@@ -35,8 +35,8 @@ def run():
     This function sets up the Typer application with subcommands.
 
     Usage:
-            devops-reusable-workflows hello
-            devops-reusable-workflows goodbye
+            osc-github-devops hello
+            osc-github-devops goodbye
 
     """
     app()

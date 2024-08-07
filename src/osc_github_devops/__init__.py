@@ -13,7 +13,7 @@ else:
 
 try:
     # Change here if project is renamed and does not equal the package name
-    dist_name = "devops_reusable_workflows"
+    dist_name = "osc_github_devops"
     __version__ = version(dist_name)
 
 except PackageNotFoundError:  # pragma: no cover

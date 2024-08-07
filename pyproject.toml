@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
 [project]
-name = "devops-reusable-workflows"
+name = "osc-github-devops"
 version = "v0.0.1"
 description = "Python project metadata to permit workflow testing."
 authors = [
@@ -36,15 +36,15 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/os-climate/devops-reusable-workflows"
-Repository = "https://github.com/os-climate/devops-reusable-workflows"
-Downloads = "https://github.com/os-climate/devops-reusable-workflows/releases"
-"Bug Tracker" = "https://github.com/os-climate/devops-reusable-workflows/issues"
-Documentation = "https://github.com/os-climate/devops-reusable-workflows/tree/main/docs"
-"Source Code" = "https://github.com/os-climate/devops-reusable-workflows"
+Homepage = "https://github.com/os-climate/osc-github-devops"
+Repository = "https://github.com/os-climate/osc-github-devops"
+Downloads = "https://github.com/os-climate/osc-github-devops/releases"
+"Bug Tracker" = "https://github.com/os-climate/osc-github-devops/issues"
+Documentation = "https://github.com/os-climate/osc-github-devops/tree/main/docs"
+"Source Code" = "https://github.com/os-climate/osc-github-devops"
 
 [project.scripts]
-devops-reusable-workflows = "devops_reusable_workflows.cli:run"
+osc-github-devops = "devops_reusable_workflows.cli:run"
 
 [build-system]
 requires = ["pdm-backend"]
