@@ -14,9 +14,9 @@ outputs:
     description: "The incremented semantic tag [with prefix] e.g. v1.2.3"
     value: ${{ steps.increment.outputs.tag }}
 
-  MISSING:
+  INVALID:
     description: "Flag set true if no semantic tags found"
-    value: ${{ steps.parse-tags.outputs.missing }}
+    value: ${{ steps.parse-tags.outputs.invalid }}
 
 runs:
   using: "composite"
@@ -36,13 +36,15 @@ runs:
 
         #SHELLCODESTART
 
-        if ! (git tag -l | grep 'v*.*.*' > /dev/null); then
-          echo "No semantic tags were found"
-          echo "missing=true" >> $GITHUB_OUTPUT
-          # Set a placeholder value for the tag
-          echo "tag=v0.0.0" >> $GITHUB_OUTPUT
-          echo "vtag=v0.0.0" >> $GITHUB_OUTPUT
+        # Allows for testing from a local shell
+        if [ -z "$GITHUB_OUTPUT" ]; then
+          echo "Running from a shell, NOT workflow"
+          export GITHUB_OUTPUT="/dev/null"
         fi
+
+        # Regular expression to match semantic tag
+        PATTERN="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$"
+
         TAG=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | sort -r | head -1)
 
         # If present, strip the leading "v" character
@@ -50,23 +52,20 @@ runs:
           TAG="${TAG:1}"
         fi
 
-        # Regular expression to match semantic tag
-        PATTERN="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$"
-
         # Validate supplied (and parsed) tag
         if ! [[ "$TAG" =~ $PATTERN ]]; then
-          echo "ERROR: invalid semantic tag"; exit 1
+          echo "No valid semantic tags were found"
+          echo "invalid=true" >> $GITHUB_OUTPUT
+          # Set a placeholder value for the tag
+          TAG="0.0.0"
         else
           echo "Numeric value: $TAG"
+          echo "invalid=false" >> $GITHUB_OUTPUT
         fi
+        VTAG="v$TAG"
 
         echo "Tag: $TAG [v$TAG]"
-
-        # Allows for testing from a local shell
-        if [ -n "$GITHUB_OUTPUT" ]; then
-          echo "missing=false" >> $GITHUB_OUTPUT
-          echo "tag=${TAG}" >> $GITHUB_OUTPUT
-          echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
-        fi
+        echo "tag=${TAG}" >> $GITHUB_OUTPUT
+        echo "vtag=${VTAG}" >> $GITHUB_OUTPUT
 
         #SHELLCODEEND
