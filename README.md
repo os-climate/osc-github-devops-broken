@@ -1,11 +1,11 @@
-# GitHub Actions Reusable Workflows
+# OS-Climate GitHub Actions and Reusable Workflows
 
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable-next-line MD013 -->
-[![OS-Climate](https://img.shields.io/badge/OS-Climate-blue)](https://os-climate.org/) [![Source Code](https://img.shields.io/badge/GitHub-100000?logo=github&logoColor=white)](https://github.com/os-climate/devops-reusable-workflows) [![Slack](https://img.shields.io/badge/slack-osclimate-brightgreen.svg?logo=slack)](https://os-climate.slack.com) [![PyPI](https://img.shields.io/pypi/v/pdm?logo=python&logoColor=%23cccccc)](https://pypi.org/project/osc-devops-reusable-workflows) [![pdm-managed](https://img.shields.io/endpoint?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fpdm-project%2F.github%2Fbadge.json)](https://pdm-project.org) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![OS-Climate](https://img.shields.io/badge/OS-Climate-blue)](https://os-climate.org/) [![Source Code](https://img.shields.io/badge/GitHub-100000?logo=github&logoColor=white)](https://github.com/os-climate/osc-github-devops) [![Slack](https://img.shields.io/badge/slack-osclimate-brightgreen.svg?logo=slack)](https://os-climate.slack.com) [![PyPI](https://img.shields.io/pypi/v/pdm?logo=python&logoColor=%23cccccc)](https://pypi.org/project/osc-osc-github-devops) [![pdm-managed](https://img.shields.io/endpoint?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fpdm-project%2F.github%2Fbadge.json)](https://pdm-project.org) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
 <!-- markdownlint-disable-next-line MD013 -->
-[![🧪 GitHub Actions CI/CD workflow tests badge]][GHA workflow runs list] [![pre-commit.ci status badge]][pre-commit.ci results page] [![Dependabot Updates](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/dependabot/dependabot-updates) [![🔐 CodeQL](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml/badge.svg)](https://github.com/os-climate/devops-reusable-workflows/actions/workflows/codeql.yaml)
+[![🧪 GitHub Actions CI/CD workflow tests badge]][GHA workflow runs list] [![pre-commit.ci status badge]][pre-commit.ci results page] [![Dependabot Updates](https://github.com/os-climate/osc-github-devops/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/os-climate/osc-github-devops/actions/workflows/dependabot/dependabot-updates) [![🔐 CodeQL](https://github.com/os-climate/osc-github-devops/actions/workflows/codeql.yaml/badge.svg)](https://github.com/os-climate/osc-github-devops/actions/workflows/codeql.yaml)
 <!-- prettier-ignore-end -->
 
 ## Composite actions and reusable workflows for Python projects
@@ -34,7 +34,7 @@ using the supplied GitHub composite actions, reusable workflows, and workflows.
 
 Relevant link to the Python package index project page:
 
-- [osc-devops-reusable-workflows](https://pypi.org/project/osc-devops-reusable-workflows)
+- [osc-github-devopss](https://pypi.org/project/osc-github-devops)
 
 Detailed documentation will be supplied here, once further development is done.
 
@@ -54,7 +54,7 @@ In the meantime, here is some general documentation covering the relevant topics
 [comment]: # Section below is sourced by the badges displayed under the project heading
 -->
 
-[🧪 GitHub Actions CI/CD workflow tests badge]: https://github.com/os-climate/devops-reusable-workflows/actions/workflows/repository.yaml/badge.svg?branch=main&event=push
-[GHA workflow runs list]: https://github.com/os-climate/devops-reusable-workflows/actions/workflows/repository.yaml?query=branch%3Amain
-[pre-commit.ci results page]: https://results.pre-commit.ci/latest/github/os-climate/devops-reusable-workflows/main
-[pre-commit.ci status badge]: https://results.pre-commit.ci/badge/github/os-climate/devops-reusable-workflows/main.svg
+[🧪 GitHub Actions CI/CD workflow tests badge]: https://github.com/os-climate/osc-github-devops/actions/workflows/repository.yaml/badge.svg?branch=main&event=push
+[GHA workflow runs list]: https://github.com/os-climate/osc-github-devops/actions/workflows/repository.yaml?query=branch%3Amain
+[pre-commit.ci results page]: https://results.pre-commit.ci/latest/github/os-climate/osc-github-devops/main
+[pre-commit.ci status badge]: https://results.pre-commit.ci/badge/github/os-climate/osc-github-devops/main.svg
