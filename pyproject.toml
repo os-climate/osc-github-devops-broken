@@ -64,6 +64,14 @@ test = [
     "pytest-cov",
 ]
 
+[tool.pdm.version]
+# This stanza is documented here:
+# https://backend.pdm-project.org/metadata/#read-from-scm-tag-supporting-git-and-hg
+# Get versioning directly from GIT
+source = "scm"
+# Note: when NOT available, the following sets the version explicitly
+# PDM_BUILD_SCM_VERSION=0.1.0 python -m build
+
 [tool.pdm.scripts]
 test = "pytest"
 tox = "tox"
