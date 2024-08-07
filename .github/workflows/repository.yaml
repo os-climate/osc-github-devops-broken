@@ -246,7 +246,7 @@ jobs:
           string: "/${{ needs.workflow-capture-metadata.outputs.repository }}"
           suffix: "/"
 
-      - name: "Test package publishing"
+      - name: "Test package publishing [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
         # Primary/default method uses trusted publishing
         if: steps.url-check.outputs.valid == 'true'
@@ -260,7 +260,7 @@ jobs:
           # Test releases are always debugged
           verbose: true
 
-      - name: "Test package publishing"
+      - name: "Test package publishing [API Key]"
         uses: pypa/gh-action-pypi-publish@release/v1
         # Fallback method uses static organisation credentials
         # Used initially when trusted publishing is unavailable
@@ -316,7 +316,7 @@ jobs:
           string: "/${{ needs.workflow-capture-metadata.outputs.repository }}"
           suffix: "/"
 
-      - name: "Publish to PyPI"
+      - name: "Publish to PyPI [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
         # Primary/default method uses trusted publishing
         if: steps.url-check.outputs.valid == 'true'
@@ -327,7 +327,7 @@ jobs:
           # We already validate earlier in the pipeline
           verify-metadata: false
 
-      - name: "Publish to PyPI"
+      - name: "Publish to PyPI [API Key]"
         uses: pypa/gh-action-pypi-publish@release/v1
         # Fallback method uses static organisation credentials
         # Used initially when trusted publishing is unavailable
