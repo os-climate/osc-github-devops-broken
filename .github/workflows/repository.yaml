@@ -36,7 +36,7 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/repository-classify-content@main
 
-  workflow-capture-metadata:
+  github-workflow-metadata:
     name: "Gather Workflow Metadata"
     runs-on: ubuntu-latest
     outputs:
@@ -48,7 +48,20 @@ jobs:
       - name: "Capture workflow metadata"
         id: set
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/workflow-capture-metadata@main
+        uses: os-climate/devops-reusable-workflows/.github/actions/github-workflow-metadata@main
+
+  verify-repository-labels:
+    name: "Verify Repository Labels"
+    runs-on: ubuntu-latest
+    outputs:
+      present: ${{ steps.labelling.outputs.present }}
+      created: ${{ steps.labelling.outputs.created }}
+
+    steps:
+      - name: "Verify/create release labels"
+        id: labelling
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/github-mandatory-labels@main
 
   python-project:
     name: "Python Project"
@@ -76,7 +89,7 @@ jobs:
   python-build:
     name: "Python Build"
     needs:
-      - workflow-capture-metadata
+      - github-workflow-metadata
       - python-project
     runs-on: "ubuntu-latest"
     continue-on-error: false
@@ -198,7 +211,7 @@ jobs:
     # Only publish on tag pushes
     # if: startsWith(github.ref, 'refs/tags/')
     needs:
-      - workflow-capture-metadata
+      - github-workflow-metadata
       - python-build
     runs-on: ubuntu-latest
     environment:
@@ -243,7 +256,7 @@ jobs:
         with:
           prefix: "https://test.pypi.org/project"
           # Use project name, e.g. "/ITR"
-          string: "/${{ needs.workflow-capture-metadata.outputs.repository }}"
+          string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
           suffix: "/"
 
       - name: "Publish to Test PyPI [Trusted Publishing]"
@@ -285,7 +298,7 @@ jobs:
       startsWith(github.ref, 'refs/tags/') &&
       needs.python-build.outputs.publish == 'true'
       # contains(github.event.head_commit.message, '[release]')
-    needs: [python-build, workflow-capture-metadata, testpypi]
+    needs: [python-build, github-workflow-metadata, testpypi]
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -313,7 +326,7 @@ jobs:
         with:
           prefix: "https://pypi.org/project"
           # Use project name, e.g. "/ITR"
-          string: "/${{ needs.workflow-capture-metadata.outputs.repository }}"
+          string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
           suffix: "/"
 
       - name: "Publish to PyPI [Trusted Publishing]"
