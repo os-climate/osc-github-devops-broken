@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🤖 Repository DevOps Automation"
+name: "🤖 DevOps Automation"
 
 # yamllint disable-line rule:truthy
 on:
@@ -202,7 +202,7 @@ jobs:
       - python-build
     runs-on: ubuntu-latest
     environment:
-      name: testpypi
+      name: development
     permissions:
       # IMPORTANT: mandatory for trusted publishing
       id-token: write
@@ -236,7 +236,7 @@ jobs:
             echo "No SigStore signing artefacts to purge"
           fi
 
-      - name: "Check presence in test PyPI"
+      - name: "Check presence in Test PyPI"
         id: url-check
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/url-validity-check@main
@@ -246,7 +246,7 @@ jobs:
           string: "/${{ needs.workflow-capture-metadata.outputs.repository }}"
           suffix: "/"
 
-      - name: "Test package publishing [Trusted Publishing]"
+      - name: "Publish to Test PyPI [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
         # Primary/default method uses trusted publishing
         if: steps.url-check.outputs.valid == 'true'
@@ -260,7 +260,7 @@ jobs:
           # Test releases are always debugged
           verbose: true
 
-      - name: "Test package publishing [API Key]"
+      - name: "Publish to Test PyPI [Fallback: API Key]"
         uses: pypa/gh-action-pypi-publish@release/v1
         # Fallback method uses static organisation credentials
         # Used initially when trusted publishing is unavailable
@@ -288,7 +288,7 @@ jobs:
     needs: [python-build, workflow-capture-metadata, testpypi]
     runs-on: ubuntu-latest
     environment:
-      name: pypi
+      name: production
     permissions:
       # IMPORTANT: mandatory for trusted publishing
       id-token: write
@@ -306,7 +306,7 @@ jobs:
             rm ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
           fi
 
-      - name: "Check presence in PyPI"
+      - name: "Check if present in PyPI"
         id: url-check
         # yamllint disable-line rule:line-length
         uses: os-climate/devops-reusable-workflows/.github/actions/url-validity-check@main
@@ -327,7 +327,7 @@ jobs:
           # We already validate earlier in the pipeline
           verify-metadata: false
 
-      - name: "Publish to PyPI [API Key]"
+      - name: "Publish to PyPI [Fallback: API Key]"
         uses: pypa/gh-action-pypi-publish@release/v1
         # Fallback method uses static organisation credentials
         # Used initially when trusted publishing is unavailable
@@ -418,7 +418,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
     steps:
-      - name: "CheckoutrRepository"
+      - name: "Checkout repository"
         uses: actions/checkout@v4
 
       - name: "Set up Python ${{ matrix.python-version }}"
