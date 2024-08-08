@@ -24,6 +24,8 @@ runs:
       run: |
         # Check for presence of mandatory labels
 
+        set -xv
+
         #SHELLCODESTART
 
         # Allows for testing from a local shell
