@@ -3,7 +3,10 @@
 
 [project]
 name = "osc-github-devops"
+# Static versioning
 version = "v0.0.1"
+# Uncomment to enable dynamic versioning
+# dynamic = [ "version" ]
 description = "Python project metadata to permit workflow testing."
 authors = [
   { name = "Matthew Watkins", email = "93649628+ModeSevenIndustrialSolutions@users.noreply.github.com" },
