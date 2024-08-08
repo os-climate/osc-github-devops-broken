@@ -18,13 +18,13 @@ outputs:
 runs:
   using: "composite"
   steps:
-    # - name: "GitHub Repository Metadata"
     - id: github
       shell: bash
       run: |
         # Check for presence of mandatory labels
 
-        set -xv
+        # When called from workflow, requires:
+        env: GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         #SHELLCODESTART
 
@@ -49,6 +49,7 @@ runs:
         # Define a regular expression to check for the presence of our labels
         PATTERN=".*Major release.*Minor release.*Patch release.*"
 
+        echo "Attempting to retrieve labels with: gh label list"
         LABELS=$(gh label list)
         if [[ "$LABELS" =~ $PATTERN ]]; then
           echo "Required labels were found"
