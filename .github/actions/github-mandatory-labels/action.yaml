@@ -3,14 +3,16 @@
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
 name: "🛠️ Check/Verify GitHub Labels"
-description: "Checks/installs repository release labelling"
+description: "Checks/creates mandatory labels"
 
 outputs:
+  # Note: these outputs/states are mutually exclusive
+  # The labels EITHER already exist OR were created
   PRESENT:
     description: "Returns true if the labels exist"
     value: ${{ steps.github.outputs.present }}
   CREATED:
-    description: "Returns true if the labels exist"
+    description: "Returns true if the labels were created"
     value: ${{ steps.github.outputs.created }}
 
 runs:
@@ -20,7 +22,7 @@ runs:
     - id: github
       shell: bash
       run: |
-        # Check for presence of release labels
+        # Check for presence of mandatory labels
 
         #SHELLCODESTART
 
