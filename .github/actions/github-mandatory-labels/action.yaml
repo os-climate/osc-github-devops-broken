@@ -24,7 +24,7 @@ runs:
         # Check for presence of mandatory labels
 
         # When called from workflow, requires:
-        env: GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env: GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         #SHELLCODESTART
 
