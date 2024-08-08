@@ -26,6 +26,8 @@ jobs:
     name: "Standalone Synthetic Tests"
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v4
@@ -112,7 +114,32 @@ jobs:
           string: "/ITR"
           suffix: "/"
 
-      - name: "Action: workflow-capture-metadata"
-        id: workflow-capture-metadata
+      - name: "Action: github-workflow-metadata"
+        id: github-workflow-metadata
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/workflow-capture-metadata@main
+        uses: os-climate/devops-reusable-workflows/.github/actions/github-workflow-metadata@main
+
+      - name: "Action: github-mandatory-labels"
+        id: github-mandatory-labels
+        # yamllint disable-line rule:line-length
+        uses: os-climate/devops-reusable-workflows/.github/actions/github-mandatory-labels@main
+
+      - name: "Validate: github-mandatory-labels"
+        shell: bash
+        run: |
+          # Check output from: github-mandatory-labels
+          if [ "${{ steps.github-mandatory-labels.outputs.present }}" = "true" ]; then
+            echo "Labels are reported present:"
+            if (gh label list | grep release); then
+              exit 0
+            fi
+          elif [ "${{ steps.github-mandatory-labels.outputs.created }}" = "true" ]; then
+            echo "Labels are reported present:"
+            if (gh label list | grep release); then
+              exit 0
+            fi
+          else
+            echo "The expected action outputs/labels were NOT found"
+            gh label list
+            exit 1
+          fi
