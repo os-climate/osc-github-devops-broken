@@ -39,29 +39,29 @@ jobs:
       - name: "Action: repository-classify-content"
         id: repository-classify-content
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/repository-classify-content@main
+        uses: os-climate/osc-github-devops/.github/actions/repository-classify-content@main
 
       - name: "Action: python-versions-matrix"
         id: python-versions-matrix
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/python-versions-matrix@main
+        uses: os-climate/osc-github-devops/.github/actions/python-versions-matrix@main
 
       - name: "Action: python-twine-check"
         id: python-twine-check
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/python-twine-check@main
+        uses: os-climate/osc-github-devops/.github/actions/python-twine-check@main
         with:
           path: "dist"
 
       - name: "Action: semantic-tag-latest"
         id: semantic-tag-latest
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-latest@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-latest@main
 
       - name: "Action: semantic-tag-increment [patch]"
         id: semantic-tag-increment-patch
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-increment@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
         with:
           tag: "v2.9.6"
           type: "patch"
@@ -69,7 +69,7 @@ jobs:
       - name: "Action: semantic-tag-increment [minor]"
         id: semantic-tag-increment-minor
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-increment@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
         with:
           tag: "v0.1.2"
           type: "minor"
@@ -77,7 +77,7 @@ jobs:
       - name: "Action: semantic-tag-increment [major]"
         id: semantic-tag-increment-major
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/semantic-tag-increment@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
         with:
           tag: "v1.2.3"
           type: "major"
@@ -108,7 +108,7 @@ jobs:
       - name: "Action: url-validity-check"
         id: url-validity-check
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/url-validity-check@main
+        uses: os-climate/osc-github-devops/.github/actions/url-validity-check@main
         with:
           prefix: "https://test.pypi.org/project"
           string: "/ITR"
@@ -117,12 +117,12 @@ jobs:
       - name: "Action: github-workflow-metadata"
         id: github-workflow-metadata
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/github-workflow-metadata@main
+        uses: os-climate/osc-github-devops/.github/actions/github-workflow-metadata@main
 
       - name: "Action: github-mandatory-labels"
         id: github-mandatory-labels
         # yamllint disable-line rule:line-length
-        uses: os-climate/devops-reusable-workflows/.github/actions/github-mandatory-labels@main
+        uses: os-climate/osc-github-devops/.github/actions/github-mandatory-labels@main
 
       - name: "Validate: github-mandatory-labels"
         shell: bash
