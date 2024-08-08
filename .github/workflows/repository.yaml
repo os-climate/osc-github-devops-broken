@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main, master]
+    tags: "v*.*.*"
 
 env:
   DEFAULT_PYTHON: "3.10"
@@ -59,6 +60,8 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - uses: actions/checkout@v4
+
       - name: "Verify/create release labels"
         id: labelling
         # yamllint disable-line rule:line-length
@@ -122,7 +125,7 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-latest@main
 
-      - name: "Create initial v0.0.1 tag [conditional]"
+      - name: "Create initial v0.0.1 tag/release [conditional]"
         id: set-initial-tag
         if: steps.semantic-tag-latest.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
         uses: softprops/action-gh-release@v2
@@ -199,6 +202,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: false
+          make_latest: true
           tag_name: ${{ github.ref_name }}
           name: "Test/Development Build: ${{ github.ref_name }}"
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
