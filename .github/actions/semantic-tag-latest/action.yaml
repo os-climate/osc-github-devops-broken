@@ -22,6 +22,13 @@ runs:
   steps:
     - name: "Fetch tags"
       shell: bash
+      if: startsWith(github.ref, 'refs/tags/') != true
+      # Don't fetch tags if a tag was pushed, it will result in an error, e.g.
+      # Fetching tags...
+      # From https://github.com/os-climate/osc-github-devops
+      #  * [new branch]      main       -> origin/main
+      #  * [new tag]         v0.0.0     -> v0.0.0
+      #  ! [rejected]        v0.0.2     -> v0.0.2  (would clobber existing tag)
       run: |
         # Workaround for: https://github.com/actions/checkout/issues/1471
         echo "Fetching tags..."
