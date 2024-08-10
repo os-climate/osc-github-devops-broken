@@ -51,7 +51,7 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/python-twine-check@main
         with:
-          path: "dist"
+          path: "test/dist"
 
       - name: "Action: semantic-tag-latest"
         id: semantic-tag-latest

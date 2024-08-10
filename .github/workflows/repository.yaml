@@ -103,7 +103,7 @@ jobs:
       # Required by SigStore signing action
       id-token: write
     outputs:
-      publish: ${{ steps.python-project-build.outputs.publish }}
+      success: ${{ steps.python-project-build.outputs.success }}
       current-tag: ${{ steps.semantic-tag-latest.outputs.tag }}
 
     steps:
@@ -189,6 +189,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
+          # ToDo: DO WE WANT A DATE/TIME STAMP HERE?
           tag_name: ${{ github.ref_name }}-dev
           name: "Test/Development Build: ${{ github.ref_name }}"
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
@@ -205,7 +206,7 @@ jobs:
           prerelease: false
           make_latest: true
           tag_name: ${{ github.ref_name }}
-          name: "Test/Development Build: ${{ github.ref_name }}"
+          name: "${{ github.ref_name }}"
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
             ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
@@ -314,8 +315,8 @@ jobs:
     if:
       # github.ref_name != 'main' &&
       # github.ref_name != 'master' &&
-      startsWith(github.ref, 'refs/tags/') &&
-      needs.python-build.outputs.publish == 'true'
+      startsWith(github.ref, 'refs/tags/')
+      # needs.python-build.outputs.success == 'true'
       # contains(github.event.head_commit.message, '[release]')
     needs: [python-build, github-workflow-metadata, testpypi]
     runs-on: ubuntu-latest
