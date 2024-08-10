@@ -8,8 +8,6 @@ name: "🤖 DevOps Automation"
 on:
   workflow_dispatch:
   push:
-    branches: [main, master]
-    tags: "v*.*.*"
 
 env:
   DEFAULT_PYTHON: "3.10"
@@ -106,6 +104,7 @@ jobs:
       id-token: write
     outputs:
       publish: ${{ steps.python-project-build.outputs.publish }}
+      current-tag: ${{ steps.semantic-tag-latest.outputs.tag }}
 
     steps:
       - uses: actions/checkout@v4
@@ -125,14 +124,14 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-latest@main
 
-      - name: "Create initial v0.0.1 tag/release [conditional]"
+      - name: "Create initial v0.0.0 tag/release [conditional]"
         id: set-initial-tag
         if: steps.semantic-tag-latest.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
-          tag_name: v0.0.1
+          tag_name: v0.0.0
 
       - name: "Build: Python project"
         id: python-project-build
@@ -254,8 +253,8 @@ jobs:
             echo "No SigStore signing artefacts to purge"
           fi
 
-      - name: "Check presence in Test PyPI"
-        id: url-check
+      - name: "Check PROJECT in Test PyPI"
+        id: testpypi-project-url-check
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/url-validity-check@main
         with:
@@ -264,10 +263,21 @@ jobs:
           string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
           suffix: "/"
 
+      - name: "Check RELEASE in Test PyPI"
+        id: testpypi-release-url-check
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/url-validity-check@main
+        with:
+          prefix: "https://test.pypi.org/project"
+          # Use project name, e.g. "/ITR"
+          string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
+          suffix: "/${{ needs.python-build.outputs.current-tag }}/"
+
       - name: "Publish to Test PyPI [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
         # Primary/default method uses trusted publishing
-        if: steps.url-check.outputs.valid == 'true'
+        # yamllint disable-line rule:line-length
+        if: steps.testpypi-project-url-check.outputs.valid == 'true' && steps.testpypi-release-url-check.outputs.valid == 'false'
         with:
           repository-url: https://test.pypi.org/legacy/
           # Show checksum values
@@ -282,7 +292,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         # Fallback method uses static organisation credentials
         # Used initially when trusted publishing is unavailable
-        if: steps.url-check.outputs.valid == 'false'
+        if: steps.testpypi-project-url-check.outputs.valid == 'false'
         with:
           repository-url: https://test.pypi.org/legacy/
           # Show checksum values
@@ -324,8 +334,8 @@ jobs:
             rm ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
           fi
 
-      - name: "Check if present in PyPI"
-        id: url-check
+      - name: "Check if PROJECT in PyPI"
+        id: pypi-project-url-check
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/url-validity-check@main
         with:
@@ -334,10 +344,21 @@ jobs:
           string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
           suffix: "/"
 
+      - name: "Check for RELEASE in PyPI"
+        id: pypi-release-url-check
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/url-validity-check@main
+        with:
+          prefix: "https://pypi.org/project"
+          # Use project name, e.g. "/ITR"
+          string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
+          suffix: "/${{ needs.python-build.outputs.current-tag }}/"
+
       - name: "Publish to PyPI [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
         # Primary/default method uses trusted publishing
-        if: steps.url-check.outputs.valid == 'true'
+        # yamllint disable-line rule:line-length
+        if: steps.pypi-project-url-check.outputs.valid == 'true' && steps.pypi-release-url-check.outputs.valid == 'false'
         with:
           # Show checksum values
           print-hash: true
@@ -349,7 +370,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         # Fallback method uses static organisation credentials
         # Used initially when trusted publishing is unavailable
-        if: steps.url-check.outputs.valid == 'false'
+        if: steps.pypi-project-url-check.outputs.valid == 'false'
         with:
           # Show checksum values
           print-hash: true
