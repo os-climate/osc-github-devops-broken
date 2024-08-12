@@ -9,6 +9,12 @@ description: "Checks/verifies access to required secrets"
 # e.g. PyPI API Keys required for package publishing
 # (when trusted publishing has not yet been setup)
 
+inputs:
+  PYPI_DEVELOPMENT_TOKEN:
+    description: "Token needed to publish packages to: test.pypi.org"
+  PYPI_PRODUCTION_TOKEN:
+    description: "Token needed to publish packages to: pypi.org"
+
 outputs:
   PRESENT:
     description: "Returns true if the labels exist"

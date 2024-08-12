@@ -66,7 +66,7 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/github-mandatory-labels@main
 
       - name: "Check for required secrets/API keys/tokens"
-        uses: os-climate/osc-github-devops/.github/actions/github-mandatory-labels@main
+        uses: os-climate/osc-github-devops/.github/actions/github-mandatory-secrets@main
         with:
           # Mandatory secrets/variables to check for
           pypi_github_development: ${{ secrets.PYPI_GITHUB_DEVELOPMENT }}
