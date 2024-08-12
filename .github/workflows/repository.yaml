@@ -49,8 +49,8 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/github-workflow-metadata@main
 
-  verify-repository-labels:
-    name: "Verify Repository Labels"
+  verify-github-environment:
+    name: "Verify GitHub Environment"
     runs-on: ubuntu-latest
     outputs:
       present: ${{ steps.labelling.outputs.present }}
@@ -64,6 +64,13 @@ jobs:
         id: labelling
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/github-mandatory-labels@main
+
+      - name: "Check for required secrets/API keys/tokens"
+        uses: os-climate/osc-github-devops/.github/actions/github-mandatory-labels@main
+        with:
+          # Mandatory secrets/variables to check for
+          pypi_github_development: ${{ secrets.PYPI_GITHUB_DEVELOPMENT }}
+          pypi_github_production: ${{ secrets.PYPI_GITHUB_PRODUCTION }}
 
   python-project:
     name: "Python Project"
@@ -165,7 +172,7 @@ jobs:
             ./${{ env.BUILD_ARTEFACTS }}/*.whl
 
   github:
-    name: "Publish to GitHub"
+    name: "Create GitHub Release"
     # Only publish on tag pushes
     needs: python-build
     runs-on: ubuntu-latest
