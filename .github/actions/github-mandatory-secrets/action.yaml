@@ -10,9 +10,9 @@ description: "Checks/verifies access to required secrets"
 # (when trusted publishing has not yet been setup)
 
 inputs:
-  PYPI_DEVELOPMENT_TOKEN:
+  PYPI_GITHUB_DEVELOPMENT:
     description: "Token needed to publish packages to: test.pypi.org"
-  PYPI_PRODUCTION_TOKEN:
+  PYPI_GITHUB_PRODUCTION:
     description: "Token needed to publish packages to: pypi.org"
 
 outputs:
@@ -46,8 +46,8 @@ runs:
         # File format is: [SECRET NAME] [SHA1SUM]
         TMPFILE=$(mktemp -p /tmp --suffix "-secrets.txt")
         cat << EOF > "$TMPFILE"
-        PYPI_DEVELOPMENT_TOKEN 19fc83e3c621347f85573fa0ea9dffff6542d3e3
-        PYPI_PRODUCTION_TOKEN dcfaee96a60c6f8e44c870ed7058fe55d8b11fc6
+        PYPI_GITHUB_DEVELOPMENT 19fc83e3c621347f85573fa0ea9dffff6542d3e3
+        PYPI_GITHUB_PRODUCTION dcfaee96a60c6f8e44c870ed7058fe55d8b11fc6
         EOF
 
         while read -r LINE; do
@@ -55,10 +55,10 @@ runs:
           SECRET=${STRING_ARRAY[0]}
           SHA1SUM=${STRING_ARRAY[1]}
           echo "Validating: $SECRET $SHA1SUM"
-          if [ "$SECRET" == "PYPI_DEVELOPMENT_TOKEN" ]; then
-            echo ${{ secrets.PYPI_DEVELOPMENT_TOKEN }} > "/tmp/$SECRET.secret.txt"
-          elif [ "$SECRET" == "PYPI_DEVELOPMENT_TOKEN" ]; then
-            echo ${{ secrets.PYPI_PRODUCTION_TOKEN }} > "/tmp/$SECRET.secret.txt"
+          if [ "$SECRET" == "PYPI_GITHUB_DEVELOPMENT" ]; then
+            echo ${{ inputs.PYPI_GITHUB_DEVELOPMENT }} > "/tmp/$SECRET.secret.txt"
+          elif [ "$SECRET" == "PYPI_GITHUB_PRODUCTION" ]; then
+            echo ${{ inputs.PYPI_GITHUB_PRODUCTION  }} > "/tmp/$SECRET.secret.txt"
           else
             echo "Unexpected secret in validation table: $SECRET"
           fi
