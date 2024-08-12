@@ -56,13 +56,13 @@ runs:
           SHA1SUM=${STRING_ARRAY[1]}
           echo "Validating: $SECRET $SHA1SUM"
           if [ "$SECRET" == "PYPI_GITHUB_DEVELOPMENT" ]; then
-            echo ${{ inputs.PYPI_GITHUB_DEVELOPMENT }} > "/tmp/$SECRET.secret.txt"
+            echo "${{ inputs.PYPI_GITHUB_DEVELOPMENT }}" > "/tmp/$SECRET.secret.txt"
           elif [ "$SECRET" == "PYPI_GITHUB_PRODUCTION" ]; then
-            echo ${{ inputs.PYPI_GITHUB_PRODUCTION  }} > "/tmp/$SECRET.secret.txt"
+            echo "${{ inputs.PYPI_GITHUB_PRODUCTION  }}" > "/tmp/$SECRET.secret.txt"
           else
             echo "Unexpected secret in validation table: $SECRET"
           fi
-          CHECKSUM=$(sha1sum /tmp/$SECRET.txt)
+          CHECKSUM=$(sha1sum /tmp/$SECRET.secret.txt)
           echo "Received: $SECRET $CHECKSUM"
         done < "$TMPFILE"
 
