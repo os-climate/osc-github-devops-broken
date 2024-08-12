@@ -55,9 +55,20 @@ runs:
           SECRET=${STRING_ARRAY[0]}
           SHA1SUM=${STRING_ARRAY[1]}
           echo "Validating: $SECRET $SHA1SUM"
-          echo ${{ secrets.$SECRET }} > "/tmp/$SECRET.txt"
+          if [ "$SECRET" == "PYPI_DEVELOPMENT_TOKEN" ]; then
+            echo ${{ secrets.PYPI_DEVELOPMENT_TOKEN }} > "/tmp/$SECRET.secret.txt"
+          elif [ "$SECRET" == "PYPI_DEVELOPMENT_TOKEN" ]; then
+            echo ${{ secrets.PYPI_PRODUCTION_TOKEN }} > "/tmp/$SECRET.secret.txt"
+          else
+            echo "Unexpected secret in validation table: $SECRET"
+          fi
           CHECKSUM=$(sha1sum /tmp/$SECRET.txt)
           echo "Received: $SECRET $CHECKSUM"
         done < "$TMPFILE"
+
+        # Important: clean secrets from disk/storage afterwards
+        rm /tmp/*.secret.txt
+
+        echo "End of action/script"
 
         #SHELLCODEEND
