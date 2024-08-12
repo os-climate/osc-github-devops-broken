@@ -314,7 +314,7 @@ jobs:
           verbose: true
           # Organisation secret/variable
           # Defined/stored in 1Password
-          password: ${{ secrets.OSC_GITHUB_PYPI_TEST_TOKEN }}
+          password: ${{ secrets.PYPI_GITHUB_DEVELOPMENT }}
 
   pypi:
     name: "Publish Package"
@@ -391,7 +391,7 @@ jobs:
           verify-metadata: false
           # Organisation secret/variable
           # Defined/stored in 1Password
-          password: ${{ secrets.OSC_GITHUB_PYPI_TOKEN }}
+          password: ${{ secrets.PYPI_GITHUB_PRODUCTION }}
 
   notebooks:
     name: "Jupyter Notebooks"
