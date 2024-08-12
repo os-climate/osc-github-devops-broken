@@ -1,0 +1,57 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🛠️ Check/Verify GitHub Secrets"
+description: "Checks/verifies access to required secrets"
+# These need to be setup at either the ORG or REPO level
+# (i.e. available to workflows in this repository)
+# e.g. PyPI API Keys required for package publishing
+# (when trusted publishing has not yet been setup)
+
+outputs:
+  PRESENT:
+    description: "Returns true if the labels exist"
+    value: ${{ steps.github.outputs.present }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: github
+      shell: bash
+      run: |
+        # Check for presence of required secrets
+
+        #SHELLCODESTART
+
+        # Allows for testing from a local shell
+        if [ -z "$GITHUB_OUTPUT" ]; then
+          echo "Running from a shell, NOT workflow"
+          export GITHUB_OUTPUT="/dev/null"
+        fi
+
+        # Initial assumption is that secrets do NOT exist
+        PRESENT="false"
+
+        # Define the secrets we need to verify
+
+        # Check/validate mandatory secrets/variables
+
+        # File format is: [SECRET NAME] [SHA1SUM]
+        TMPFILE=$(mktemp -p /tmp --suffix "-secrets.txt")
+        cat << EOF > "$TMPFILE"
+        PYPI_DEVELOPMENT_TOKEN 19fc83e3c621347f85573fa0ea9dffff6542d3e3
+        PYPI_PRODUCTION_TOKEN dcfaee96a60c6f8e44c870ed7058fe55d8b11fc6
+        EOF
+
+        while read -r LINE; do
+          STRING_ARRAY=($LINE)
+          SECRET=${STRING_ARRAY[0]}
+          SHA1SUM=${STRING_ARRAY[1]}
+          echo "Validating: $SECRET $SHA1SUM"
+          echo ${{ secrets.$SECRET }} > "/tmp/$SECRET.txt"
+          CHECKSUM=$(sha1sum /tmp/$SECRET.txt)
+          echo "Received: $SECRET $CHECKSUM"
+        done < "$TMPFILE"
+
+        #SHELLCODEEND
