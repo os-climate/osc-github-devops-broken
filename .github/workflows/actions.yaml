@@ -143,3 +143,11 @@ jobs:
             gh label list
             exit 1
           fi
+
+      - name: "Action: github-mandatory-secrets"
+        id: github-mandatory-secrets
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/github-mandatory-secrets@main
+        with:
+          pypi_github_development: ${{ secrets.PYPI_GITHUB_DEVELOPMENT }}
+          pypi_github_production: ${{ secrets.PYPI_GITHUB_PRODUCTION }}
