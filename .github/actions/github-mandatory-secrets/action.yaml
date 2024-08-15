@@ -24,11 +24,11 @@ outputs:
 
 runs:
   using: "composite"
-  env:
-    PYPI_GITHUB_DEVELOPMENT: ${{ inputs.pypi_github_development }}
-    PYPI_GITHUB_PRODUCTION: ${{ inputs.pypi_github_production }}
   steps:
     - id: github
+      env:
+        PYPI_GITHUB_DEVELOPMENT: ${{ inputs.pypi_github_development }}
+        PYPI_GITHUB_PRODUCTION: ${{ inputs.pypi_github_production }}
       shell: bash
       run: |
         # Check for presence of required secrets
