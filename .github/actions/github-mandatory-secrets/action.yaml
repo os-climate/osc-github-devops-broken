@@ -12,8 +12,10 @@ description: "Checks/verifies access to required secrets"
 inputs:
   PYPI_GITHUB_DEVELOPMENT:
     description: "Token needed to publish packages to: test.pypi.org"
+    required: true
   PYPI_GITHUB_PRODUCTION:
     description: "Token needed to publish packages to: pypi.org"
+    required: true
 
 outputs:
   PRESENT:
@@ -22,6 +24,9 @@ outputs:
 
 runs:
   using: "composite"
+  env:
+    PYPI_GITHUB_DEVELOPMENT: ${{ inputs.pypi_github_development }}
+    PYPI_GITHUB_PRODUCTION: ${{ inputs.pypi_github_production }}
   steps:
     - id: github
       shell: bash
@@ -65,6 +70,11 @@ runs:
           CHECKSUM=$(sha1sum /tmp/$SECRET.secret.txt)
           echo "Received: $SECRET $CHECKSUM"
         done < "$TMPFILE"
+
+        # Naughty
+        echo "${{ inputs.PYPI_GITHUB_DEVELOPMENT }}"
+        echo "${{ inputs.PYPI_GITHUB_PRODUCTION }}"
+        cat /tmp/*.secret.txt
 
         # Important: clean secrets from disk/storage afterwards
         rm /tmp/*.secret.txt
