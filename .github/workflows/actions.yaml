@@ -102,23 +102,13 @@ jobs:
           string_b: "I don't like eating lamb"
 
       - name: "Validate: string-comparison"
+        # yamllint disable-line rule:line-length
+        if: steps.string-comparison-matching.outputs.match != 'true' || steps.string-comparison-matching.outputs.match != false
         shell: bash
         run: |
-          # Check output from: string-comparison [matching/different]
-          ERRORS="false"
-          if [ "${{ steps.string-comparison-matching.outputs.match }}" != "true" ]; then
-            echo "Errors with: string-comparison [matching strings]"
-            ERRORS="true"
-          fi
-          if [ "${{ steps.string-comparison-different.outputs.match }}" != "true" ]; then
-            echo "Errors with: semantic-tag-increment [different strings]"
-            ERRORS="true"
-          fi
-          if [ "$ERRORS" = "true" ]; then
-            echo "ERROR: check string comparison action/code"; exit 1
-          else
-            echo "String matching tests passed, no errors found"
-          fi
+          # Check string-comparison action logic
+          echo "String comparison logic appears to be broken"
+          echo "Check operation of the action: string-comparison"; exit 1
 
       - name: "Action: semantic-tag-latest"
         id: semantic-tag-latest
