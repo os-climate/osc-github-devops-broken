@@ -55,36 +55,33 @@ runs:
         PYPI_GITHUB_PRODUCTION dcfaee96a60c6f8e44c870ed7058fe55d8b11fc6
         EOF
 
+        # Iterate over secrets and validate checksums against those stored in GitHub
+        ERRORS="false"
         while read -r LINE; do
           STRING_ARRAY=($LINE)
           SECRET=${STRING_ARRAY[0]}
-          SHA1SUM=${STRING_ARRAY[1]}
+          EXPECTED=${STRING_ARRAY[1]}
           echo "Validating: $SECRET $SHA1SUM"
           if [ "$SECRET" == "PYPI_GITHUB_DEVELOPMENT" ]; then
-            echo "${{ env.PYPI_GITHUB_DEVELOPMENT }}" > "/tmp/$SECRET.secret.txt"
+            CHECKSUM=$(echo ${{ env.PYPI_GITHUB_DEVELOPMENT }} | sha1sum | awk '{print $1}')
           elif [ "$SECRET" == "PYPI_GITHUB_PRODUCTION" ]; then
-            echo "${{ env.PYPI_GITHUB_PRODUCTION  }}" > "/tmp/$SECRET.secret.txt"
+            CHECKSUM=$(echo ${{ env.PYPI_GITHUB_PRODUCTION }} | sha1sum | awk '{print $1}')
           else
             echo "Unexpected secret in validation table: $SECRET"
+            echo "Error: the validation workflow may need updating"
+            ERRORS="true"
           fi
-          CHECKSUM=$(sha1sum /tmp/$SECRET.secret.txt | awk '{print $1}')
-          echo "Received: $SECRET $CHECKSUM"
+
+          if [ "$EXPECTED" == "$CHECKSUM" ]; then
+            echo "Successfully validated secret: $SECRET $CHECKSUM"
+          else
+            echo "Error: failed to validate secret: $SECRET $CHECKSUM"
+            ERRORS="true"
+          fi
         done < "$TMPFILE"
 
-        # Naughty
-        echo "Debugging values"
-        echo "Development: ${{ env.PYPI_GITHUB_DEVELOPMENT }}"
-        echo "Production: ${{ env.PYPI_GITHUB_PRODUCTION }}"
-        echo "Listing temporary files"
-        ls /tmp/*.secret.txt
-        echo "Dumping their contents:"
-        cat /tmp/*.secret.txt
-        echo "Sha1summing them:"
-        sha1sum /tmp/*.secret.txt
-
-        # Important: clean secrets from disk/storage afterwards
-        rm /tmp/*.secret.txt
-
-        echo "End of action/script"
+        if [ "$ERRORS" == true ]; then
+          exit 1
+        fi
 
         #SHELLCODEEND
