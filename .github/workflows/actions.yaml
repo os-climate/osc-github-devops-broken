@@ -147,8 +147,10 @@ jobs:
           fi
 
       - name: "Required secrets are NOT available"
-        if: env.pypi_github_development == '' && env.pypi_github_production == ''
-        run: echo "Some organisation secrets were not available to the workflow"; exit 1
+        if: env.PYPI_GITHUB_DEVELOPMENT == '' || env.PYPI_GITHUB_PRODUCTION == ''
+        run:
+          # Abort the workflow
+          echo "Some organisation secrets were not available to the workflow"; exit 1
 
       - name: "Action: github-mandatory-secrets"
         id: github-mandatory-secrets
