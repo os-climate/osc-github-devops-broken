@@ -47,8 +47,8 @@ runs:
           fi
         fi
 
-        echo "First string: $TAG"
-        echo "Second string: $TAG"
+        echo "First string: $STRING_A"
+        echo "Second string: $STRING_B"
 
 
         if [ "$STRING_A" != "$STRING_B" ]; then
