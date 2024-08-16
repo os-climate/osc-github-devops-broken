@@ -110,14 +110,14 @@ jobs:
             echo "Errors with: string-comparison [matching strings]"
             ERRORS="true"
           fi
-          if [ "${{ steps.string-comparison-different.outputs.match }}" != "false" ]; then
+          if [ "${{ steps.string-comparison-different.outputs.match }}" != "true" ]; then
             echo "Errors with: semantic-tag-increment [different strings]"
             ERRORS="true"
           fi
           if [ "$ERRORS" = "true" ]; then
             echo "ERROR: check string comparison action/code"; exit 1
           else
-            echo "Striong matching tests passed, no errors found"
+            echo "String matching tests passed, no errors found"
           fi
 
       - name: "Action: semantic-tag-latest"
