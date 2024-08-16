@@ -18,7 +18,7 @@ inputs:
     required: true
 
 outputs:
-  PRESENT:
+  VALID:
     description: "Returns true if the labels exist"
     value: ${{ steps.github.outputs.present }}
 
@@ -31,7 +31,7 @@ runs:
         PYPI_GITHUB_PRODUCTION: ${{ inputs.pypi_github_production }}
       shell: bash
       run: |
-        # Check for presence of required secrets
+        # Check for mandatory secrets/variables
 
         #SHELLCODESTART
 

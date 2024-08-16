@@ -9,7 +9,8 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - ! .github/**
+      - "**"
+      - "!.github/**"
 
 env:
   DEFAULT_PYTHON: "3.10"
