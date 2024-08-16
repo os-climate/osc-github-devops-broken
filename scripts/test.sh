@@ -6,27 +6,27 @@
 # Thin wrapper script to test workflow YAML code directly from a shell
 
 set -eu -o pipefail
-DEBUG="true"
+DEBUG="false"
 export DEBUG
 
 # Check script arguments
 
-if [ $# -ne 1 ]; then
+if [ $# -lt 1 ]; then
     # Provide a Github action/workflow YAML file as argument
-    echo "Usage: $0 [workflow YAML file]"; exit 1
+    echo "Usage: $0 [workflow YAML file] [optional arguments to pass to extracted script]"; exit 1
+fi
+
+SOURCE_FILE="$1"
+if [ ! -f "$SOURCE_FILE" ]; then
+    echo "Specified file could not be read: $SOURCE_FILE"; exit 1
+fi
+SETUP_FILE="setup.txt"
+if [ -f "$SETUP_FILE" ]; then
+    echo "Sourcing script actions/variables from: $SETUP_FILE"
+    # shellcheck disable=SC1090
+    source "$SETUP_FILE"
 else
-    SOURCE_FILE="$1"
-    if [ ! -f "$SOURCE_FILE" ]; then
-        echo "Specified file could not be read: $SOURCE_FILE"; exit 1
-    fi
-    SETUP_FILE="setup.txt"
-    if [ -f "$SETUP_FILE" ]; then
-        echo "Sourcing script actions/variables from: $SETUP_FILE"
-        # shellcheck disable=SC1090
-        source "$SETUP_FILE"
-    else
-        echo "No file found specifying inputs: $SETUP_FILE"
-    fi
+    echo "No file found specifying inputs: $SETUP_FILE"
 fi
 
 # Check for required binaries
@@ -134,7 +134,9 @@ if [ "$EXTRACT" = "complete" ]; then
     # Shell code executed is temporary and cannot be checked by linting
     # https://www.shellcheck.net/wiki/SC1090
     # shellcheck disable=SC1090
-    "$SHELL_SCRIPT"
+    # Strip first argument
+    shift
+    "$SHELL_SCRIPT" "$@"
 else
     echo "Error: start/stop markers not found in file"
     exit 1
