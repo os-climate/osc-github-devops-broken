@@ -77,8 +77,6 @@ runs:
         PATCH=$(echo "$TAG" | sed -e "s#$REGEX#\3#")
         echo "Current versioning [ major: $MAJOR  minor: $MINOR  patch: $PATCH ]"
 
-        ### CONTENT RECENTLY ADDED ###
-
         case "$TYPE" in
           major)
             MAJOR=$((MAJOR+1))
