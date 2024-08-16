@@ -75,7 +75,7 @@ runs:
           if [ "$EXPECTED" == "$CHECKSUM" ]; then
             echo "Successfully validated secret: $SECRET $CHECKSUM"
           else
-            echo "Error: failed to validate secret: $SECRET $CHECKSUM"
+            echo "Error: checksum validation failed for secret: $SECRET"
             ERRORS="true"
           fi
         done < "$TMPFILE"
