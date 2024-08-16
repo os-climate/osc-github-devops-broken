@@ -1,0 +1,67 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🔤 String Comparison Check"
+
+inputs:
+  STRING_A:
+    description: "First string for comparison"
+    required: true
+  STRING_B:
+    description: "Second string for comparison"
+    required: true
+
+outputs:
+  MATCH:
+    description: "True if tag matches semantic versioning check"
+    value: ${{ steps.validate.outputs.semantic }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Check if strings are the same"
+      id: compare
+      shell: bash
+      run: |
+        # Check if strings are the same
+
+        #SHELLCODESTART
+
+        # Allows for testing from a local shell
+        if [ -z "$GITHUB_OUTPUT" ]; then
+          echo "Running from a shell, NOT workflow"
+          export GITHUB_OUTPUT="/dev/null"
+        else
+          STRING_A=${{ inputs.STRING_A }}
+          STRING_B=${{ inputs.STRING_B }}
+        fi
+
+        if [ -z "$STRING_A" ]; then
+          echo "Running from shell script outside GitHub"
+          if [ $# -ne 2 ]; then
+            echo "Usage:  $0 [first string] [second string]"; exit 1
+          else
+            STRING_A="$1"
+            STRING_B="$2"
+          fi
+        fi
+
+        echo "First string: $TAG"
+        echo "Second string: $TAG"
+
+
+        if [ "$STRING_A" != "$STRING_B" ]; then
+          echo "ERROR: strings do NOT match"
+          MATCH="false"
+        else
+          echo "Strings match"
+          MATCH="true"
+        fi
+
+        # Allows for testing from a local shell
+        if [ -n "$GITHUB_OUTPUT" ]; then
+          echo "match=$MATCH" >> $GITHUB_OUTPUT
+        fi
+
+        #SHELLCODEEND

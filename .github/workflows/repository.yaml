@@ -143,6 +143,17 @@ jobs:
           prerelease: true
           tag_name: v0.0.0
 
+      # If this was a tag push pyproject.toml
+      #  may not reflect the latest tag
+      - name: "Patch project metadata [conditional]"
+        id: patcvh-current-tag
+        if: steps.semantic-tag-latest.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+          tag_name: v0.0.0
+
       - name: "Build: Python project"
         id: python-project-build
         if: steps.semantic-tag-latest.outputs.invalid == 'false'
