@@ -9,9 +9,8 @@ on:
   workflow_dispatch:
   pull_request:
     types: [opened, reopened, edited, synchronize, closed]
-    paths: [".github/**", ".github/actions/**", ".github/workflows/**"]
-    branches:
-      - "*"
+    paths: [".github/**"]
+    branches: ["main", "master"]
 
 env:
   DEFAULT-PYTHON: "3.10"
@@ -28,6 +27,8 @@ jobs:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PYPI_GITHUB_DEVELOPMENT: ${{ secrets.PYPI_GITHUB_DEVELOPMENT }}
+      PYPI_GITHUB_PRODUCTION: ${{ secrets.PYPI_GITHUB_PRODUCTION }}
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v4
@@ -144,15 +145,17 @@ jobs:
             exit 1
           fi
 
-      #- name: "Required secrets are NOT available"
-      #  if: env.PYPI_GITHUB_DEVELOPMENT == '' || env.PYPI_GITHUB_PRODUCTION == ''
-      #  run:
-      #    # Abort the workflow
-      #    echo "Some organisation secrets were not available to the workflow"; exit 1
+      - name: "Check mandatory secrets/variables are available"
+        if: env.PYPI_GITHUB_DEVELOPMENT == '' || env.PYPI_GITHUB_PRODUCTION == ''
+        shell: bash
+        run: |
+          # Check mandatory secrets/variables are available
+          # Note: provide warning, but do NOT abort the workflow
+          echo "Warning: Some organisation secrets/variables are NOT available"
 
-      - name: "Check for required secrets/API keys/tokens"
+      - name: "Action: github-mandatory-secrets"
         uses: os-climate/osc-github-devops/.github/actions/github-mandatory-secrets@main
         with:
-          # Mandatory secrets/variables to check for
+          # Mandatory secrets/variables to check
           pypi_github_development: ${{ secrets.PYPI_GITHUB_DEVELOPMENT }}
           pypi_github_production: ${{ secrets.PYPI_GITHUB_PRODUCTION }}
