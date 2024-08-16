@@ -173,16 +173,14 @@ jobs:
 
   github:
     name: "Create GitHub Release"
-    # Only publish on tag pushes
     needs: python-build
     runs-on: ubuntu-latest
     permissions:
       # IMPORTANT: mandatory to publish artefacts
       contents: write
     if:
-      # github.ref_name != 'main' &&
-      # github.ref_name != 'master' &&
-      startsWith(github.ref, 'refs/tags/')
+      # Only publish on tag pushes or when a release is explicitly requested
+      startsWith(github.ref, 'refs/tags/') || contains(github.event.head_commit.message, '[release]')
     steps:
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
@@ -222,11 +220,11 @@ jobs:
 
   testpypi:
     name: "Test Package Publishing"
-    # Only publish on tag pushes
-    # if: startsWith(github.ref, 'refs/tags/')
     needs:
       - github-workflow-metadata
       - python-build
+    # Only test publishing on merge of pull requests or tag pushes
+    if: github.event.pull_request.merged == true || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     environment:
       name: development
@@ -318,13 +316,11 @@ jobs:
 
   pypi:
     name: "Publish Package"
-    # Only publish on tag pushes
     if:
+      # Only publish on tag pushes or when a release is explicitly requested
+      startsWith(github.ref, 'refs/tags/') || contains(github.event.head_commit.message, '[release]')
       # github.ref_name != 'main' &&
-      # github.ref_name != 'master' &&
-      startsWith(github.ref, 'refs/tags/')
-      # needs.python-build.outputs.success == 'true'
-      # contains(github.event.head_commit.message, '[release]')
+      # github.ref_name != 'master'
     needs: [python-build, github-workflow-metadata, testpypi]
     runs-on: ubuntu-latest
     environment:
