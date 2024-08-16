@@ -61,13 +61,12 @@ runs:
           STRING_ARRAY=($LINE)
           SECRET=${STRING_ARRAY[0]}
           EXPECTED=${STRING_ARRAY[1]}
-          echo "Validating: $SECRET $SHA1SUM"
           if [ "$SECRET" == "PYPI_GITHUB_DEVELOPMENT" ]; then
             CHECKSUM=$(echo ${{ env.PYPI_GITHUB_DEVELOPMENT }} | sha1sum | awk '{print $1}')
           elif [ "$SECRET" == "PYPI_GITHUB_PRODUCTION" ]; then
             CHECKSUM=$(echo ${{ env.PYPI_GITHUB_PRODUCTION }} | sha1sum | awk '{print $1}')
           else
-            echo "Unexpected secret in validation table: $SECRET"
+            echo "Unexpected secret $SECRET was NOT found in validation table"
             echo "Error: the validation workflow may need updating"
             ERRORS="true"
           fi
@@ -75,7 +74,8 @@ runs:
           if [ "$EXPECTED" == "$CHECKSUM" ]; then
             echo "Successfully validated secret: $SECRET $CHECKSUM"
           else
-            echo "Error: checksum validation failed for secret: $SECRET"
+            echo "Error: checksum validation failed for $SECRET"
+            echo "Got: $CHECKSUM Expected: $EXPECTED"
             ERRORS="true"
           fi
         done < "$TMPFILE"
