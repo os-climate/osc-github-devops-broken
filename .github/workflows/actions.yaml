@@ -103,7 +103,7 @@ jobs:
 
       - name: "Validate: string-comparison"
         # yamllint disable-line rule:line-length
-        if: steps.string-comparison-matching.outputs.match != 'true' || steps.string-comparison-matching.outputs.match != false
+        if: steps.string-comparison-matching.outputs.match != 'true' || steps.string-comparison-different.outputs.match != false
         shell: bash
         run: |
           # Check string-comparison action logic
