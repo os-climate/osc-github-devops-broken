@@ -27,8 +27,6 @@ jobs:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      PYPI_GITHUB_DEVELOPMENT: ${{ secrets.PYPI_GITHUB_DEVELOPMENT }}
-      PYPI_GITHUB_PRODUCTION: ${{ secrets.PYPI_GITHUB_PRODUCTION }}
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v4
@@ -54,7 +52,7 @@ jobs:
         with:
           path: "tests/dist"
 
-      - name: "Action: semantic-tag-validity [valid tag]"
+      - name: "Action: semantic-tag-validity [semantic tag]"
         id: semantic-tag-validate-good
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-validity@main
@@ -71,7 +69,7 @@ jobs:
       - name: "Validate: semantic-tag-validity"
         shell: bash
         run: |
-          # Check output from: semantic-tag-validate-good/junk
+          # Check output from: semantic-tag-validate [semantic/junk]
           ERRORS="false"
           if [ "${{ steps.semantic-tag-validate-good.outputs.valid }}" != "true" ]; then
             echo "Errors with: semantic-tag-validate v1.2.3"
@@ -85,6 +83,41 @@ jobs:
             echo "ERROR: check semantic tag validation action/code"; exit 1
           else
             echo "All tag validation tests passed, no errors found"
+          fi
+
+      - name: "Action: string-comparison [matching strings]"
+        id: string-comparison-matching
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
+        with:
+          string_a: "Mary had a little lamb"
+          string_b: "Mary had a little lamb"
+
+      - name: "Action: string-comparison [different strings]"
+        id: string-comparison-different
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
+        with:
+          string_a: "Mary had a little lamb"
+          string_b: "I don't like eating lamb"
+
+      - name: "Validate: string-comparison"
+        shell: bash
+        run: |
+          # Check output from: string-comparison [matching/different]
+          ERRORS="false"
+          if [ "${{ steps.string-comparison-matching.outputs.match }}" != "true" ]; then
+            echo "Errors with: string-comparison [matching strings]"
+            ERRORS="true"
+          fi
+          if [ "${{ steps.string-comparison-different.outputs.match }}" != "false" ]; then
+            echo "Errors with: semantic-tag-increment [different strings]"
+            ERRORS="true"
+          fi
+          if [ "$ERRORS" = "true" ]; then
+            echo "ERROR: check string comparison action/code"; exit 1
+          else
+            echo "Striong matching tests passed, no errors found"
           fi
 
       - name: "Action: semantic-tag-latest"
