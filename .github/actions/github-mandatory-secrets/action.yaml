@@ -12,8 +12,10 @@ description: "Checks/verifies access to required secrets"
 inputs:
   PYPI_GITHUB_DEVELOPMENT:
     description: "Token needed to publish packages to: test.pypi.org"
+    required: true
   PYPI_GITHUB_PRODUCTION:
     description: "Token needed to publish packages to: pypi.org"
+    required: true
 
 outputs:
   PRESENT:
@@ -24,6 +26,9 @@ runs:
   using: "composite"
   steps:
     - id: github
+      env:
+        PYPI_GITHUB_DEVELOPMENT: ${{ inputs.pypi_github_development }}
+        PYPI_GITHUB_PRODUCTION: ${{ inputs.pypi_github_production }}
       shell: bash
       run: |
         # Check for presence of required secrets
@@ -56,15 +61,26 @@ runs:
           SHA1SUM=${STRING_ARRAY[1]}
           echo "Validating: $SECRET $SHA1SUM"
           if [ "$SECRET" == "PYPI_GITHUB_DEVELOPMENT" ]; then
-            echo "${{ inputs.PYPI_GITHUB_DEVELOPMENT }}" > "/tmp/$SECRET.secret.txt"
+            echo "${{ env.PYPI_GITHUB_DEVELOPMENT }}" > "/tmp/$SECRET.secret.txt"
           elif [ "$SECRET" == "PYPI_GITHUB_PRODUCTION" ]; then
-            echo "${{ inputs.PYPI_GITHUB_PRODUCTION  }}" > "/tmp/$SECRET.secret.txt"
+            echo "${{ env.PYPI_GITHUB_PRODUCTION  }}" > "/tmp/$SECRET.secret.txt"
           else
             echo "Unexpected secret in validation table: $SECRET"
           fi
-          CHECKSUM=$(sha1sum /tmp/$SECRET.secret.txt)
+          CHECKSUM=$(sha1sum /tmp/$SECRET.secret.txt | awk '{print $1}')
           echo "Received: $SECRET $CHECKSUM"
         done < "$TMPFILE"
+
+        # Naughty
+        echo "Debugging values"
+        echo "Development: ${{ env.PYPI_GITHUB_DEVELOPMENT }}"
+        echo "Production: ${{ env.PYPI_GITHUB_PRODUCTION }}"
+        echo "Listing temporary files"
+        ls /tmp/*.secret.txt
+        echo "Dumping their contents:"
+        cat /tmp/*.secret.txt
+        echo "Sha1summing them:"
+        sha1sum /tmp/*.secret.txt
 
         # Important: clean secrets from disk/storage afterwards
         rm /tmp/*.secret.txt
