@@ -33,8 +33,8 @@ runs:
           echo "Running from a shell, NOT workflow"
           export GITHUB_OUTPUT="/dev/null"
         else
-          STRING_A=${{ inputs.STRING_A }}
-          STRING_B=${{ inputs.STRING_B }}
+          STRING_A="${{ inputs.STRING_A }}"
+          STRING_B="${{ inputs.STRING_B }}"
         fi
 
         if [ -z "$STRING_A" ]; then
