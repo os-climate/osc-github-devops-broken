@@ -72,8 +72,8 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/github-mandatory-secrets@main
         with:
           # Mandatory secrets/variables to check
-          pypi_github_development: ${{ secrets.PYPI_GITHUB_DEVELOPMENT }}
-          pypi_github_production: ${{ secrets.PYPI_GITHUB_PRODUCTION }}
+          pypi_development: ${{ secrets.PYPI_DEVELOPMENT }}
+          pypi_production: ${{ secrets.PYPI_PRODUCTION }}
 
   python-project:
     name: "Python Project"
@@ -326,7 +326,7 @@ jobs:
           verbose: true
           # Organisation secret/variable
           # Defined/stored in 1Password
-          password: ${{ secrets.PYPI_GITHUB_DEVELOPMENT }}
+          password: ${{ secrets.PYPI_DEVELOPMENT }}
 
   pypi:
     name: "Publish Package"
@@ -401,7 +401,7 @@ jobs:
           verify-metadata: false
           # Organisation secret/variable
           # Defined/stored in 1Password
-          password: ${{ secrets.PYPI_GITHUB_PRODUCTION }}
+          password: ${{ secrets.PYPI_PRODUCTION }}
 
   notebooks:
     name: "Jupyter Notebooks"
