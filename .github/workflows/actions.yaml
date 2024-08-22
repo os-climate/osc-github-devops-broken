@@ -57,21 +57,21 @@ jobs:
         with:
           path: "tests/dist"
 
-      - name: "Action: semantic-tag-validity [semantic tag]"
+      - name: "Action: semantic-tag-validate [semantic tag]"
         id: semantic-tag-validate-good
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-validity@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-validate@main
         with:
           tag: "v1.2.3"
 
-      - name: "Action: semantic-tag-validity [junk tag]"
+      - name: "Action: semantic-tag-validate [junk tag]"
         id: semantic-tag-validate-junk
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-validity@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-validate@main
         with:
           tag: "v1.not-valid.3.garbage"
 
-      - name: "Validate: semantic-tag-validity"
+      - name: "Validate: semantic-tag-validate"
         shell: bash
         run: |
           # Check output from: semantic-tag-validate [semantic/junk]
