@@ -8,14 +8,13 @@ outputs:
   TAG:
     # A leading non-numeric "v" character will be stripped
     description: "Return the latest semantic tag from repository"
-    value: ${{ steps.parse-tags.outputs.tag }}
+    value: ${{ steps.results.outputs.tag }}
   VTAG:
-    # A leading non-numeric "v" character will be stripped
-    description: "The incremented semantic tag [with prefix] e.g. v1.2.3"
-    value: ${{ steps.increment.outputs.tag }}
+    description: "The tag [with v prefix] e.g. v1.2.3"
+    value: ${{ steps.results.outputs.vtag }}
   INVALID:
     description: "Flag set true if no semantic tags found"
-    value: ${{ steps.parse-tags.outputs.invalid }}
+    value: ${{ steps.results.outputs.invalid }}
 
 runs:
   using: "composite"
@@ -34,44 +33,44 @@ runs:
         echo "Fetching tags..."
         git fetch --tags
 
-    - name: "Parse tags"
-      id: parse-tags
+    - name: "Get latest tag"
+      id: retrieve
       shell: bash
       run: |
-        # Extract and report latest semantic tag
-
-        #SHELLCODESTART
-
-        # Allows for testing from a local shell
-        if [ -z "$GITHUB_OUTPUT" ]; then
-          echo "Running from a shell, NOT workflow"
-          export GITHUB_OUTPUT="/dev/null"
-        fi
-
-        # Regular expression to match semantic tag
-        PATTERN="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$"
-
-        TAG=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | sort -r | head -1 || true)
+        # Get latest tag
+        TAG_INTERIM=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | sort -r | head -1 || true)
 
         # If present, strip the leading "v" character
-        if [[ "$TAG" == v* ]]; then
-          TAG="${TAG:1}"
+        if [[ "$TAG_INTERIM" == v* ]]; then
+          TAG_INTERIM="${TAG_INTERIM:1}"
+          echo "Numeric value: $TAG_INTERIM"
         fi
 
+        # Report the result
+        echo "tag_interim=${TAG_INTERIM}" >> $GITHUB_OUTPUT
+
+    - name: "Check semantic/validity"
+      id: validate
+      uses: os-climate/osc-github-devops/.github/actions/repository-classify-content@main
+      with:
+        tag: ${{ steps.retrieve.outputs.tag }}
+
+    - name: "Check semantic/validity"
+      id: results
+      shell: bash
+      run: |
         # Validate supplied (and parsed) tag
-        if ! [[ "$TAG" =~ $PATTERN ]]; then
+        if [ ${{ steps.validate.outputs.valid }} = "true" ]; then
+          TAG="${{ steps.retrieve.outputs.tag_interim }}"
+          echo "invalid=false" >> $GITHUB_OUTPUT
+        else
           echo "No valid semantic tags were found"
           echo "invalid=true" >> $GITHUB_OUTPUT
           # Set a placeholder value for the tag
           TAG="0.0.0"
-        else
-          echo "Numeric value: $TAG"
-          echo "invalid=false" >> $GITHUB_OUTPUT
         fi
-        VTAG="v$TAG"
+
 
         echo "Tag: $TAG [v$TAG]"
         echo "tag=${TAG}" >> $GITHUB_OUTPUT
-        echo "vtag=${VTAG}" >> $GITHUB_OUTPUT
-
-        #SHELLCODEEND
+        echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
