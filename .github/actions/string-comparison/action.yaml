@@ -31,6 +31,9 @@ runs:
     - name: "Perform comparison of string values"
       id: compare
       shell: bash
+      env:
+        SUBSTRING_MATCH: ${{ inputs.SUBSTRING_MATCH }}
+        CASE_INSENSITIVE: ${{ inputs.CASE_INSENSITIVE }}
       run: |
         # Perform comparison of string values
 
