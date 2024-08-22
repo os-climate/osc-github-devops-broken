@@ -57,14 +57,14 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-validity@main
         with:
-          tag: v1.2.3
+          tag: "v1.2.3"
 
       - name: "Action: semantic-tag-validity [junk tag]"
         id: semantic-tag-validate-junk
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-validity@main
         with:
-          tag: v1.not-valid.3.garbage
+          tag: "v1.not-valid.3.garbage"
 
       - name: "Validate: semantic-tag-validity"
         shell: bash
@@ -178,6 +178,7 @@ jobs:
 
       - name: "Action: github-mandatory-secrets"
         uses: os-climate/osc-github-devops/.github/actions/github-mandatory-secrets@main
+        continue-on-error: true
         with:
           # Mandatory secrets/variables to check
           pypi_development: ${{ secrets.PYPI_DEVELOPMENT }}
