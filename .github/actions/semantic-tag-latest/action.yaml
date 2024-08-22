@@ -61,6 +61,7 @@ runs:
       run: |
         # Validate supplied (and parsed) tag
         if [ ${{ steps.validate.outputs.valid }} = "true" ]; then
+          echo "Tag retrieved and is semantic/valid"
           TAG="${{ steps.retrieve.outputs.tag_interim }}"
           echo "invalid=false" >> $GITHUB_OUTPUT
         else
