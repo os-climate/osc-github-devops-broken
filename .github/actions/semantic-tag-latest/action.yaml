@@ -51,9 +51,9 @@ runs:
 
     - name: "Check semantic/validity"
       id: validate
-      uses: os-climate/osc-github-devops/.github/actions/repository-classify-content@main
+      uses: os-climate/osc-github-devops/.github/actions/semantic-tag-validate@main
       with:
-        tag: ${{ steps.retrieve.outputs.tag }}
+        tag: ${{ steps.retrieve.outputs.tag_interim }}
 
     - name: "Check semantic/validity"
       id: results
