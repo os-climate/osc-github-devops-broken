@@ -10,25 +10,25 @@ description: "Checks/verifies access to required secrets"
 # (when trusted publishing has not yet been setup)
 
 inputs:
-  PYPI_GITHUB_DEVELOPMENT:
+  PYPI_DEVELOPMENT:
     description: "Token needed to publish packages to: test.pypi.org"
     required: true
-  PYPI_GITHUB_PRODUCTION:
+  PYPI_PRODUCTION:
     description: "Token needed to publish packages to: pypi.org"
     required: true
 
 outputs:
   VALID:
     description: "Returns true if the labels exist"
-    value: ${{ steps.github.outputs.present }}
+    value: ${{ steps.secrets.outputs.present }}
 
 runs:
   using: "composite"
   steps:
-    - id: github
+    - id: secrets
       env:
-        PYPI_GITHUB_DEVELOPMENT: ${{ inputs.pypi_github_development }}
-        PYPI_GITHUB_PRODUCTION: ${{ inputs.pypi_github_production }}
+        PYPI_DEVELOPMENT: ${{ inputs.pypi_development }}
+        PYPI_PRODUCTION: ${{ inputs.pypi_production }}
       shell: bash
       run: |
         # Check for mandatory secrets/variables
@@ -51,8 +51,8 @@ runs:
         # File format is: [SECRET NAME] [SHA1SUM]
         TMPFILE=$(mktemp -p /tmp --suffix "-secrets.txt")
         cat << EOF > "$TMPFILE"
-        PYPI_GITHUB_DEVELOPMENT 19fc83e3c621347f85573fa0ea9dffff6542d3e3
-        PYPI_GITHUB_PRODUCTION dcfaee96a60c6f8e44c870ed7058fe55d8b11fc6
+        PYPI_DEVELOPMENT 19fc83e3c621347f85573fa0ea9dffff6542d3e3
+        PYPI_PRODUCTION dcfaee96a60c6f8e44c870ed7058fe55d8b11fc6
         EOF
 
         # Iterate over secrets and validate checksums against those stored in GitHub
@@ -61,10 +61,10 @@ runs:
           STRING_ARRAY=($LINE)
           SECRET=${STRING_ARRAY[0]}
           EXPECTED=${STRING_ARRAY[1]}
-          if [ "$SECRET" == "PYPI_GITHUB_DEVELOPMENT" ]; then
-            CHECKSUM=$(echo ${{ env.PYPI_GITHUB_DEVELOPMENT }} | sha1sum | awk '{print $1}')
-          elif [ "$SECRET" == "PYPI_GITHUB_PRODUCTION" ]; then
-            CHECKSUM=$(echo ${{ env.PYPI_GITHUB_PRODUCTION }} | sha1sum | awk '{print $1}')
+          if [ "$SECRET" == "PYPI_DEVELOPMENT" ]; then
+            CHECKSUM=$(echo ${{ env.PYPI_DEVELOPMENT }} | sha1sum | awk '{print $1}')
+          elif [ "$SECRET" == "PYPI_PRODUCTION" ]; then
+            CHECKSUM=$(echo ${{ env.PYPI_PRODUCTION }} | sha1sum | awk '{print $1}')
           else
             echo "Unexpected secret $SECRET was NOT found in validation table"
             echo "Error: the validation workflow may need updating"

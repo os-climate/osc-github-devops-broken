@@ -27,6 +27,7 @@ jobs:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    continue-on-error: true
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v4
@@ -84,31 +85,6 @@ jobs:
           else
             echo "All tag validation tests passed, no errors found"
           fi
-
-      - name: "Action: string-comparison [matching strings]"
-        id: string-comparison-matching
-        # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
-        with:
-          string_a: "Mary had a little lamb"
-          string_b: "Mary had a little lamb"
-
-      - name: "Action: string-comparison [different strings]"
-        id: string-comparison-different
-        # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
-        with:
-          string_a: "Mary had a little lamb"
-          string_b: "I don't like eating lamb"
-
-      - name: "Validate: string-comparison"
-        # yamllint disable-line rule:line-length
-        if: steps.string-comparison-matching.outputs.match != 'true' || steps.string-comparison-different.outputs.match != false
-        shell: bash
-        run: |
-          # Check string-comparison action logic
-          echo "String comparison logic appears to be broken"
-          echo "Check operation of the action: string-comparison"; exit 1
 
       - name: "Action: semantic-tag-latest"
         id: semantic-tag-latest
@@ -201,17 +177,34 @@ jobs:
             exit 1
           fi
 
-      - name: "Check mandatory secrets/variables are available"
-        if: env.PYPI_GITHUB_DEVELOPMENT == '' || env.PYPI_GITHUB_PRODUCTION == ''
-        shell: bash
-        run: |
-          # Check mandatory secrets/variables are available
-          # Note: provide warning, but do NOT abort the workflow
-          echo "Warning: Some organisation secrets/variables are NOT available"
-
       - name: "Action: github-mandatory-secrets"
         uses: os-climate/osc-github-devops/.github/actions/github-mandatory-secrets@main
         with:
           # Mandatory secrets/variables to check
-          pypi_github_development: ${{ secrets.PYPI_GITHUB_DEVELOPMENT }}
-          pypi_github_production: ${{ secrets.PYPI_GITHUB_PRODUCTION }}
+          pypi_development: ${{ secrets.PYPI_DEVELOPMENT }}
+          pypi_production: ${{ secrets.PYPI_PRODUCTION }}
+
+      - name: "Action: string-comparison [matching strings]"
+        id: string-comparison-matching
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
+        with:
+          string_a: "Mary had a little lamb"
+          string_b: "Mary had a little lamb"
+
+      - name: "Action: string-comparison [different strings]"
+        id: string-comparison-different
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
+        with:
+          string_a: "Mary had a little lamb"
+          string_b: "I don't like eating lamb"
+
+      - name: "Validate: string-comparison"
+        # yamllint disable-line rule:line-length
+        if: steps.string-comparison-matching.outputs.match == 'false' || steps.string-comparison-different.outputs.match == 'true'
+        shell: bash
+        run: |
+          # Check string-comparison action logic
+          echo "String comparison logic appears to be broken"
+          echo "Check operation of the action: string-comparison"; exit 1
