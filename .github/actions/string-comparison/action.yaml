@@ -26,7 +26,7 @@ outputs:
 
 runs:
   using: "composite"
-  env: SUBSTRING_MATCH
+
   steps:
     - name: "Perform comparison of string values"
       id: compare
