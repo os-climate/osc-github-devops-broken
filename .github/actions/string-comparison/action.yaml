@@ -11,20 +11,27 @@ inputs:
   STRING_B:
     description: "Second string for comparison"
     required: true
+  SUBSTRING_MATCH:
+    description: "Match if string A contains string B"
+    required: false
+    default: "false"
+  CASE_INSENSITIVE:
+    required: false
+    default: "false"
 
 outputs:
   MATCH:
-    description: "True if tag matches semantic versioning check"
+    description: "True if string matches based on provided inputs/parameters"
     value: ${{ steps.compare.outputs.match }}
 
 runs:
   using: "composite"
   steps:
-    - name: "Check if strings are the same"
+    - name: "Perform comparison of string values"
       id: compare
       shell: bash
       run: |
-        # Check if strings are the same
+        # Perform comparison of string values
 
         #SHELLCODESTART
 

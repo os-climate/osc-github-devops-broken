@@ -27,7 +27,6 @@ jobs:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    continue-on-error: true
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v4
@@ -200,11 +199,30 @@ jobs:
           string_a: "Mary had a little lamb"
           string_b: "I don't like eating lamb"
 
-      - name: "Validate: string-comparison"
+      - name: "Action: string-comparison [sub-string matching]"
+        id: string-comparison-substring
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
+        with:
+          string_a: "Mary had a little lamb"
+          string_b: "a little lamb"
+          substring_match: "true"
+
+      - name: "Action: string-comparison [sub-string matching case-insensitive]"
+        id: string-comparison-substring-case
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
+        with:
+          string_a: "Mary had a little lamb"
+          string_b: "A little lamb"
+          substring_match: "true"
+          case_insensitive: "true"
+
+      - name: "Errors with: string-comparison"
         # yamllint disable-line rule:line-length
         if: steps.string-comparison-matching.outputs.match == 'false' || steps.string-comparison-different.outputs.match == 'true'
         shell: bash
         run: |
           # Check string-comparison action logic
-          echo "String comparison logic appears to be broken"
-          echo "Check operation of the action: string-comparison"; exit 1
+          echo "String comparison/action logic appears to be broken"
+          exit 1
