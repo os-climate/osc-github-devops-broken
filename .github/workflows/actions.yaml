@@ -184,7 +184,7 @@ jobs:
           pypi_development: ${{ secrets.PYPI_DEVELOPMENT }}
           pypi_production: ${{ secrets.PYPI_PRODUCTION }}
 
-      - name: "Action: string-comparison [matching strings]"
+      - name: "Action: string-comparison [match]"
         id: string-comparison-matching
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
@@ -192,7 +192,7 @@ jobs:
           string_a: "Mary had a little lamb"
           string_b: "Mary had a little lamb"
 
-      - name: "Action: string-comparison [different strings]"
+      - name: "Action: string-comparison [different]"
         id: string-comparison-different
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
@@ -200,7 +200,7 @@ jobs:
           string_a: "Mary had a little lamb"
           string_b: "I don't like eating lamb"
 
-      - name: "Action: string-comparison [sub-string matching]"
+      - name: "Action: string-comparison [sub-string match]"
         id: string-comparison-substring
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
@@ -209,8 +209,8 @@ jobs:
           string_b: "a little lamb"
           substring_match: "true"
 
-      - name: "Action: string-comparison [sub-string matching case-insensitive]"
-        id: string-comparison-substring-case
+      - name: "Action: string-comparison [sub-string match, case-insensitive]"
+        id: string-comparison-substring-nocase
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
         with:
@@ -219,9 +219,12 @@ jobs:
           substring_match: "true"
           case_insensitive: "true"
 
-      - name: "Errors with: string-comparison"
+      - name: "Report Errors: string-comparison"
         # yamllint disable-line rule:line-length
-        if: steps.string-comparison-matching.outputs.match == 'false' || steps.string-comparison-different.outputs.match == 'true'
+        if: steps.string-comparison-matching.outputs.match == 'false'
+          || steps.string-comparison-different.outputs.match == 'true'
+          || steps.string-comparison-substring.outputs.match == 'false'
+          || steps.string-comparison-substring-nocase.outputs.match == 'false'
         shell: bash
         run: |
           # Check string-comparison action logic
