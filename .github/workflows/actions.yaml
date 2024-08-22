@@ -8,12 +8,10 @@ name: "🧪 Validate GitHub Actions"
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-      - master
+    branches: ["main", "master"]
     paths: [".github/**"]
   pull_request:
-    types: [opened, reopened, edited, synchronize, closed]
+    types: [opened, reopened, edited, synchronize]
     paths: [".github/**"]
     branches: ["main", "master"]
 
