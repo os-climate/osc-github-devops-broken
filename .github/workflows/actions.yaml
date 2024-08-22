@@ -7,6 +7,11 @@ name: "🧪 Validate GitHub Actions"
 # yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths: [".github/**"]
   pull_request:
     types: [opened, reopened, edited, synchronize, closed]
     paths: [".github/**"]
@@ -178,7 +183,9 @@ jobs:
 
       - name: "Action: github-mandatory-secrets"
         uses: os-climate/osc-github-devops/.github/actions/github-mandatory-secrets@main
-        continue-on-error: true
+        # Pull requests cannot access secrets, so run this step conditionally
+        if: github.event_name != 'pull_request'
+        # continue-on-error: true
         with:
           # Mandatory secrets/variables to check
           pypi_development: ${{ secrets.PYPI_DEVELOPMENT }}
