@@ -8,7 +8,8 @@ version = 1
 # A simple glob of all files in tests/twine
 [[annotations]]
 path = [
-	 "tests/dist/*",
+	 "tests/dist/**",
+	 "img/**",
 	 "pdm.lock"
 ]
 SPDX-License-Identifier = "Apache-2.0"
