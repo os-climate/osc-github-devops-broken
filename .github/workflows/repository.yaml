@@ -52,6 +52,29 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/github-workflow-metadata@main
 
+  tagging:
+    name: "Retrieve/Verify Tags"
+    runs-on: ubuntu-latest
+    outputs:
+      current: ${{ steps.semantic-tag-latest.outputs.tag }}
+      invalid: ${{ steps.semantic-tag-latest.outputs.invalid }}
+
+    steps:
+      - name: "Retrieve/verify tags"
+        id: semantic-tag-latest
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-latest@main
+
+      # Only runs if no tags are found, pushes an initial v0.0.0
+      - name: "Create initial v0.0.0 tag [conditional]"
+        id: set-initial-tag
+        if: steps.semantic-tag-latest.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+          tag_name: v0.0.0
+
   verify-github-environment:
     name: "Verify GitHub Environment"
     runs-on: ubuntu-latest
@@ -114,7 +137,6 @@ jobs:
       id-token: write
     outputs:
       success: ${{ steps.build.outputs.success }}
-      current-tag: ${{ steps.semantic-tag-latest.outputs.tag }}
 
     steps:
       # - uses: actions/checkout@v4
@@ -130,30 +152,6 @@ jobs:
         uses: pdm-project/setup-pdm@v4
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: "Action: semantic-tag-latest"
-        id: semantic-tag-latest
-        # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-latest@main
-
-      - name: "Create initial v0.0.0 tag/release [conditional]"
-        id: set-initial-tag
-        if: steps.semantic-tag-latest.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
-        uses: softprops/action-gh-release@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: true
-          tag_name: v0.0.0
-
-      # If this was a tag push pyproject.toml may not reflect the latest tag
-      - name: "Patch project metadata [conditional]"
-        id: patch-current-tag
-        if: steps.semantic-tag-latest.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
-        uses: softprops/action-gh-release@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: true
-          tag_name: v0.0.0
 
       - name: "Build Python Project"
         id: build
@@ -211,6 +209,7 @@ jobs:
   testpypi:
     name: "Test Package Publishing"
     needs:
+      - tagging
       - github-workflow-metadata
       - python-build
     # Only test publishing on merge of pull requests or tag pushes
@@ -269,7 +268,7 @@ jobs:
           prefix: "https://test.pypi.org/project"
           # Use project name, e.g. "/ITR"
           string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
-          suffix: "/${{ needs.python-build.outputs.current-tag }}/"
+          suffix: "/${{ needs.tagging.outputs.current }}/"
 
       - name: "Publish to Test PyPI [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -311,7 +310,7 @@ jobs:
       startsWith(github.ref, 'refs/tags/') || contains(github.event.head_commit.message, '[release]')
       # github.ref_name != 'main' &&
       # github.ref_name != 'master'
-    needs: [python-build, github-workflow-metadata, testpypi]
+    needs: [tagging, python-build, github-workflow-metadata, testpypi]
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -350,7 +349,7 @@ jobs:
           prefix: "https://pypi.org/project"
           # Use project name, e.g. "/ITR"
           string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
-          suffix: "/${{ needs.python-build.outputs.current-tag }}/"
+          suffix: "/${{ needs.tagging.outputs.current }}/"
 
       - name: "Publish to PyPI [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
