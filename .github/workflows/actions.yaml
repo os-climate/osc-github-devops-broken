@@ -36,7 +36,7 @@ jobs:
         with:
           # Does not currently work: https://github.com/actions/checkout/issues/1471
           fetch-tags: true
-          # The semantic-tag-latest action  currently contains a workaround for this behaviour
+          # The repository-tags-fetch action  currently contains a workaround for this behaviour
 
       - name: "Action: repository-classify-content"
         id: repository-classify-content
@@ -88,10 +88,10 @@ jobs:
             echo "All tag validation tests passed, no errors found"
           fi
 
-      - name: "Action: semantic-tag-latest"
-        id: semantic-tag-latest
+      - name: "Action: repository-tags-fetch"
+        id: repository-tags-fetch
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-latest@main
+        uses: os-climate/osc-github-devops/.github/actions/repository-tags-fetch@main
 
       - name: "Action: semantic-tag-increment [patch]"
         id: semantic-tag-increment-patch
