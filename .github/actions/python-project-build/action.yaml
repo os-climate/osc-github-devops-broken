@@ -8,12 +8,22 @@ description: "Build Python Project"
 inputs:
   ARTEFACT_OUTPUT_PATH:
     description: "Output path/location for build artefacts"
-    required: true
+    required: false
     default: "dist"
   PURGE_OUTPUT_PATH:
-    description: "Purge target path prior to builds"
-    required: true
+    description: "Purge target artefact path prior to builds"
+    required: false
     default: false
+  # Only a single set of build artefacts will be stored
+  # A single Python version is used to build the artefacts
+  BUILD_PYTHON:
+    description: "Python version used to build artefacts"
+    required: false
+    default: "3.10"
+  # Tests are performed for all compatible Python versions specified in pyproject.toml
+  PYTHON_MATRIX_JSON:
+    description: "Python matrix versions to use for test builds (in JSON)"
+    required: false
 
 outputs:
   DATETIME_STAMP:
@@ -29,6 +39,9 @@ outputs:
 runs:
   using: "composite"
   steps:
+    # Can't build without having the repository content available
+    # - uses: actions/checkout@v4
+
     - name: "Set build parameters/variables"
       id: parameters
       shell: bash
@@ -39,6 +52,10 @@ runs:
         echo "Build date and time stamp: $datetime"
         echo "datetime=$datetime" >> "$GITHUB_ENV"
         echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
+        if [ -z "$PYTHON_VERSIONS" ]; then
+          echo "Matrix jobs will use default Python version: $BUILD_PYTHON"
+          PYTHON_MATRIX_JSON="{\"python-version\": [\"$BUILD_PYTHON\"]}"
+        fi
 
     - name: "Check target/path for build products"
       id: check-target

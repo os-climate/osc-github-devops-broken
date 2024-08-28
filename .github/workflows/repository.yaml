@@ -113,10 +113,12 @@ jobs:
       # Required by SigStore signing action
       id-token: write
     outputs:
-      success: ${{ steps.python-project-build.outputs.success }}
+      success: ${{ steps.build.outputs.success }}
       current-tag: ${{ steps.semantic-tag-latest.outputs.tag }}
 
     steps:
+      # - uses: actions/checkout@v4
+
       - uses: actions/checkout@v4
 
       - name: "Set up Python ${{ matrix.python-version }}"
@@ -143,10 +145,9 @@ jobs:
           prerelease: true
           tag_name: v0.0.0
 
-      # If this was a tag push pyproject.toml
-      #  may not reflect the latest tag
+      # If this was a tag push pyproject.toml may not reflect the latest tag
       - name: "Patch project metadata [conditional]"
-        id: patcvh-current-tag
+        id: patch-current-tag
         if: steps.semantic-tag-latest.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
         uses: softprops/action-gh-release@v2
         with:
@@ -154,36 +155,11 @@ jobs:
           prerelease: true
           tag_name: v0.0.0
 
-      - name: "Build: Python project"
-        id: python-project-build
-        if: steps.semantic-tag-latest.outputs.invalid == 'false'
-        # yamllint disable-line rule:line-length
+      - name: "Build Python Project"
+        id: build
         uses: os-climate/osc-github-devops/.github/actions/python-project-build@main
-        with:
-          artefact_output_path: "dist"
-          purge_output_path: "true"
-
-      - name: "Validate artefacts with Twine"
-        id: python-twine-check
-        # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/python-twine-check@main
-
-      - name: "Upload build artefacts"
-        uses: actions/upload-artifact@v4
-        if: matrix.python-version == env.DEFAULT_PYTHON
-        with:
-          name: ${{ github.ref_name }}
-          path: ${{ env.BUILD_ARTEFACTS }}
-
-      - name: "Sign packages with SigStore"
-        uses: sigstore/gh-action-sigstore-python@v3.0.0
-        if: matrix.python-version == env.DEFAULT_PYTHON
-        env:
-          package-path: ${{ env.BUILD_ARTEFACTS }}
-        with:
-          inputs: >-
-            ./${{ env.BUILD_ARTEFACTS }}/*.tar.gz
-            ./${{ env.BUILD_ARTEFACTS }}/*.whl
+        # with:
+        # python-versions: ${{ matrix.python-version }}
 
   github:
     name: "Create GitHub Release"
