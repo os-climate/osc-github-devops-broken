@@ -36,7 +36,7 @@ jobs:
       - name: "Classify content"
         id: classify
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/repository-classify-content@main
+        uses: os-climate/osc-github-devops/.github/actions/repository-content-classify@main
 
   github-workflow-metadata:
     name: "Gather Workflow Metadata"
@@ -56,19 +56,19 @@ jobs:
     name: "Retrieve/Verify Tags"
     runs-on: ubuntu-latest
     outputs:
-      current: ${{ steps.semantic-tag-latest.outputs.tag }}
-      invalid: ${{ steps.semantic-tag-latest.outputs.invalid }}
+      current: ${{ steps.repository-tags-fetch.outputs.tag }}
+      invalid: ${{ steps.repository-tags-fetch.outputs.invalid }}
 
     steps:
       - name: "Retrieve/verify tags"
-        id: semantic-tag-latest
+        id: repository-tags-fetch
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-latest@main
+        uses: os-climate/osc-github-devops/.github/actions/repository-tags-fetch@main
 
       # Only runs if no tags are found, pushes an initial v0.0.0
       - name: "Create initial v0.0.0 tag [conditional]"
         id: set-initial-tag
-        if: steps.semantic-tag-latest.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
+        if: steps.repository-tags-fetch.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
