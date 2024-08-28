@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🏷️ Latest Semantic Tag"
+name: "🏷️ Retrieve/Validate Tags"
 
 outputs:
   TAG:
@@ -19,6 +19,8 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v4
+
     - name: "Fetch tags"
       shell: bash
       if: startsWith(github.ref, 'refs/tags/') != true
@@ -70,7 +72,6 @@ runs:
           # Set a placeholder value for the tag
           TAG="0.0.0"
         fi
-
 
         echo "Tag: $TAG [v$TAG]"
         echo "tag=${TAG}" >> $GITHUB_OUTPUT
