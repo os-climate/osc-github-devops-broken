@@ -123,11 +123,10 @@ jobs:
 
   python-build:
     name: "Python Build"
+    uses: os-climate/osc-github-devops/.github/workflows/python-matrix-build@main
     needs:
       - github-workflow-metadata
       - python-project
-    runs-on: "ubuntu-latest"
-    continue-on-error: false
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
@@ -135,29 +134,10 @@ jobs:
       contents: write
       # Required by SigStore signing action
       id-token: write
-    outputs:
-      success: ${{ steps.build.outputs.success }}
-
-    steps:
-      # - uses: actions/checkout@v4
-
-      - uses: actions/checkout@v4
-
-      - name: "Set up Python ${{ matrix.python-version }}"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: "Install PDM tooling"
-        uses: pdm-project/setup-pdm@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: "Build Python Project"
-        id: build
-        uses: os-climate/osc-github-devops/.github/actions/python-project-build@main
-        # with:
-        # python-versions: ${{ matrix.python-version }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      python-version: ${{ matrix.python-version }}
 
   github:
     name: "Create GitHub Release"

@@ -41,7 +41,7 @@ jobs:
       - name: "Action: repository-classify-content"
         id: repository-classify-content
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/repository-classify-content@main
+        uses: os-climate/osc-github-devops/.github/actions/repository-content-classify@main
 
       - name: "Action: python-versions-matrix"
         id: python-versions-matrix
