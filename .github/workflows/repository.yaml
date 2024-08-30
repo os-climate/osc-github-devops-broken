@@ -134,8 +134,6 @@ jobs:
       contents: write
       # Required by SigStore signing action
       id-token: write
-    secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
     with:
       python-version: ${{ matrix.python-version }}
 
