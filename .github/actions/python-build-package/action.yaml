@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🧱 Python Build"
-description: "Build Python Project"
+name: "🧱 Build Package"
+description: "Builds a Python Project"
 
 inputs:
   ARTEFACT_OUTPUT_PATH:

@@ -99,19 +99,13 @@ jobs:
           pypi_production: ${{ secrets.PYPI_PRODUCTION }}
 
   python-project:
-    name: "Python Project"
+    name: "Python Code"
     needs:
       - classify-content
     if: needs.classify-content.outputs.python  == 'true'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.python.outputs.matrixjson }}
-    permissions:
-      # IMPORTANT: mandatory to raise the PR
-      id-token: write
-      pull-requests: write
-      repository-projects: write
-      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -122,8 +116,8 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/python-versions-matrix@main
 
   python-build:
-    name: "Python Build"
-    uses: os-climate/osc-github-devops/.github/workflows/python-matrix-build.yaml@main
+    name: "Build Project"
+    uses: os-climate/osc-github-devops/.github/workflows/python-build-matrix.yaml@main
     needs:
       - github-workflow-metadata
       - python-project
