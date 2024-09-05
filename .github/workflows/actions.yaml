@@ -27,8 +27,10 @@ jobs:
   test-1password:
     name: "1Password Synthetic Tests"
     uses: os-climate/osc-github-devops/.github/workflows/one-password-credentials.yaml@main
+    # Do NOT run until change is merged; secrets will NOT be available and workflow WILL fail
+    if: github.event_name != 'pull_request'
     secrets:
-      ONE_PASSWORD_TESTING: ${{ secrets.ONE_PASSWORD_TESTING }}
+      ONE_PASSWORD_DEVELOPMENT: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
 
   test:
     name: "Standalone Synthetic Tests"
@@ -187,7 +189,7 @@ jobs:
 
       - name: "Action: github-mandatory-secrets"
         uses: os-climate/osc-github-devops/.github/actions/github-mandatory-secrets@main
-        # Pull requests cannot access secrets, so run this step conditionally
+        # Do NOT run until change is merged; secrets will NOT be available and workflow WILL fail
         if: github.event_name != 'pull_request'
         # continue-on-error: true
         with:
