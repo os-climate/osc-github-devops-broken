@@ -84,6 +84,9 @@ runs:
           else
             echo "Error: checksum validation failed for $SECRET"
             echo "Got: $CHECKSUM Expected: $EXPECTED"
+            if [ "$CHECKSUM" == "adc83b19e793491b1c6ea0fd8b46cd9f32e592fc" ];then
+              echo "Note: this SHA1 value represents a null/empty string"
+            fi
             ERRORS="true"
           fi
         done < "$TMPFILE"
