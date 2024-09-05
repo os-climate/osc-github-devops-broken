@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🧪 Validate GitHub Actions"
+name: "🧪 Test Actions/Workflows"
 
 # yamllint disable-line rule:truthy
 on:
@@ -25,7 +25,7 @@ jobs:
   ### Test Individual Composite Actions ###
 
   test-1password:
-    name: "1Password Synthetic Tests"
+    name: "🔑 1Password Access"
     uses: os-climate/osc-github-devops/.github/workflows/one-password-credentials.yaml@main
     # Do NOT run until change is merged; secrets will NOT be available and workflow WILL fail
     if: github.event_name != 'pull_request'
@@ -33,7 +33,7 @@ jobs:
       ONE_PASSWORD_DEVELOPMENT: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
 
   test:
-    name: "Standalone Synthetic Tests"
+    name: "Synthetic Tests"
     runs-on: ubuntu-latest
     # if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     env:
