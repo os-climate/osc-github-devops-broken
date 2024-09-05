@@ -194,7 +194,7 @@ jobs:
           # Mandatory secrets/variables to check
           pypi_development: ${{ secrets.PYPI_DEVELOPMENT }}
           pypi_production: ${{ secrets.PYPI_PRODUCTION }}
-          one_password_testing: ${{ secrets.ONE_PASSWORD_TESTING }}
+          one_password_development: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
 
       - name: "Action: string-comparison [match]"
         id: string-comparison-matching

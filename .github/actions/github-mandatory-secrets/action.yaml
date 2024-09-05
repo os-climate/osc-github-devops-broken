@@ -16,7 +16,7 @@ inputs:
   PYPI_PRODUCTION:
     description: "Token needed to publish packages to: pypi.org"
     required: true
-  ONE_PASSWORD_TESTING:
+  ONE_PASSWORD_DEVELOPMENT:
     description: "Test service account for 1Password vault access"
     required: true
 
@@ -32,7 +32,7 @@ runs:
       env:
         PYPI_DEVELOPMENT: ${{ inputs.pypi_development }}
         PYPI_PRODUCTION: ${{ inputs.pypi_production }}
-        ONE_PASSWORD_TESTING: ${{ inputs.one_password_testing }}
+        ONE_PASSWORD_DEVELOPMENT: ${{ inputs.one_password_development }}
 
       shell: bash
       run: |
