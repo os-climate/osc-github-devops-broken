@@ -24,6 +24,10 @@ env:
 jobs:
   ### Test Individual Composite Actions ###
 
+  test-1password:
+    name: "1Password Synthetic Tests"
+    uses: os-climate/osc-github-devops/.github/workflows/one-password-credentials.yaml@main
+
   test:
     name: "Standalone Synthetic Tests"
     runs-on: ubuntu-latest
@@ -188,6 +192,7 @@ jobs:
           # Mandatory secrets/variables to check
           pypi_development: ${{ secrets.PYPI_DEVELOPMENT }}
           pypi_production: ${{ secrets.PYPI_PRODUCTION }}
+          one_password_testing: ${{ secrets.ONE_PASSWORD_TESTING }}
 
       - name: "Action: string-comparison [match]"
         id: string-comparison-matching

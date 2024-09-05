@@ -53,7 +53,7 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/github-workflow-metadata@main
 
   tagging:
-    name: "Retrieve/Verify Tags"
+    name: "Retrieve/Verify GIT Tags"
     runs-on: ubuntu-latest
     outputs:
       current: ${{ steps.repository-tags-fetch.outputs.tag }}
@@ -99,7 +99,7 @@ jobs:
           pypi_production: ${{ secrets.PYPI_PRODUCTION }}
 
   python-project:
-    name: "Python Code"
+    name: "Python Content"
     needs:
       - classify-content
     if: needs.classify-content.outputs.python  == 'true'
@@ -131,52 +131,9 @@ jobs:
     with:
       python-version: ${{ matrix.python-version }}
 
-  github:
+  github-release:
     name: "Create GitHub Release"
-    needs: python-build
-    runs-on: ubuntu-latest
-    permissions:
-      # IMPORTANT: mandatory to publish artefacts
-      contents: write
-    if:
-      # Only publish on tag pushes or when a release is explicitly requested
-      startsWith(github.ref, 'refs/tags/') || contains(github.event.head_commit.message, '[release]')
-    steps:
-      - name: "⬇ Download build artefacts"
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ github.ref_name }}
-          path: ${{ env.BUILD_ARTEFACTS }}
-
-      - name: "Publish DEVELOPMENT artefacts to GitHub"
-        if: (startsWith(github.ref, 'refs/tags/') != true) && (env.GITHUB_RELEASE_ALWAYS == 'true')
-        uses: softprops/action-gh-release@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: true
-          # ToDo: DO WE WANT A DATE/TIME STAMP HERE?
-          tag_name: ${{ github.ref_name }}-dev
-          name: "Test/Development Build: ${{ github.ref_name }}"
-          # body_path: ${{ github.workspace }}/CHANGELOG.rst
-          files: |
-            ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
-            ${{ env.BUILD_ARTEFACTS }}/*.whl
-            ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
-
-      - name: "Publish PRODUCTION artefacts to GitHub"
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: false
-          make_latest: true
-          tag_name: ${{ github.ref_name }}
-          name: "${{ github.ref_name }}"
-          # body_path: ${{ github.workspace }}/CHANGELOG.rst
-          files: |
-            ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
-            ${{ env.BUILD_ARTEFACTS }}/*.whl
-            ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
+    uses: os-climate/osc-github-devops/.github/workflows/github-release.yaml@main
 
   testpypi:
     name: "Test Package Publishing"

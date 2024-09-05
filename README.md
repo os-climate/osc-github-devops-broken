@@ -34,7 +34,7 @@ using the supplied GitHub composite actions, reusable workflows, and workflows.
 
 Relevant link to the Python package index project page:
 
-- [osc-github-devopss](https://pypi.org/project/osc-github-devops)
+- [osc-github-devops](https://pypi.org/project/osc-github-devops)
 
 Detailed documentation will be supplied here, once further development is done.
 
