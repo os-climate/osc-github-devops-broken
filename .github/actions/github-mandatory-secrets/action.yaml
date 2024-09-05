@@ -58,7 +58,7 @@ runs:
         cat << EOF > "$TMPFILE"
         PYPI_DEVELOPMENT 19fc83e3c621347f85573fa0ea9dffff6542d3e3
         PYPI_PRODUCTION dcfaee96a60c6f8e44c870ed7058fe55d8b11fc6
-        ONE_PASSWORD_TESTING 38dac567db578936c5e9cea545f2c13a57a2585f
+        ONE_PASSWORD_DEVELOPMENT 38dac567db578936c5e9cea545f2c13a57a2585f
         EOF
 
         # Iterate over secrets and validate checksums against those stored in GitHub
@@ -71,8 +71,8 @@ runs:
             CHECKSUM=$(echo ${{ env.PYPI_DEVELOPMENT }} | sha1sum | awk '{print $1}')
           elif [ "$SECRET" == "PYPI_PRODUCTION" ]; then
             CHECKSUM=$(echo ${{ env.PYPI_PRODUCTION }} | sha1sum | awk '{print $1}')
-          elif [ "$SECRET" == "ONE_PASSWORD_TESTING" ]; then
-            CHECKSUM=$(echo ${{ env.ONE_PASSWORD_TESTING }} | sha1sum | awk '{print $1}')
+          elif [ "$SECRET" == "ONE_PASSWORD_DEVELOPMENT" ]; then
+            CHECKSUM=$(echo ${{ env.ONE_PASSWORD_DEVELOPMENT }} | sha1sum | awk '{print $1}')
           else
             echo "Unexpected secret $SECRET was NOT found in validation table"
             echo "Error: the validation workflow may need updating"
