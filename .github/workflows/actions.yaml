@@ -27,6 +27,8 @@ jobs:
   test-1password:
     name: "1Password Synthetic Tests"
     uses: os-climate/osc-github-devops/.github/workflows/one-password-credentials.yaml@main
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.ONE_PASSWORD_TESTING }}
 
   test:
     name: "Standalone Synthetic Tests"
