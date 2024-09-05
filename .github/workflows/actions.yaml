@@ -25,7 +25,7 @@ jobs:
   ### Test Individual Composite Actions ###
 
   test-1password:
-    name: "🔑 1Password Access"
+    name: "1Password Access"
     uses: os-climate/osc-github-devops/.github/workflows/one-password-credentials.yaml@main
     # Do NOT run until change is merged; secrets will NOT be available and workflow WILL fail
     if: github.event_name != 'pull_request'
