@@ -31,7 +31,7 @@ jobs:
     if: github.event_name != 'pull_request'
     with:
       ELEMENT: "op://67hdehutbpddhfbgm6ffjvdsbu/Test Secure Note/notesPlain"
-      EXPORT-ENV: true
+      EXPORT: true
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
 
