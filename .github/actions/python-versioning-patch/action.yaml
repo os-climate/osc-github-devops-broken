@@ -20,10 +20,18 @@ runs:
       shell: bash
       run: |
         # Substituting project version string
+
+        # Abort if dynamic versioning is enabled for the project
+        DYNAMIC=$(grep "dynamic = [\"version\"]" pyproject.toml)
+        if [ "$DYNAMIC" == "pyproject.toml" ]; then
+          echo "Error: dynamic versioning is enabled for this Python project"; exit 1
+        fi
+
+        # Attempt version string substitution for project
         FILEMATCH=$(grep "version = \"$CURRENT\"" pyproject.toml)
         if [ "$FILEMATCH" == "pyproject.toml" ]; then
+          # String found; replace/update the version
           sed -i "s:version = \"$CURRENT\":version = \"$TARGET\":" pyproject.toml
         else
-          echo "Error: specified version string $CURRENT was NOT found in pyproject.toml"
-          exit 1
+          echo "Error: specified version $CURRENT was NOT found in pyproject.toml"; exit 1
         fi
