@@ -17,7 +17,7 @@ on:
         description: "Version used to upload/store artefacts for publishing"
         required: false
         type: string
-        default: "3.10"
+        default: "3.11"
       ARTEFACT_LOCATION:
         description: "Build artefacts will be output to this folder/directory"
         required: false
