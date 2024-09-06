@@ -30,7 +30,7 @@ jobs:
     # Do NOT run until change is merged; secrets will NOT be available and workflow WILL fail
     if: github.event_name != 'pull_request'
     with:
-      ELEMENT: "op://67hdehutbpddhfbgm6ffjvdsbu/Test Secure Note/notesPlain"
+      VAULT_ITEM: "op://67hdehutbpddhfbgm6ffjvdsbu/Test Secure Note/notesPlain"
       EXPORT: true
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
