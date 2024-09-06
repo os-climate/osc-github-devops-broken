@@ -24,13 +24,16 @@ env:
 jobs:
   ### Test Individual Composite Actions ###
 
-  test-1password:
+  one-password-test:
     name: "1Password Access"
     uses: os-climate/osc-github-devops/.github/workflows/one-password-credentials.yaml@main
     # Do NOT run until change is merged; secrets will NOT be available and workflow WILL fail
     if: github.event_name != 'pull_request'
+    with:
+      ELEMENT: "op://67hdehutbpddhfbgm6ffjvdsbu/Test Secure Note/notesPlain"
+      EXPORT-ENV: "true"
     secrets:
-      ONE_PASSWORD_DEVELOPMENT: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
 
   test:
     name: "Synthetic Tests"
