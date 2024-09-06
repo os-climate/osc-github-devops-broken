@@ -35,7 +35,7 @@ classifiers = [
 
 dependencies = [
     "typer",
-    "jupyterlab==4.1.6"
+    "jupyterlab"
 ]
 
 [project.urls]

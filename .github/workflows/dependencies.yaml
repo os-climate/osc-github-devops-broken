@@ -20,8 +20,27 @@ env:
   DEFAULT-PYTHON: "3.10"
 
 jobs:
+  classify-content:
+    name: "Inspect Repository"
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.classify.outputs.python }}
+      notebooks: ${{ steps.classify.outputs.notebooks }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Classify content"
+        id: classify
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/repository-content-classify@main
+
   update-dependencies:
-    name: "🐍 Python"
+    name: "Update Python Modules"
+    needs:
+      - classify-content
+    if: needs.classify-content.outputs.python  == 'true'
+
     runs-on: ubuntu-latest
     permissions:
       # IMPORTANT: mandatory to raise the PR
