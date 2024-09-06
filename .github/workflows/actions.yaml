@@ -16,7 +16,7 @@ on:
     branches: ["main", "master"]
 
 env:
-  DEFAULT-PYTHON: "3.10"
+  DEFAULT-PYTHON: "3.11"
   ARTEFACTS: "dist"
   # Configures publishing to PyPI
   PUBLISH: "true"
