@@ -108,6 +108,7 @@ jobs:
           # Mandatory secrets/variables to check
           pypi_development: ${{ secrets.PYPI_DEVELOPMENT }}
           pypi_production: ${{ secrets.PYPI_PRODUCTION }}
+          one_password_development: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
 
   python-project:
     name: "Python Content"
@@ -145,6 +146,8 @@ jobs:
   github-release:
     name: "Create GitHub Release"
     uses: os-climate/osc-github-devops/.github/workflows/github-release.yaml@main
+    needs:
+      - python-build
 
   testpypi:
     name: "Test Package Publishing"
