@@ -9,9 +9,9 @@ on:
   workflow_call:
     inputs:
       PRERELEASE:
-        # Set to either: [ true | false ]
         description: "Mark release as pre-release version"
         type: boolean
+        required: true
       TAG:
         # Tag to use for release/build name
         description: "Semantic tag for release/build"
