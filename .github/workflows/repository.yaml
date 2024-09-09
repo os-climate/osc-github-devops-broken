@@ -152,14 +152,14 @@ jobs:
     with:
       python-version: ${{ matrix.python-version }}
 
-  github-prerelease:
+  github-dev-release:
     name: "GitHub Development Release"
     uses: os-climate/osc-github-devops/.github/workflows/github-release.yaml@main
     needs:
       - python-build
       - tagging
     if:
-      startsWith(github.ref, 'refs/tags/') != 'true'
+      github.event.pull_request.merged == true && startsWith(github.ref, 'refs/tags/') != 'true'
       # ToDo: Add conditional (based on labels in release PR)
     with:
       prerelease: false
