@@ -17,19 +17,13 @@ on:
         description: "Semantic tag for release/build"
         type: string
         required: true
-      FORCE:
-        description: "Force a development release"
-        type: boolean
-        required: false
-        default: false
 
 jobs:
   github-release:
-    name: "GitHub Release"
+    name: "Create GitHub release"
     runs-on: "ubuntu-latest"
     permissions:
       contents: write
-    if: inputs.PRERELEASE && inputs.FORCE
     steps:
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
@@ -37,7 +31,22 @@ jobs:
           name: ${{ github.ref_name }}
           path: ${{ env.BUILD_ARTEFACTS }}
 
-      - name: "Publish artefacts to GitHub"
+      - name: "DEVELOPMENT artefacts"
+        uses: softprops/action-gh-release@v2
+        if: env.GITHUB_RELEASE_ALWAYS
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: ${{ inputs.PRERELEASE }}
+          # ToDo: DO WE WANT A DATE/TIME STAMP HERE?
+          tag_name: ${{ inputs.tag }}
+          name: "Development/build: ${{ inputs.tag }}"
+          # body_path: ${{ github.workspace }}/CHANGELOG.rst
+          files: |
+            ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
+            ${{ env.BUILD_ARTEFACTS }}/*.whl
+            ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
+
+      - name: "PRODUCTION artefacts"
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
