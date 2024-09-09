@@ -3,15 +3,20 @@
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
 name: "📦 GitHub Release"
-# Packages a development or production release on GitHub"
+# Packages a development/production release on GitHub"
 
 on:
   workflow_call:
     inputs:
       PRERELEASE:
         # Set to either: [ true | false ]
-        description: "Mark as pre-release version"
+        description: "Mark release as pre-release version"
         type: boolean
+      TAG:
+        # Tag to use for release/build name
+        description: "Semantic tag for release/build"
+        type: string
+        required: true
 
 jobs:
   github-release:
@@ -26,30 +31,14 @@ jobs:
           name: ${{ github.ref_name }}
           path: ${{ env.BUILD_ARTEFACTS }}
 
-      - name: "Publish DEVELOPMENT artefacts to GitHub"
-        if: (startsWith(github.ref, 'refs/tags/') != true) && (env.GITHUB_RELEASE_ALWAYS == 'true')
+      - name: "Publish artefacts to GitHub"
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: ${{ inputs.PRERELEASE }}
           # ToDo: DO WE WANT A DATE/TIME STAMP HERE?
-          tag_name: ${{ github.ref_name }}-dev
-          name: "Test/Development Build: ${{ github.ref_name }}"
-          # body_path: ${{ github.workspace }}/CHANGELOG.rst
-          files: |
-            ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
-            ${{ env.BUILD_ARTEFACTS }}/*.whl
-            ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
-
-      - name: "Publish PRODUCTION artefacts to GitHub"
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: ${{ inputs.PRERELEASE }}
-          make_latest: true
-          tag_name: ${{ github.ref_name }}
-          name: "${{ github.ref_name }}"
+          tag_name: ${{ inputs.tag }}
+          name: "Release/build: ${{ inputs.tag }}"
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
             ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
