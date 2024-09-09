@@ -17,6 +17,11 @@ on:
         description: "Semantic tag for release/build"
         type: string
         required: true
+      FORCE:
+        description: "Force a development release"
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   github-release:
@@ -24,6 +29,7 @@ jobs:
     runs-on: "ubuntu-latest"
     permissions:
       contents: write
+    if: inputs.PRERELEASE && inputs.FORCE
     steps:
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
