@@ -72,7 +72,7 @@ runs:
         echo "Multi-line base64 encoded text:"
         echo "$ENCODED_TEXT"
 
-        TEXT=$(base64 -d $ENCODED_TEXT)
+        TEXT=$(echo "$ENCODED_TEXT" | base64 -d)
         echo "Decoded text:"
         echo "$TEXT"
 
