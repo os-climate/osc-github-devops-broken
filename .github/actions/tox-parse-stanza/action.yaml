@@ -32,15 +32,3 @@ runs:
 
         echo "TOX configuration stanza:"
         echo "$STANZA"
-
-# Sample output:
-# % grep -E -w "^\[(.*?)\]" tox.ini | tr -d '[],'
-# gh-actions
-# tox
-# testenv
-# testenv:tests
-# testenv:lint
-# testenv:{buildclean}
-# testenv:cov
-# testenv:{docsdoctestslinkcheck}
-# tool.flake8
