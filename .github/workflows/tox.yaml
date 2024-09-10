@@ -38,7 +38,6 @@ on:
 
 jobs:
   parse-tox-file:
-    name: "Parse TOX Configuration"
     runs-on: ubuntu-latest
     outputs:
       stanza: ${{ steps.tox-stanza.outputs.stanza }}
