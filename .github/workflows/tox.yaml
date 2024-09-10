@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🛠️ Tox"
+name: "🛠️ Tox Environment"
 # Checks for TOX configuration file, parses the stanza, sets useful flags
 
 on:
@@ -38,6 +38,7 @@ on:
 
 jobs:
   parse-tox-file:
+    name: "Gather"
     runs-on: ubuntu-latest
     outputs:
       stanza: ${{ steps.tox-stanza.outputs.stanza }}
