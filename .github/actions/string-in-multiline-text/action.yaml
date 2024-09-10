@@ -8,7 +8,7 @@ inputs:
   STRING:
     description: "String/line to match"
     required: true
-  TEXT:
+  BASE64_TEXT:
     description: "Multi-line text to check for match"
     required: true
   SUBSTRING_MATCH:
@@ -25,7 +25,7 @@ outputs:
     value: ${{ steps.compare.outputs.match }}
   COUNT:
     description: "True if string matches based on provided inputs/parameters"
-    value: ${{ steps.compare.outputs.match }}
+    value: ${{ steps.compare.outputs.count }}
 
 runs:
   using: "composite"
@@ -48,16 +48,16 @@ runs:
           export GITHUB_OUTPUT="/dev/null"
         else
           STRING="${{ inputs.STRING }}"
-          TEXT="${{ inputs.TEXT }}"
+          BASE64_TEXT="${{ inputs.TEXT }}"
         fi
 
         if [ -z "$STRING" ]; then
           echo "Running from shell script outside GitHub"
           if [ $# -ne 2 ]; then
-            echo "Usage:  $0 [string/line] [multi-line text to search]"; exit 1
+            echo "Usage:  $0 [string/line] [base64 encoded multi-line text]"; exit 1
           else
             STRING="$1"
-            TEXT="$2"
+            BASE64_TEXT="$2"
           fi
         fi
 
@@ -69,7 +69,11 @@ runs:
         fi
 
         echo "String to match: $STRING"
-        echo "Multi-line text: $TEXT"
+        echo "Multi-line base64 encoded text: $BASE64_TEXT"
+
+        TEXT=$(base64 -d $BASE64_TEXT)
+        echo "Decoded text:"
+        echo "$TEXT"
 
         while read -r LINE
         do
