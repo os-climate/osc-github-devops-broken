@@ -125,15 +125,7 @@ jobs:
     needs:
       - classify-content
     if: needs.classify-content.outputs.tox  == 'true'
-    runs-on: ubuntu-latest
-    outputs:
-      stanza: ${{ steps.tox-stanza.outputs.stanza }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: "Extract TOX stanza"
-        id: tox-stanza
-        # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/tox-parse-stanza@main
+    uses: os-climate/osc-github-devops/.github/workflows/tox.yaml@main
 
   python-project:
     name: "Python Content"

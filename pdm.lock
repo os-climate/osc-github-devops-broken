@@ -5,7 +5,7 @@
 groups = ["default", "dev", "docs", "lint", "test", "tox"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:401d0c4252b64b4e93df1aad1d2cf341e2355033bed84beba0ded2a2f4327aa1"
+content_hash = "sha256:60dcc9ff60f6790d8d28284bc1e7e92112fcff9a7bd62eb93a59c1c3a4ecedaf"
 
 [[metadata.targets]]
 requires_python = ">=3.10,<3.13"
@@ -1049,7 +1049,7 @@ files = [
 
 [[package]]
 name = "jupyterlab"
-version = "4.1.6"
+version = "4.2.5"
 requires_python = ">=3.8"
 summary = "JupyterLab computational environment"
 groups = ["default"]
@@ -1063,16 +1063,17 @@ dependencies = [
     "jupyter-core",
     "jupyter-lsp>=2.0.0",
     "jupyter-server<3,>=2.4.0",
-    "jupyterlab-server<3,>=2.19.0",
+    "jupyterlab-server<3,>=2.27.1",
     "notebook-shim>=0.2",
     "packaging",
+    "setuptools>=40.1.0",
     "tomli>=1.2.2; python_version < \"3.11\"",
     "tornado>=6.2.0",
     "traitlets",
 ]
 files = [
-    {file = "jupyterlab-4.1.6-py3-none-any.whl", hash = "sha256:cf3e862bc10dbf4331e4eb37438634f813c238cfc62c71c640b3b3b2caa089a8"},
-    {file = "jupyterlab-4.1.6.tar.gz", hash = "sha256:7935f36ba26eb615183a4f5c2bbca5791b5108ce2a00b5505f8cfd100d53648e"},
+    {file = "jupyterlab-4.2.5-py3-none-any.whl", hash = "sha256:73b6e0775d41a9fee7ee756c80f58a6bed4040869ccc21411dc559818874d321"},
+    {file = "jupyterlab-4.2.5.tar.gz", hash = "sha256:ae7f3a1b8cb88b4f55009ce79fa7c06f99d70cd63601ee4aa91815d054f46f75"},
 ]
 
 [[package]]
@@ -1399,7 +1400,7 @@ files = [
 
 [[package]]
 name = "pdm"
-version = "2.18.1"
+version = "2.18.2"
 requires_python = ">=3.8"
 summary = "A modern Python package and dependency manager supporting the latest PEP standards"
 groups = ["dev", "test"]
@@ -1424,30 +1425,30 @@ dependencies = [
     "shellingham>=1.3.2",
     "tomli>=1.1.0; python_version < \"3.11\"",
     "tomlkit<1,>=0.11.1",
-    "truststore; python_version >= \"3.10\"",
+    "truststore>=0.9; python_version >= \"3.10\"",
     "unearth>=0.17.0",
     "virtualenv>=20",
 ]
 files = [
-    {file = "pdm-2.18.1-py3-none-any.whl", hash = "sha256:6a86b9a6fbe071dc26f266006ac8d688e8d16e5115ee115135713af95a860c0a"},
-    {file = "pdm-2.18.1.tar.gz", hash = "sha256:acef692477a7190731ee7c1f626e97516eeb7473e4eeeeede4fef2bf0fb743ee"},
+    {file = "pdm-2.18.2-py3-none-any.whl", hash = "sha256:cb794c3d7c4d57494b039662932ac758babafb047e3c49cb18fa7bff30687262"},
+    {file = "pdm-2.18.2.tar.gz", hash = "sha256:6d93a18d52edca056fafed7b262fe48ddc61984dabf73eb9365ad61a90caebb6"},
 ]
 
 [[package]]
 name = "pdm"
-version = "2.18.1"
+version = "2.18.2"
 extras = ["pytest"]
 requires_python = ">=3.8"
 summary = "A modern Python package and dependency manager supporting the latest PEP standards"
 groups = ["test"]
 dependencies = [
-    "pdm==2.18.1",
+    "pdm==2.18.2",
     "pytest",
     "pytest-mock",
 ]
 files = [
-    {file = "pdm-2.18.1-py3-none-any.whl", hash = "sha256:6a86b9a6fbe071dc26f266006ac8d688e8d16e5115ee115135713af95a860c0a"},
-    {file = "pdm-2.18.1.tar.gz", hash = "sha256:acef692477a7190731ee7c1f626e97516eeb7473e4eeeeede4fef2bf0fb743ee"},
+    {file = "pdm-2.18.2-py3-none-any.whl", hash = "sha256:cb794c3d7c4d57494b039662932ac758babafb047e3c49cb18fa7bff30687262"},
+    {file = "pdm-2.18.2.tar.gz", hash = "sha256:6d93a18d52edca056fafed7b262fe48ddc61984dabf73eb9365ad61a90caebb6"},
 ]
 
 [[package]]
@@ -1617,7 +1618,7 @@ files = [
 
 [[package]]
 name = "pytest"
-version = "8.3.2"
+version = "8.3.3"
 requires_python = ">=3.8"
 summary = "pytest: simple powerful testing with Python"
 groups = ["test"]
@@ -1630,8 +1631,8 @@ dependencies = [
     "tomli>=1; python_version < \"3.11\"",
 ]
 files = [
-    {file = "pytest-8.3.2-py3-none-any.whl", hash = "sha256:4ba08f9ae7dcf84ded419494d229b48d0903ea6407b030eaec46df5e6a73bba5"},
-    {file = "pytest-8.3.2.tar.gz", hash = "sha256:c132345d12ce551242c87269de812483f5bcc87cdbb4722e48487ba194f9fdce"},
+    {file = "pytest-8.3.3-py3-none-any.whl", hash = "sha256:a6853c7375b2663155079443d2e45de913a911a11d669df02a50814944db57b2"},
+    {file = "pytest-8.3.3.tar.gz", hash = "sha256:70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181"},
 ]
 
 [[package]]
@@ -2004,6 +2005,17 @@ files = [
 ]
 
 [[package]]
+name = "setuptools"
+version = "74.1.2"
+requires_python = ">=3.8"
+summary = "Easily download, build, install, upgrade, and uninstall Python packages"
+groups = ["default"]
+files = [
+    {file = "setuptools-74.1.2-py3-none-any.whl", hash = "sha256:5f4c08aa4d3ebcb57a50c33b1b07e94315d7fc7230f7115e47fc99776c8ce308"},
+    {file = "setuptools-74.1.2.tar.gz", hash = "sha256:95b40ed940a1c67eb70fc099094bd6e99c6ee7c23aa2306f4d2697ba7916f9c6"},
+]
+
+[[package]]
 name = "shellingham"
 version = "1.5.4"
 requires_python = ">=3.7"
@@ -2279,12 +2291,12 @@ files = [
 
 [[package]]
 name = "tox"
-version = "4.18.0"
+version = "4.18.1"
 requires_python = ">=3.8"
 summary = "tox is a generic virtualenv management and test command line tool"
 groups = ["dev", "tox"]
 dependencies = [
-    "cachetools>=5.4",
+    "cachetools>=5.5",
     "chardet>=5.2",
     "colorama>=0.4.6",
     "filelock>=3.15.4",
@@ -2296,8 +2308,8 @@ dependencies = [
     "virtualenv>=20.26.3",
 ]
 files = [
-    {file = "tox-4.18.0-py3-none-any.whl", hash = "sha256:0a457400cf70615dc0627eb70d293e80cd95d8ce174bb40ac011011f0c03a249"},
-    {file = "tox-4.18.0.tar.gz", hash = "sha256:5dfa1cab9f146becd6e351333a82f9e0ade374451630ba65ee54584624c27b58"},
+    {file = "tox-4.18.1-py3-none-any.whl", hash = "sha256:35d472032ee1f73fe20c3e0e73d7073a4e85075c86ff02c576f9fc7c6a15a578"},
+    {file = "tox-4.18.1.tar.gz", hash = "sha256:3c0c96bc3a568a5c7e66387a4cfcf8c875b52e09f4d47c9f7a277ec82f1a0b11"},
 ]
 
 [[package]]
@@ -2332,7 +2344,6 @@ version = "0.9.2"
 requires_python = ">=3.10"
 summary = "Verify certificates using native system trust stores"
 groups = ["dev", "test"]
-marker = "python_version >= \"3.10\""
 files = [
     {file = "truststore-0.9.2-py3-none-any.whl", hash = "sha256:04559916f8810cc1a5ecc41f215eddc988746067b754fc0995da7a2ceaf54735"},
     {file = "truststore-0.9.2.tar.gz", hash = "sha256:a1dee0d0575ff22d2875476343783a5d64575419974e228f3248772613c3d993"},
