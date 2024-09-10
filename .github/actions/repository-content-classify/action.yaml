@@ -13,7 +13,7 @@ outputs:
     description: "Repository contains Python Jupyter Notebooks"
     value: ${{ steps.classification.outputs.notebooks }}
   TOX:
-    description: "Repository contains a TOX condfigutation"
+    description: "Repository contains a TOX configuration"
     value: ${{ steps.classification.outputs.tox }}
 
 runs:
