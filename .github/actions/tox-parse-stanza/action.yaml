@@ -27,8 +27,25 @@ runs:
           exit 1
         else
           STANZA=$(grep -E -w "^\[(.*?)\]" tox.ini | tr -d '[],')
-          echo "stanza=$STANZA" >> $GITHUB_OUTPUT
+
+          # Note: multi-line GitHub output needs careful handling
+          # See: https://github.com/orgs/community/discussions/116619
+          echo 'stanza<<EOF' >> $GITHUB_OUTPUT
+          echo $STANZA >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
         fi
 
         echo "TOX configuration stanza:"
         echo "$STANZA"
+
+# Sample output:
+# % grep -E -w "^\[(.*?)\]" tox.ini | tr -d '[],'
+# gh-actions
+# tox
+# testenv
+# testenv:tests
+# testenv:lint
+# testenv:{buildclean}
+# testenv:cov
+# testenv:{docsdoctestslinkcheck}
+# tool.flake8
