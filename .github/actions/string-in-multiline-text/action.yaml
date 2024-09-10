@@ -79,7 +79,7 @@ runs:
         # Check if string A contains string B
         if [[ "$SUBSTRING_MATCH" == "true" ]]; then
           echo "Sub-string match requested"
-          if [[ "$STRING" =~ '$TEXT' ]]; then
+          if [[ "$STRING" =~ "$TEXT" ]]; then
             echo "String A contains string B"
             MATCH="true"
             COUNT=$((COUNT+1))
