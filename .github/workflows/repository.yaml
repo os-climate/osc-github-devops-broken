@@ -153,7 +153,7 @@ jobs:
       python-version: ${{ matrix.python-version }}
 
   github-dev-release:
-    name: "GitHub Development Release"
+    name: "Development Build"
     uses: os-climate/osc-github-devops/.github/workflows/github-release.yaml@main
     needs:
       - python-build
@@ -167,7 +167,7 @@ jobs:
       tag: ${{ needs.tagging.outputs.dev_tag }}
 
   github-release:
-    name: "GitHub Production Release"
+    name: "Production Build"
     uses: os-climate/osc-github-devops/.github/workflows/github-release.yaml@main
     # On merge of tag push, create a production release
     if: github.event.pull_request.merged == true && startsWith(github.ref, 'refs/tags/')
