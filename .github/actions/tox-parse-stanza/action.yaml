@@ -10,7 +10,7 @@ outputs:
     value: ${{ steps.parse-tox-ini.outputs.stanza }}
   ENCODED_STANZA:
     description: "Stores TOX stanza from tox.ini base64 encoded"
-    value: ${{ steps.parse-tox-ini.outputs.encoded_stanza }}
+    value: ${{ steps.parse-tox-ini.outputs.encoded-stanza }}
 
 runs:
   using: "composite"
@@ -30,10 +30,11 @@ runs:
         else
           STANZA=$(grep -E -w "^\[(.*?)\]" tox.ini | tr -d '[],')
           ENCODED_STANZA=$(echo -n "$STANZA" | base64)
-          echo 'stanza<<EOF' >> $GITHUB_OUTPUT
-          echo "$STANZA" >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
-          echo "encoded_stanza=$ENCODED_STANZA" >> $GITHUB_OUTPUT
+          echo 'stanza<<EOF' >> "$GITHUB_OUTPUT"
+          echo "$STANZA" >> "$GITHUB_OUTPUT"
+          echo 'EOF' >> "$GITHUB_OUTPUT"
+          # echo -n "encoded_stanza=$ENCODED_STANZA" >> "$GITHUB_OUTPUT"
+          echo "encoded_stanza<<EOF"$'\n'"$ENCODED_STANZA"$'\n'EOF >> "$GITHUB_OUTPUT"
         fi
 
         echo "TOX configuration stanza:"
