@@ -46,27 +46,20 @@ runs:
         if [ -z "$GITHUB_OUTPUT" ]; then
           echo "Running from a shell, NOT workflow"
           export GITHUB_OUTPUT="/dev/null"
-        else
-          STRING="${{ inputs.STRING }}"
-          ENCODED_TEXT="${{ inputs.ENCODED_TEXT }}"
-          SUBSTRING_MATCH="${{ inputs.SUBSTRING_MATCH }}"
-          CASE_INSENSITIVE="${{ inputs.CASE_INSENSITIVE }}"
-        fi
-
-        if [ -z "$STRING" ]; then
-          echo "Running from shell script outside GitHub"
           if [ $# -ne 4 ]; then
-            echo "Usage:  $0 [string] [base64 text] [match substring true|false] [case-insensitive true|false]"; exit 1
+            echo "Usage:  $0 [string] [base64 text] [match substring true|false] [case-insensitive true|false]"
+            echo "Error: invalid arguments specified"; exit 1
           else
             STRING="$1"
             ENCODED_TEXT="$2"
             SUBSTRING_MATCH="$3"
             CASE_INSENSITIVE="$4"
           fi
-        fi
-
-        if [ $# -lt 2 ] || [ $# -gt 4 ]; then
-          echo "Error: invalid arguments supplied"; exit 1
+        else
+          STRING="${{ inputs.STRING }}"
+          ENCODED_TEXT="${{ inputs.ENCODED_TEXT }}"
+          SUBSTRING_MATCH="${{ inputs.SUBSTRING_MATCH }}"
+          CASE_INSENSITIVE="${{ inputs.CASE_INSENSITIVE }}"
         fi
 
         if [ "$SUBSTRING_MATCH" != "true" ] && [ "$SUBSTRING_MATCH" != "false" ]; then
