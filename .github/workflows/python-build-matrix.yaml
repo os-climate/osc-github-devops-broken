@@ -50,7 +50,7 @@ jobs:
         id: python-matrix-builds
         uses: os-climate/osc-github-devops/.github/actions/python-build-package@main
         with:
-          python-version: ${{ inputs.python_version }}
+          python_version: ${{ inputs.python_version }}
 
       - name: "Validate artefacts with Twine"
         id: python-twine-check
