@@ -259,7 +259,7 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/string-in-multiline-text@main
         with:
           string: "testenv:tests"
-          text: "${{ steps.tox-stanza.outputs.stanza }}"
+          text: "${{ steps.tox-stanza.outputs.encoded_stanza }}"
           substring_match: "false"
           case_insensitive: "false"
 
@@ -269,7 +269,7 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/string-in-multiline-text@main
         with:
           string: "testenv:"
-          text: "${{ steps.tox-stanza.outputs.stanza }}"
+          text: "${{ steps.tox-stanza.outputs.encoded_stanza }}"
           substring_match: "true"
           case_insensitive: "false"
 
