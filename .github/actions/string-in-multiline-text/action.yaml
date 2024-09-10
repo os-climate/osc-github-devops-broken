@@ -1,0 +1,112 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🔤 Multi-line String Comparison Check"
+
+inputs:
+  STRING:
+    description: "String/line to match"
+    required: true
+  TEXT:
+    description: "Multi-line text to check for match"
+    required: true
+  SUBSTRING_MATCH:
+    description: "Match if OUTPUT contains LINE"
+    required: false
+    default: "false"
+  CASE_INSENSITIVE:
+    required: false
+    default: "false"
+
+outputs:
+  MATCH:
+    description: "True if string matches based on provided inputs/parameters"
+    value: ${{ steps.compare.outputs.match }}
+  COUNT:
+    description: "True if string matches based on provided inputs/parameters"
+    value: ${{ steps.compare.outputs.match }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: "Perform comparison of string values"
+      id: compare
+      shell: bash
+      env:
+        SUBSTRING_MATCH: ${{ inputs.SUBSTRING_MATCH }}
+        CASE_INSENSITIVE: ${{ inputs.CASE_INSENSITIVE }}
+      run: |
+        # Perform comparison of string values
+
+        #SHELLCODESTART
+
+        # Allows for testing from a local shell
+        if [ -z "$GITHUB_OUTPUT" ]; then
+          echo "Running from a shell, NOT workflow"
+          export GITHUB_OUTPUT="/dev/null"
+        else
+          STRING="${{ inputs.STRING }}"
+          TEXT="${{ inputs.TEXT }}"
+        fi
+
+        if [ -z "$STRING" ]; then
+          echo "Running from shell script outside GitHub"
+          if [ $# -ne 2 ]; then
+            echo "Usage:  $0 [string/line] [multi-line text to search]"; exit 1
+          else
+            STRING="$1"
+            TEXT="$2"
+          fi
+        fi
+
+        COUNT="0"
+
+        if [ "$CASE_INSENSITIVE" = "true" ]; then
+          echo "Case-insensitive string comparison requested"
+          shopt -s nocasematch
+        fi
+
+        echo "String to match: $STRING"
+        echo "Multi-line text: $TEXT"
+
+        while read -r LINE
+        do
+            echo "Line: $LINE"
+        done <<< "$TEXT"
+
+        # Check if string A contains string B
+        if [[ "$SUBSTRING_MATCH" == "true" ]]; then
+          echo "Sub-string match requested"
+          if [[ "$STRING" =~ "$TEXT" ]]; then
+            echo "String A contains string B"
+            MATCH="true"
+            COUNT=$((COUNT+1))
+          else
+            echo "String A does NOT contain string B"
+            MATCH="false"
+          fi
+        # Check for an exact match between strings
+        else
+          if [[ "$STRING" == "$TEXT" ]]; then
+            echo "Strings match"
+            MATCH="true"
+            COUNT=$((COUNT+1))
+          else
+            echo "Strings do NOT match"
+            MATCH="false"
+          fi
+        fi
+
+        if [ MATCH = "true" ]; then
+          echo "Number of times string matched: $COUNT"
+        fi
+
+        # Allows for testing from a local shell
+        if [ -n "$GITHUB_OUTPUT" ]; then
+          echo "match=$MATCH" >> $GITHUB_OUTPUT
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+        fi
+
+        #SHELLCODEEND
