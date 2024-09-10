@@ -20,7 +20,7 @@ on:
 
 jobs:
   github-release:
-    name: "Create GitHub release"
+    name: "GitHub Release"
     runs-on: "ubuntu-latest"
     permissions:
       contents: write
