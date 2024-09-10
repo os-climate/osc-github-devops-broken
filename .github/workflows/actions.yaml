@@ -54,6 +54,11 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/repository-content-classify@main
 
+      - name: "Extract TOX stanza"
+        id: tox-stanza
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/tox-parse-stanza@main
+
       - name: "Action: python-versions-matrix"
         id: python-versions-matrix
         # yamllint disable-line rule:line-length
@@ -246,4 +251,36 @@ jobs:
         run: |
           # Check string-comparison action logic
           echo "String comparison/action logic appears to be broken"
+          exit 1
+
+      - name: "Test TOX stanza [specific/individual stanza]"
+        id: tox-stanza-test-individual
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/string-in-multiline-text@main
+        with:
+          string: "testenv:tests"
+          text: "${{ steps.tox-stanza.outputs.stanza }}"
+          substring_match: "false"
+          case_insensitive: "false"
+
+      - name: "Test TOX stanza [multiple matches]"
+        id: tox-stanza-test-multiple
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/string-in-multiline-text@main
+        with:
+          string: "testenv:"
+          text: "${{ steps.tox-stanza.outputs.stanza }}"
+          substring_match: "true"
+          case_insensitive: "false"
+
+      - name: "Report Errors in TOX stanza tests"
+        # yamllint disable-line rule:line-length
+        if: (steps.tox-stanza-test-individual.outputs.match == 'false' ||
+          steps.tox-stanza-test-individual.outputs.count != '1') ||
+          (steps.tox-stanza-test-multiple.outputs.match == 'false' ||
+          steps.tox-stanza-test-multiple.outputs.count != '5')
+        shell: bash
+        run: |
+          # Check string-comparison action logic
+          echo "Parsing of TOX stanza appears to be broken"
           exit 1
