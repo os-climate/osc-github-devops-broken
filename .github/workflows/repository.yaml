@@ -121,7 +121,7 @@ jobs:
           one_password_development: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
 
   parse-tox-configuration:
-    name: "Parse TOX configuration"
+    name: "Parse TOX Configuration"
     needs:
       - classify-content
     if: needs.classify-content.outputs.tox  == 'true'
