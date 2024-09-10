@@ -166,7 +166,7 @@ jobs:
       # Required by SigStore signing action
       id-token: write
     with:
-      python-version: ${{ matrix.python-version }}
+      python_version: ${{ matrix.python-version }}
 
   python-test:
     name: "Test Project"
@@ -178,7 +178,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
     with:
-      python-version: ${{ matrix.python-version }}
+      python_version: ${{ matrix.python-version }}
 
   github-dev-release:
     name: "Development Build"
