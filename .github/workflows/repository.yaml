@@ -24,7 +24,7 @@ env:
 
 jobs:
   one-password-verify:
-    name: "Test 1Password"
+    name: "1Password"
     uses: os-climate/osc-github-devops/.github/workflows/one-password-credentials.yaml@main
     # Do NOT run until change is merged; secrets will NOT be available and workflow WILL fail
     if: github.event_name != 'pull_request'
@@ -149,6 +149,18 @@ jobs:
       contents: write
       # Required by SigStore signing action
       id-token: write
+    with:
+      python-version: ${{ matrix.python-version }}
+
+  python-test:
+    name: "Test Project"
+    uses: os-climate/osc-github-devops/.github/workflows/python-test-matrix.yaml@main
+    needs:
+      - github-workflow-metadata
+      - python-project
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
     with:
       python-version: ${{ matrix.python-version }}
 

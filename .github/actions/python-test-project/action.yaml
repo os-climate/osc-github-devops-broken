@@ -1,0 +1,45 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🧪 Run Unit Tests"
+description: "Tests a Python Project"
+
+inputs:
+  # The matrix Python build version should be passed into this action
+  PYTHON_VERSION:
+    description: "Python version used to build artefacts"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Install dependencies"
+      id: install-dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pdm export -o requirements.txt
+        pip install -r requirements.txt
+        pip install --upgrade pytest pytest-cov
+        pip install .
+
+    # Add additional workflow test steps here:
+    # 1. detect tox.ini
+    # 2. parse file for test stanza
+    # 3. use tox if testing available there
+    # 4. exit 0 if successful (following steps will be skipped)
+    # 5. otherwise proceed to fallback method below (pytest)
+
+    - name: "Run unit tests: pytest"
+      id: run-tests
+      shell: bash
+      run: |
+        if [ -d test ]; then
+          python -m pytest test
+        elif [ -d tests ]; then
+          python -m pytest tests
+        else
+          echo "No test/tests directory could be found"
+          echo "Aborting testing without error"; exit 0
+        fi
