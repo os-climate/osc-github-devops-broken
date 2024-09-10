@@ -8,7 +8,7 @@ name: "🧱 Build (Matrix)"
 on:
   workflow_call:
     inputs:
-      PYTHON-VERSION:
+      PYTHON_VERSION:
         # Usually specified/extracted from the file: pyproject.toml
         description: "Python matrix versions to use for test builds (in JSON)"
         required: true
@@ -36,21 +36,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Set up Python ${{ inputs.python-version }}"
+      - name: "Set up Python ${{ inputs.python_version }}"
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ inputs.python-version }}
+          python-version: ${{ inputs.python_version }}
 
       - name: "Install PDM tooling"
         uses: pdm-project/setup-pdm@v4
         with:
-          python-version: ${{ inputs.python-version }}
+          python-version: ${{ inputs.python_version }}
 
       - name: "Build Python project"
         id: python-matrix-builds
         uses: os-climate/osc-github-devops/.github/actions/python-build-package@main
         with:
-          python-version: ${{ inputs.python-version }}
+          python-version: ${{ inputs.python_version }}
 
       - name: "Validate artefacts with Twine"
         id: python-twine-check
@@ -59,14 +59,14 @@ jobs:
 
       - name: "Upload build artefacts"
         uses: actions/upload-artifact@v4
-        if: inputs.python-version == inputs.ARTEFACT_PYTHON_VERSION
+        if: inputs.python_version == inputs.ARTEFACT_PYTHON_VERSION
         with:
           name: ${{ github.ref_name }}
           path: ${{ inputs.ARTEFACT_LOCATION }}
 
       - name: "Sign packages with SigStore"
         uses: sigstore/gh-action-sigstore-python@v3.0.0
-        if: inputs.python-version == inputs.ARTEFACT_PYTHON_VERSION
+        if: inputs.python_version == inputs.ARTEFACT_PYTHON_VERSION
         env:
           package-path: ${{ inputs.ARTEFACT_LOCATION }}
         with:

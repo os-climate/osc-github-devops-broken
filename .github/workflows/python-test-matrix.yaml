@@ -8,7 +8,7 @@ name: "🧪 Test (Matrix)"
 on:
   workflow_call:
     inputs:
-      PYTHON-VERSION:
+      PYTHON_VERSION:
         # Usually specified/extracted from the file: pyproject.toml
         description: "Python matrix versions to use for test builds (in JSON)"
         required: true
@@ -22,18 +22,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Set up Python ${{ inputs.python-version }}"
+      - name: "Set up Python ${{ inputs.python_version }}"
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ inputs.python-version }}
+          python-version: ${{ inputs.python_version }}
 
       - name: "Install PDM tooling"
         uses: pdm-project/setup-pdm@v4
         with:
-          python-version: ${{ inputs.python-version }}
+          python-version: ${{ inputs.python_version }}
 
       - name: "Test Python project"
         id: python-project-tests
         uses: os-climate/osc-github-devops/.github/actions/python-test-project@main
         with:
-          python-version: ${{ inputs.python-version }}
+          python-version: ${{ inputs.python_version }}
