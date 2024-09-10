@@ -38,7 +38,7 @@ runs:
         SUBSTRING_MATCH: ${{ inputs.SUBSTRING_MATCH }}
         CASE_INSENSITIVE: ${{ inputs.CASE_INSENSITIVE }}
       run: |
-        # Perform comparison of string values
+        # Perform comparison of string values
 
         #SHELLCODESTART
 
