@@ -26,6 +26,7 @@ on:
 
 jobs:
   python-build-matrix:
+    name: Python Project
     runs-on: "ubuntu-latest"
     permissions:
       contents: write
