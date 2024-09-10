@@ -12,6 +12,9 @@ outputs:
   NOTEBOOKS:
     description: "Repository contains Python Jupyter Notebooks"
     value: ${{ steps.classification.outputs.notebooks }}
+  TOX:
+    description: "Repository contains a TOX condfigutation"
+    value: ${{ steps.classification.outputs.tox }}
 
 runs:
   using: "composite"
@@ -29,6 +32,13 @@ runs:
           echo "python=true" >> "$GITHUB_OUTPUT"
         else
           echo "python=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        if [ -f tox.ini ]; then
+          echo "TOX configuration found"
+          echo "tox=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "tox=false" >> "$GITHUB_OUTPUT"
         fi
 
         # Check if repository contains Jupyter Notebooks
