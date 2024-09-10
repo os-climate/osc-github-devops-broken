@@ -48,7 +48,7 @@ runs:
           export GITHUB_OUTPUT="/dev/null"
         else
           STRING="${{ inputs.STRING }}"
-          ENCODED_TEXT="${{ inputs.TEXT }}"
+          ENCODED_TEXT="${{ inputs.ENCODED_TEXT }}"
         fi
 
         if [ -z "$STRING" ]; then
@@ -75,6 +75,8 @@ runs:
         TEXT=$(base64 -d $ENCODED_TEXT)
         echo "Decoded text:"
         echo "$TEXT"
+
+        set -x
 
         while read -r LINE
         do
