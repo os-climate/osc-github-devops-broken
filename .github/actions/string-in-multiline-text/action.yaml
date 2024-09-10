@@ -49,16 +49,31 @@ runs:
         else
           STRING="${{ inputs.STRING }}"
           ENCODED_TEXT="${{ inputs.ENCODED_TEXT }}"
+          SUBSTRING_MATCH="${{ inputs.SUBSTRING_MATCH }}"
+          CASE_INSENSITIVE="${{ inputs.CASE_INSENSITIVE }}"
         fi
 
         if [ -z "$STRING" ]; then
           echo "Running from shell script outside GitHub"
-          if [ $# -ne 2 ]; then
-            echo "Usage:  $0 [string/line] [base64 encoded multi-line text]"; exit 1
+          if [ $# -ne 4 ]; then
+            echo "Usage:  $0 [string] [base64 text] [match substring true|false] [case-insensitive true|false]"; exit 1
           else
             STRING="$1"
             ENCODED_TEXT="$2"
+            SUBSTRING_MATCH="$3"
+            CASE_INSENSITIVE="$4"
           fi
+        fi
+
+        if [ $# -lt 2 ] || [ $# -gt 4 ]; then
+          echo "Error: invalid arguments supplied"; exit 1
+        fi
+
+        if [ "$SUBSTRING_MATCH" != "true" ] && [ "$SUBSTRING_MATCH" != "false" ]; then
+          echo "Error: substring match argument != [true|false]"; exit 1
+        fi
+        if [ "$CASE_INSENSITIVE" != "true" ] && [ "$CASE_INSENSITIVE" != "false" ]; then
+          echo "Error: case-insentivive match argument != [true|false]"; exit 1
         fi
 
         COUNT="0"
@@ -72,7 +87,7 @@ runs:
         echo "Multi-line base64 encoded text:"
         echo "$ENCODED_TEXT"
 
-        TEXT=$(echo "$ENCODED_TEXT" | base64 -d)
+        TEXT=$(base64 -d <<< "$ENCODED_TEXT")
         echo "Decoded text:"
         echo "$TEXT"
 
@@ -80,11 +95,9 @@ runs:
 
         while read -r LINE
         do
-
           # Check if string A contains string B
           if [[ "$SUBSTRING_MATCH" == "true" ]]; then
-            echo "Sub-string match requested"
-            if [[ "$STRING" =~ "$LINE" ]]; then
+            if [[ "$LINE" =~ "$STRING" ]]; then
               MATCH="true"
               COUNT=$((COUNT+1))
             fi
@@ -98,7 +111,7 @@ runs:
 
         done <<< "$TEXT"
 
-        if [ MATCH = "true" ]; then
+        if [ "$MATCH" = "true" ]; then
           echo "String WAS matched, count: $COUNT"
         else
           echo "String was NOT matched"
@@ -106,8 +119,8 @@ runs:
 
         # Allows for testing from a local shell
         if [ -n "$GITHUB_OUTPUT" ]; then
-          echo "match=$MATCH" >> $GITHUB_OUTPUT
-          echo "count=$COUNT" >> $GITHUB_OUTPUT
+          echo "match=$MATCH" >> "$GITHUB_OUTPUT"
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
         fi
 
         #SHELLCODEEND
