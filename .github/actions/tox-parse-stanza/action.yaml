@@ -29,11 +29,11 @@ runs:
           exit 1
         else
           STANZA=$(grep -E -w "^\[(.*?)\]" tox.ini | tr -d '[],')
-          ENCODED_STANZA=$(echo "$STANZA" | base64)
+          ENCODED_STANZA=$(echo -n "$STANZA" | base64)
           echo 'stanza<<EOF' >> $GITHUB_OUTPUT
           echo "$STANZA" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
-          printf "%s" "$ENCODED_STANZA" >> $GITHUB_OUTPUT
+          echo "encoded_stanza=$ENCODED_STANZA" >> $GITHUB_OUTPUT
         fi
 
         echo "TOX configuration stanza:"
@@ -55,4 +55,4 @@ runs:
 
 # Base64 encoded:
 # yamllint disable-line rule:line-length
-# Z2gtYWN0aW9ucwp0b3gKdGVzdGVudgp0ZXN0ZW52OnRlc3RzCnRlc3RlbnY6bGludAp0ZXN0ZW52 OntidWlsZGNsZWFufQp0ZXN0ZW52OmNvdgp0ZXN0ZW52Ontkb2NzZG9jdGVzdHNsaW5rY2hlY2t9 CnRvb2wuZmxha2U4Cg==
+# Z2gtYWN0aW9ucwp0b3gKdGVzdGVudgp0ZXN0ZW52OnRlc3RzCnRlc3RlbnY6bGludAp0ZXN0ZW52OntidWlsZGNsZWFufQp0ZXN0ZW52OmNvdgp0ZXN0ZW52Ontkb2NzZG9jdGVzdHNsaW5rY2hlY2t9CnRvb2wuZmxha2U4Cg==
