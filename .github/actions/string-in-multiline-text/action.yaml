@@ -93,6 +93,7 @@ runs:
             if [[ "$STRING" == "$LINE" ]]; then
               MATCH="true"
               COUNT=$((COUNT+1))
+            fi
           fi
 
         done <<< "$TEXT"
