@@ -2,17 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🔤 Multi-line String Comparison Check"
+name: "📃 Multi-line Text String Matching"
 
 inputs:
   STRING:
     description: "String/line to match"
     required: true
   ENCODED_TEXT:
-    description: "Multi-line text to check for match"
+    description: "Text to search for match"
     required: true
   SUBSTRING_MATCH:
-    description: "Match if OUTPUT contains LINE"
+    description: "Match if LINE contains STRING"
     required: false
     default: "false"
   CASE_INSENSITIVE:
@@ -76,7 +76,7 @@ runs:
         echo "Decoded text:"
         echo "$TEXT"
 
-        set -x
+        MATCH="false"
 
         while read -r LINE
         do
@@ -85,29 +85,22 @@ runs:
           if [[ "$SUBSTRING_MATCH" == "true" ]]; then
             echo "Sub-string match requested"
             if [[ "$STRING" =~ "$LINE" ]]; then
-              echo "String A contains string B"
               MATCH="true"
               COUNT=$((COUNT+1))
-            else
-              echo "String A does NOT contain string B"
-              MATCH="false"
             fi
           # Check for an exact match between strings
           else
             if [[ "$STRING" == "$LINE" ]]; then
-              echo "Strings match"
               MATCH="true"
               COUNT=$((COUNT+1))
-            else
-              echo "Strings do NOT match"
-              MATCH="false"
-            fi
           fi
 
         done <<< "$TEXT"
 
         if [ MATCH = "true" ]; then
-          echo "Number of times string matched: $COUNT"
+          echo "String WAS matched, count: $COUNT"
+        else
+          echo "String was NOT matched"
         fi
 
         # Allows for testing from a local shell
