@@ -33,7 +33,7 @@ runs:
           echo 'stanza<<EOF' >> $GITHUB_OUTPUT
           echo "$STANZA" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
-          echo "$ENCODED_STANZA" >> $GITHUB_OUTPUT
+          printf "%s" "$ENCODED_STANZA" >> $GITHUB_OUTPUT
         fi
 
         echo "TOX configuration stanza:"
