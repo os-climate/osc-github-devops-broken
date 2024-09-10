@@ -8,7 +8,7 @@ inputs:
   STRING:
     description: "String/line to match"
     required: true
-  BASE64_TEXT:
+  ENCODED_TEXT:
     description: "Multi-line text to check for match"
     required: true
   SUBSTRING_MATCH:
@@ -48,7 +48,7 @@ runs:
           export GITHUB_OUTPUT="/dev/null"
         else
           STRING="${{ inputs.STRING }}"
-          BASE64_TEXT="${{ inputs.TEXT }}"
+          ENCODED_TEXT="${{ inputs.TEXT }}"
         fi
 
         if [ -z "$STRING" ]; then
@@ -57,7 +57,7 @@ runs:
             echo "Usage:  $0 [string/line] [base64 encoded multi-line text]"; exit 1
           else
             STRING="$1"
-            BASE64_TEXT="$2"
+            ENCODED_TEXT="$2"
           fi
         fi
 
@@ -69,9 +69,10 @@ runs:
         fi
 
         echo "String to match: $STRING"
-        echo "Multi-line base64 encoded text: $BASE64_TEXT"
+        echo "Multi-line base64 encoded text:"
+        echo "$ENCODED_TEXT"
 
-        TEXT=$(base64 -d $BASE64_TEXT)
+        TEXT=$(base64 -d $ENCODED_TEXT)
         echo "Decoded text:"
         echo "$TEXT"
 
