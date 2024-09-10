@@ -1,0 +1,46 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🗒️ Tox Parse Stansa"
+
+outputs:
+  STANZA:
+    # Note:
+    description: "Stores the TOX stanza found in a string"
+    value: ${{ steps.parse-tox-ini.outputs.stanza }}
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: "Parse TOX Configuration"
+      id: parse-tox-ini
+      shell: bash
+      run: |
+        # Parse TOX Configuration
+
+        if [ ! -f tox.ini ]; then
+          echo "Error: TOX configuration file NOT found";
+          echo "This action should be called conditionally"
+          exit 1
+        else
+          STANZA=$(grep -E -w "^\[(.*?)\]" tox.ini | tr -d '[],')
+          echo "stanza=$STANZA" >> $GITHUB_OUTPUT
+        fi
+
+        echo "TOX configuration stanza:"
+        echo "$STANZA"
+
+# Sample output:
+# % grep -E -w "^\[(.*?)\]" tox.ini | tr -d '[],'
+# gh-actions
+# tox
+# testenv
+# testenv:tests
+# testenv:lint
+# testenv:{buildclean}
+# testenv:cov
+# testenv:{docsdoctestslinkcheck}
+# tool.flake8

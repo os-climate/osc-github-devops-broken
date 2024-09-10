@@ -40,6 +40,7 @@ jobs:
     outputs:
       python: ${{ steps.classify.outputs.python }}
       notebooks: ${{ steps.classify.outputs.notebooks }}
+      tox: ${{ steps.classify.outputs.tox }}
 
     steps:
       - uses: actions/checkout@v4
@@ -118,6 +119,21 @@ jobs:
           pypi_development: ${{ secrets.PYPI_DEVELOPMENT }}
           pypi_production: ${{ secrets.PYPI_PRODUCTION }}
           one_password_development: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
+
+  parse-tox-configuration:
+    name: "Parse TOX configuration"
+    needs:
+      - classify-content
+    if: needs.classify-content.outputs.tox  == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      stanza: ${{ steps.tox-stanza.outputs.stanza }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Extract TOX stanza"
+        id: tox-stanza
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/tox-parse-stanza@main
 
   python-project:
     name: "Python Content"
