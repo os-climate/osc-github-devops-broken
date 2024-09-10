@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🧪 Test (Matrix)"
+name: "🧪 Python Tests (Matrix)"
 # Runs tests on a Python project for a number of specified Python versions"
 
 on:
@@ -16,7 +16,6 @@ on:
 
 jobs:
   python-test-matrix:
-    name: "Python Test (Matrix)"
     runs-on: "ubuntu-latest"
 
     steps:

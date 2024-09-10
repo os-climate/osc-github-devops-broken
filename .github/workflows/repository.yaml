@@ -145,7 +145,7 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/python-versions-matrix@main
 
   python-build:
-    name: "Build Project"
+    name: "Builds"
     uses: os-climate/osc-github-devops/.github/workflows/python-build-matrix.yaml@main
     needs:
       - github-workflow-metadata
@@ -161,7 +161,7 @@ jobs:
       python_version: ${{ matrix.python-version }}
 
   python-test:
-    name: "Test Project"
+    name: "Tests"
     uses: os-climate/osc-github-devops/.github/workflows/python-test-matrix.yaml@main
     needs:
       - github-workflow-metadata
@@ -371,7 +371,7 @@ jobs:
           password: ${{ secrets.PYPI_PRODUCTION }}
 
   notebooks:
-    name: "Jupyter Notebooks"
+    name: "Jupyter/Notebooks"
     needs:
       - classify-content
       - python-project
@@ -435,7 +435,7 @@ jobs:
       #     retention-days: 14
 
   security:
-    name: "Security Audit"
+    name: "Security/Audit"
     needs:
       - classify-content
       - python-project
