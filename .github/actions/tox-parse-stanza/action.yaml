@@ -10,7 +10,7 @@ outputs:
     value: ${{ steps.parse-tox-ini.outputs.stanza }}
   ENCODED_STANZA:
     description: "Stores TOX stanza from tox.ini base64 encoded"
-    value: ${{ steps.parse-tox-ini.outputs.base64-stanza }}
+    value: ${{ steps.parse-tox-ini.outputs.encoded_stanza }}
 
 runs:
   using: "composite"
