@@ -9,14 +9,28 @@ on:
   workflow_call:
     inputs:
       PRERELEASE:
-        description: "Mark release as pre-release version"
+        description: "Mark release as pre-release/development version"
         type: boolean
-        required: true
+        required: false
+        default: false
       TAG:
-        # Tag to use for release/build name
+        # Force use of this tag/name for release
         description: "Semantic tag for release/build"
         type: string
-        required: true
+        required: false
+        default: ${{ needs.tagging.outputs.dev_tag }}
+
+# Two release types supported, based on conditions
+
+### Development Release
+# github.event.pull_request.merged == true &&
+# startsWith(github.ref, 'refs/tags/') != 'true'
+# tag: ${{ needs.tagging.outputs.dev_tag }}
+
+### Production Release
+# On merge of tag push, create a production release
+# if: github.event.pull_request.merged == true && startsWith(github.ref, 'refs/tags/')
+# tag: ${{ github.ref_name }}
 
 jobs:
   github-release:
@@ -24,6 +38,8 @@ jobs:
     runs-on: "ubuntu-latest"
     permissions:
       contents: write
+    env:
+      tag: ${{ github.event.inputs.tag }}
     steps:
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
@@ -31,9 +47,9 @@ jobs:
           name: ${{ github.ref_name }}
           path: ${{ env.BUILD_ARTEFACTS }}
 
-      - name: "DEVELOPMENT artefacts"
+      - name: "DEVELOPMENT release"
         uses: softprops/action-gh-release@v2
-        if: env.GITHUB_RELEASE_ALWAYS
+        if: ${{ inputs.PRERELEASE}}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: ${{ inputs.PRERELEASE }}
@@ -46,8 +62,17 @@ jobs:
             ${{ env.BUILD_ARTEFACTS }}/*.whl
             ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
 
-      - name: "PRODUCTION artefacts"
+      - name: "Check version string in pyproject.toml matches tag push"
+        shell: bash
+        run: |
+          echo "ToDo: NOT IMPLEMENTED YET"
+
+      - name: "PRODUCTION Release"
         uses: softprops/action-gh-release@v2
+        if:
+          # Run production release on merge of tag push
+          github.event.pull_request.merged == true &&
+          startsWith(github.ref, 'refs/tags/')
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: ${{ inputs.PRERELEASE }}

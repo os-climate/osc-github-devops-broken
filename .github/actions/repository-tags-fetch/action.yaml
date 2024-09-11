@@ -15,6 +15,9 @@ outputs:
   INVALID:
     description: "Flag set true if no semantic tags found"
     value: ${{ steps.results.outputs.invalid }}
+  DYNAMIC:
+    description: "Set true if pyproject.toml configured for dynamic versioning"
+    value: ${{ steps.results.outputs.dynamic }}
 
 runs:
   using: "composite"
@@ -71,6 +74,15 @@ runs:
           echo "invalid=true" >> $GITHUB_OUTPUT
           # Set a placeholder value for the tag
           TAG="0.0.0"
+        fi
+
+        # Check to see if pyproject.toml set for dynamic versioning
+        if $(grep -q -E "^dynamic = \[ \"version\" \]$" pyproject.toml); then
+          echo "Dynamic pyproject.toml versioning: TRUE"
+          "dynamic=true" >> $GITHUB_OUTPUT
+        else
+          echo "Dynamic pyproject.toml versioning: FALSE"
+          "dynamic=false" >> $GITHUB_OUTPUT
         fi
 
         echo "Tag: $TAG [v$TAG]"
