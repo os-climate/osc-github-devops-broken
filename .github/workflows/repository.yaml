@@ -181,6 +181,9 @@ jobs:
     with:
       prerelease: true
       devtag: ${{ needs.tagging.outputs.dev_tag }}
+    permissions:
+      # Needed both here and in the called workflow
+      contents: write
 
   testpypi:
     name: "Test Package Publishing"
