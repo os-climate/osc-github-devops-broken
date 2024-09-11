@@ -8,7 +8,6 @@
 # External modules
 import typer
 
-app = typer.Typer()
 
 # Define command structure with typer module
 app = typer.Typer(no_args_is_help=True)
@@ -29,14 +28,18 @@ def goodbye(name: str, formal: bool = False):
         print(f"Bye {name}!")
 
 
-def run():
-    """Provide main entry point for the sample/test application.
+# def run():
+#     app()
 
-    This function sets up the Typer application with subcommands.
 
-    Usage:
-            osc-github-devops hello
-            osc-github-devops goodbye
+# if __name__ == "__main__":
+#     """Provide main entry point for the sample/test application.
 
-    """
-    app()
+#     This function sets up the Typer application with subcommands.
+
+#     Usage:
+#             osc-github-devops hello
+#             osc-github-devops goodbye
+
+#     """
+#     app()
