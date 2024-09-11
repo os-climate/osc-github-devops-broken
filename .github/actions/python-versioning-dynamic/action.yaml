@@ -19,8 +19,8 @@ runs:
         # Check project for dynamic versioning
         if $(grep -q -E "^dynamic = \[ \"version\" \]$" pyproject.toml); then
           echo "Dynamic pyproject.toml versioning: TRUE"
-          "dynamic=true" >> $GITHUB_OUTPUT
+          echo "dynamic=true" >> $GITHUB_OUTPUT
         else
           echo "Dynamic pyproject.toml versioning: FALSE"
-          "dynamic=false" >> $GITHUB_OUTPUT
+          echo "dynamic=false" >> $GITHUB_OUTPUT
         fi
