@@ -48,7 +48,7 @@ jobs:
 
       - name: "Build Python project"
         id: python-matrix-builds
-        uses: os-climate/osc-github-devops/.github/actions/python-build-package@main
+        uses: os-climate/osc-github-devops/.github/actions/python-build-project@main
         with:
           python_version: ${{ inputs.python_version }}
 
