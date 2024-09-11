@@ -104,6 +104,10 @@ jobs:
       created: ${{ steps.labelling.outputs.created }}
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    permissions:
+      # Required for action to create labels: github-mandatory-labels
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
