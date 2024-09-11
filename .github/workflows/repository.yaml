@@ -18,7 +18,7 @@ env:
   # Configures publishing to PyPI
   PYPI_PUBLISHING: "true"
   # Create GitHub releases for all builds, not just production builds
-  GITHUB_RELEASE_ALWAYS: "true"
+  GITHUB_PRERELEASE: "true"
   # Create an initial tag, if missing
   CREATE_MISSING_TAG: "true"
 
@@ -172,31 +172,15 @@ jobs:
     with:
       python_version: ${{ matrix.python-version }}
 
-  github-dev-release:
-    name: "Development Build"
+  github-release:
+    name: "Publish GitHub Release"
     uses: os-climate/osc-github-devops/.github/workflows/github-release.yaml@main
     needs:
       - python-build
       - tagging
-    if:
-      github.event.pull_request.merged == true &&
-      startsWith(github.ref, 'refs/tags/') != 'true'
-      # ToDo: Add conditional (based on labels in release PR)
     with:
       prerelease: true
-      tag: ${{ needs.tagging.outputs.dev_tag }}
-
-  github-release:
-    name: "Production Build"
-    uses: os-climate/osc-github-devops/.github/workflows/github-release.yaml@main
-    # On merge of tag push, create a production release
-    if: github.event.pull_request.merged == true && startsWith(github.ref, 'refs/tags/')
-    needs:
-      - python-build
-      - tagging
-    with:
-      tag: ${{ github.ref_name }}
-      prerelease: false
+      devtag: ${{ needs.tagging.outputs.dev_tag }}
 
   testpypi:
     name: "Test Package Publishing"

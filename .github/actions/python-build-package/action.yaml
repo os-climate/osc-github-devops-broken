@@ -43,6 +43,11 @@ runs:
         echo "Build date and time stamp: $datetime"
         echo "datetime=$datetime" >> "$GITHUB_ENV"
         echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
+        # Use synthetic build version number
+        if [ ${{ !startsWith(github.ref, 'refs/tags/') }} != 'true' ]; then
+          export PDM_BUILD_SCM_VERSION=${{ needs.tagging.outputs.dev_tag }}
+          echo "PDM_BUILD_SCM_VERSION: $PDM_BUILD_SCM_VERSION"
+        fi
 
     - name: "Check target/path for build products"
       id: check-target
