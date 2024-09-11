@@ -1,0 +1,17 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🏷️ Tags Pushed"
+# Runs only when tags are pushed to the repository
+
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:
+      - "**" # Push events to every tag including hierarchical tags like v1.0/beta
+
+jobs:
+  verify-tags:
+    name: "Verify Tags"
+    uses: os-climate/osc-github-devops/.github/workflows/tags-verify.yaml@main

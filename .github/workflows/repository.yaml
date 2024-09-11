@@ -68,20 +68,20 @@ jobs:
     name: "Retrieve/Verify GIT Tags"
     runs-on: ubuntu-latest
     outputs:
-      current: ${{ steps.repository-tags-fetch.outputs.tag }}
-      invalid: ${{ steps.repository-tags-fetch.outputs.invalid }}
-      dev_tag: ${{ steps.get-development-tag.outputs.tag }}
+      current: ${{ steps.repository-tags.outputs.tag }}
+      invalid: ${{ steps.repository-tags.outputs.invalid }}
+      dev_tag: ${{ steps.get-development.outputs.tag }}
 
     steps:
       - name: "Retrieve/verify tags"
-        id: repository-tags-fetch
+        id: repository-tags
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/repository-tags-fetch@main
+        uses: os-climate/osc-github-devops/.github/actions/repository-tags@main
 
       - name: "Create initial v0.0.0 tag [conditional]"
         id: set-initial-tag
         # Only runs if no tags are found, pushes an initial v0.0.0
-        if: steps.repository-tags-fetch.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
+        if: steps.repository-tags.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -89,12 +89,12 @@ jobs:
           tag_name: v0.0.0
 
       - name: "Create development tag [conditional]"
-        id: get-development-tag
+        id: get-development
         # Only runs if this is NOT a tag push, makes a development tag/name available
         if: startsWith(github.ref, 'refs/tags/') != true
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
         with:
-          tag: ${{ steps.repository-tags-fetch.outputs.tag }}
+          tag: ${{ steps.repository-tags.outputs.tag }}
 
   verify-github-environment:
     name: "Verify GitHub Environment"
@@ -145,7 +145,7 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/python-versions-matrix@main
 
   python-build:
-    name: "Builds"
+    name: "Build"
     uses: os-climate/osc-github-devops/.github/workflows/python-build-matrix.yaml@main
     needs:
       - github-workflow-metadata
@@ -161,7 +161,7 @@ jobs:
       python_version: ${{ matrix.python-version }}
 
   python-test:
-    name: "Tests"
+    name: "Test"
     uses: os-climate/osc-github-devops/.github/workflows/python-test-matrix.yaml@main
     needs:
       - github-workflow-metadata
