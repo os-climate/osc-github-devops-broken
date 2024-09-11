@@ -76,7 +76,7 @@ jobs:
       - name: "Retrieve/verify tags"
         id: repository-tags
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/repository-tags@main
+        uses: os-climate/osc-github-devops/.github/actions/repository-tags-fetch@main
 
       - name: "Create initial v0.0.0 tag [conditional]"
         id: set-initial-tag
