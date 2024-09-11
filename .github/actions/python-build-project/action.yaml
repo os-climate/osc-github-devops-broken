@@ -55,8 +55,8 @@ runs:
         ${{ steps.dynamic-versioning.outputs.dynamic }} == 'false'
       uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
 
-    - name: "Generate development build name"
-      id: name-development-build
+    - name: "Export development build name"
+      id: export-development-build
       if: github.ref_name == 'main' &&
         ${{ steps.dynamic-versioning.outputs }} == 'false'
       shell: bash
