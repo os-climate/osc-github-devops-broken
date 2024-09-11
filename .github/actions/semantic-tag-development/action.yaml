@@ -7,7 +7,7 @@ name: "🏷️ Development Semantic Tag"
 inputs:
   TAG:
     description: "The existing semantic tag to be incremented"
-    required: true
+    required: false
   TYPE:
     description: "Increment to perform [major|minor|patch]"
     required: false
@@ -26,6 +26,10 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: "Enumerate current tag"
+      id: current-tag
+      uses: os-climate/osc-github-devops/.github/actions/repository-tags-fetch@main
+
     - name: "Create development tag"
       id: increment
       shell: bash
@@ -54,6 +58,11 @@ runs:
             [ ! "$TYPE" = "minor" ] && \
             [ ! "$TYPE" = "patch" ]; then
            echo "Increment type invalid"; exit 1
+        fi
+
+        # If tag was NOT supplied, get the current one from the repository
+        if [ -z $TAG ]; then
+          TAG=${{ steps.current-tag.outputs.vtag }}
         fi
 
         echo "Input tag: $TAG"
