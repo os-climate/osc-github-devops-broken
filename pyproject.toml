@@ -100,7 +100,7 @@ omit = ["test/*"]
 # relative_files = true
 
 [tool.coverage.report]
-fail_under = 30
+fail_under = 80
 skip_empty = true
 # format = ["term", "term-missing", "html", "text"]
 
