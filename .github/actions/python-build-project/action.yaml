@@ -14,10 +14,6 @@ inputs:
     description: "Purge target artefact path prior to builds"
     required: false
     default: false
-  # The matrix Python build version should be passed into this action
-  PYTHON_VERSION:
-    description: "Python version used to build artefacts"
-    required: true
 
 outputs:
   DATETIME_STAMP:
