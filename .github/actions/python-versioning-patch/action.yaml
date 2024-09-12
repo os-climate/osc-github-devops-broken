@@ -40,12 +40,6 @@ runs:
           TARGET=${{ inputs.TARGET }}
         fi
 
-        # Abort if dynamic versioning is enabled for the project
-        DYNAMIC=$(grep "dynamic = [\"version\"]" pyproject.toml)
-        if [ "$DYNAMIC" == "pyproject.toml" ]; then
-          echo "Error: dynamic versioning is enabled for this Python project"; exit 1
-        fi
-
         # Attempt version string substitution for project
         if (grep -q "version = \"$CURRENT\"" pyproject.toml); then
           # String found; replace/update the version
