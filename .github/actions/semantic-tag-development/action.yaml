@@ -23,6 +23,15 @@ outputs:
     description: "The incremented semantic tag [with prefix] e.g. v1.2.3"
     value: ${{ steps.increment.outputs.tag }}
 
+  ### Return additional values NOT actually generated here
+  # Convenience, prevents a separate call to: repository-tags-fetch
+  CURRENT_TAG:
+    description: "The existing semantic tag to be incremented, same as input"
+    value: ${{ steps.increment.outputs.current_tag }}
+  CURRENT_VTAG:
+    description: "The existing semantic tag to be incremented, same as input"
+    value: ${{ steps.increment.outputs.current_vtag }}
+
 runs:
   using: "composite"
   steps:
@@ -112,6 +121,8 @@ runs:
         if [ -n "$GITHUB_OUTPUT" ]; then
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
           echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
+          echo "current_tag=${{ steps.current-tag.outputs.tag }} >> $GITHUB_OUTPUT
+          echo "current_vtag=${{ steps.current-tag.outputs.vtag }} >> $GITHUB_OUTPUT
         fi
 
         #SHELLCODEEND

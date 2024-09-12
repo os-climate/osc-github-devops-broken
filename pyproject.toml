@@ -72,9 +72,8 @@ test = [
 # https://backend.pdm-project.org/metadata/#read-from-scm-tag-supporting-git-and-hg
 # Get versioning directly from GIT
 source = "scm"
-# Note: when NOT available, the following sets the version explicitly
-# PDM_BUILD_SCM_VERSION=0.1.0 python -m build
 fallback_version = "0.0.0"
+write_to = "version.txt"
 
 [tool.pdm.scripts]
 test = "pytest"
