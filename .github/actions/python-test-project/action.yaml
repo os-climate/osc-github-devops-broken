@@ -10,17 +10,26 @@ inputs:
   PYTHON_VERSION:
     description: "Python version used to build artefacts"
     required: true
+  NEVER_FAIL:
+    description: "Continue even when a test fails"
+    required: false
+    default: false
+  REPORT_ARTEFACT:
+    description: "Store test/coverage report as artefact"
+    required: false
+    default: false
 
 runs:
   using: "composite"
   steps:
-    - name: "Install dependencies"
+    - name: "Install testing dependencies"
       id: install-dependencies
       shell: bash
       run: |
+        # Install testing dependencies
         python -m pip install --upgrade pip
         pdm export -o requirements.txt
-        pip install -r requirements.txt
+        pip install --upgrade -r requirements.txt
         pip install --upgrade pytest pytest-cov
         pip install .
 
@@ -31,15 +40,40 @@ runs:
     # 4. exit 0 if successful (following steps will be skipped)
     # 5. otherwise proceed to fallback method below (pytest)
 
-    - name: "Run unit tests: pytest"
+    - name: "Run tests, coverage report"
       id: run-tests
       shell: bash
       run: |
+        # Run tests, coverage report
+        if [ ${{ inputs.NEVER_FAIL }} = "true" ]; then
+          SCRIPT_ARGS='|| true'
+        fi
         if [ -d test ]; then
-          python -m pytest test
+          pytest --cov --cov-report=html:coverage_report tests "$SCRIPT_ARGS"
         elif [ -d tests ]; then
-          python -m pytest tests
+          pytest --cov --cov-report=html:coverage_report tests "$SCRIPT_ARGS"
         else
-          echo "No test/tests directory could be found"
+          echo "No test/tests directories were found"
           echo "Aborting testing without error"; exit 0
         fi
+
+    - name: "Create ZIP archive of coverage report"
+      id: archive-report
+      if: inputs.REPORT_ARTEFACT == 'true'
+      shell: bash
+      run: |
+        # Create ZIP archive of coverage report
+        if [ -d coverage_report ]; then
+          echo "Creating ZIP file of HTML coverage report"
+          zip -r test_coverage_report.zip coverage_report
+        else
+          echo "No coverage report directory exists"
+        fi
+
+    - name: "Upload build artefacts"
+      uses: actions/upload-artifact@v4
+      if: inputs.REPORT_ARTEFACT == 'true'
+      with:
+        name: test_coverage_report.zip
+        path: test_coverage_report.zip
+        retention-days: 90
