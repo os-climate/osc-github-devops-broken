@@ -121,8 +121,8 @@ runs:
         if [ -n "$GITHUB_OUTPUT" ]; then
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
           echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
-          echo "current_tag=${{ steps.current-tag.outputs.tag }} >> $GITHUB_OUTPUT
-          echo "current_vtag=${{ steps.current-tag.outputs.vtag }} >> $GITHUB_OUTPUT
+          echo "current_tag=${{ inputs.TAG }} >> $GITHUB_OUTPUT
+          echo "current_vtag=v${{ inputs.TAG }} >> $GITHUB_OUTPUT
         fi
 
         #SHELLCODEEND
