@@ -57,19 +57,20 @@ jobs:
           steps.dynamic-versioning.outputs.dynamic == 'false'
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
 
+      # ToDo: Tag pushes can be production or development releases
+
       - name: "DEVELOPMENT release"
         uses: softprops/action-gh-release@v2
         if:
-          # Runs when a pre-release requested, development tag supplied,
-          #  pull request merged and release NOT triggered by a tag push
-          github.event.pull_request.merged == true &&
+          # Development release NOT triggered by a tag push
+          github.ref_name == 'main' &&
           !startsWith(github.ref, 'refs/tags/')
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
-          # ToDo: DO WE WANT A DATE/TIME STAMP HERE?
           tag_name: ${{ steps.name-development-build.outputs.vtag }}
           name: "Development/build: ${{ steps.name-development-build.outputs.vtag }}"
+          # ToDo: Incorporate release notes, etc.
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
             ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
@@ -77,26 +78,26 @@ jobs:
             ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
 
       - name: "Check tag matches pyproject.toml"
-        if: github.event.pull_request.merged == true &&
-          startsWith(github.ref, 'refs/tags/')
+        if: github.ref_name == 'main' &&
+          startsWith(github.ref, 'refs/tags/') &&
+          steps.dynamic-versioning.outputs.dynamic == 'false'
         shell: bash
         run: |
           # Check tag push matches pyproject.toml
           echo "ToDo: NOT IMPLEMENTED YET"
 
-      # ToDo: Tag pushes can be production or development releases
-
       - name: "PRODUCTION Release"
         uses: softprops/action-gh-release@v2
         if:
-          # Run production release on merge of tag push
-          github.event.pull_request.merged == true &&
+          # Production releases triggered by a tag push
+          github.ref_name == 'main' &&
           startsWith(github.ref, 'refs/tags/')
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: false
           tag_name: ${{ github.ref_name }}
           name: "Release/build: ${{ github.ref_name }}"
+          # ToDo: Incorporate release notes, etc.
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
             ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
