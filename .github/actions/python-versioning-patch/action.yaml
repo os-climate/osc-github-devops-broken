@@ -28,8 +28,8 @@ runs:
           echo "Running from a shell, NOT workflow"
           export GITHUB_OUTPUT="/dev/null"
         else
-          TAG=${{ inputs.CURRENT }}
-          TYPE=${{ inputs.TARGET }}
+          CURRENT=${{ inputs.CURRENT }}
+          TARGET=${{ inputs.TARGET }}
         fi
 
         if [ -z "$CURRENT" ] && [ -z "$TARGET" ]; then
