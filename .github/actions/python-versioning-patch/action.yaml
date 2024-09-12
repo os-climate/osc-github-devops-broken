@@ -23,17 +23,22 @@ runs:
 
         #SHELLCODESTART
 
+        # Allows for testing from a local shell
+        if [ -z "$GITHUB_OUTPUT" ]; then
+          echo "Running from a shell, NOT workflow"
+          export GITHUB_OUTPUT="/dev/null"
+        else
+          TAG=${{ inputs.CURRENT }}
+          TYPE=${{ inputs.TARGET }}
+        fi
+
         if [ -z "$CURRENT" ] && [ -z "$TARGET" ]; then
-          echo "Running from shell script outside GitHub"
           if [ $# -ne 2 ]; then
             echo "Usage:  $0 [current-tag] [target-tag]"; exit 1
           else
             CURRENT="$1"
             TARGET="$2"
           fi
-        else
-          TAG=${{ inputs.CURRENT }} >/dev/null 2>&1
-          TYPE=${{ inputs.TARGET }} >/dev/null 2>&1
         fi
 
         # Abort if dynamic versioning is enabled for the project
