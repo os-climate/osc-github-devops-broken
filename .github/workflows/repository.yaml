@@ -180,9 +180,10 @@ jobs:
     needs:
       - python-build
       - tagging
-    with:
-      prerelease: true
-      devtag: ${{ needs.tagging.outputs.dev_tag }}
+    # ToDo: Implement explicit development release and build naming
+    # with:
+    #   prerelease: true
+    #   devtag: ${{ needs.tagging.outputs.dev_tag }}
     permissions:
       # Needed both here and in the called workflow
       contents: write
