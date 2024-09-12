@@ -22,11 +22,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: "Install testing dependencies"
+    - name: "Install test dependencies"
       id: install-dependencies
       shell: bash
       run: |
-        # Install testing dependencies
+        # Install test dependencies
         python -m pip install --upgrade pip
         pdm export -o requirements.txt
         pip install --upgrade -r requirements.txt
@@ -78,7 +78,7 @@ runs:
         # Create ZIP archive of coverage report
         if [ -d coverage_report ]; then
           echo "Creating ZIP file of HTML coverage report"
-          zip -r test_coverage_report.zip coverage_report
+          zip -r test_coverage_report-${{ inputs.PYTHON_VERSION }}.zip coverage_report
         else
           echo "No coverage report directory exists"
         fi
@@ -87,6 +87,6 @@ runs:
       uses: actions/upload-artifact@v4
       if: inputs.REPORT_ARTEFACT == 'true'
       with:
-        name: test_coverage_report.zip
-        path: test_coverage_report.zip
+        name: test_coverage_report*.zip
+        path: test_coverage_report*.zip
         retention-days: 90

@@ -390,9 +390,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: "Install package dependencies"
+      - name: "Install notebook/test dependencies"
         run: |
-          # Install build dependencies
+          # Install notebook/test dependencies
           python -m pip install -q --upgrade pip
           pdm export -o requirements.txt
           if [ -f requirements.txt ]; then
@@ -404,8 +404,6 @@ jobs:
       - name: "Testing Jupyter notebooks"
         run: |
           # Testing Jupyter notebooks
-          echo "Installing required dependencies"
-          pip install --upgrade -q pytest nbmake
           # Consider enabling the line below when debugging/testing
           # find . -name '*.ipynb'
           echo "Running command: pytest --nbmake -- **/*.ipynb"
