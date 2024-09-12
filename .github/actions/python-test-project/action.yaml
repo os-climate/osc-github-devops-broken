@@ -40,18 +40,31 @@ runs:
     # 4. exit 0 if successful (following steps will be skipped)
     # 5. otherwise proceed to fallback method below (pytest)
 
-    - name: "Run tests, coverage report"
+    - name: "Run tests and coverage report"
       id: run-tests
+      if: inputs.NEVER_FAIL == 'false'
       shell: bash
       run: |
         # Run tests, coverage report
-        if [ ${{ inputs.NEVER_FAIL }} = "true" ]; then
-          SCRIPT_ARGS='|| true'
-        fi
         if [ -d test ]; then
-          pytest --cov --cov-report=html:coverage_report tests "$SCRIPT_ARGS"
+          pytest --cov --cov-report=html:coverage_report tests
         elif [ -d tests ]; then
-          pytest --cov --cov-report=html:coverage_report tests "$SCRIPT_ARGS"
+          pytest --cov --cov-report=html:coverage_report tests
+        else
+          echo "No test/tests directories were found"
+          echo "Aborting testing without error"; exit 0
+        fi
+
+    - name: "Run tests and coverage report [NEVER_FAIL]"
+      id: run-tests
+      if: inputs.REPORT_ARTEFACT == 'true'
+      shell: bash
+      run: |
+        # Run tests, coverage report
+        if [ -d test ]; then
+          pytest --cov --cov-report=html:coverage_report tests || true
+        elif [ -d tests ]; then
+          pytest --cov --cov-report=html:coverage_report tests || true
         else
           echo "No test/tests directories were found"
           echo "Aborting testing without error"; exit 0
@@ -70,7 +83,7 @@ runs:
           echo "No coverage report directory exists"
         fi
 
-    - name: "Upload build artefacts"
+    - name: "Upload test/coverage report"
       uses: actions/upload-artifact@v4
       if: inputs.REPORT_ARTEFACT == 'true'
       with:
