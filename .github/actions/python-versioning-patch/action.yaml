@@ -21,6 +21,21 @@ runs:
       run: |
         # Substituting project version string
 
+        #SHELLCODESTART
+
+        if [ -z "$CURRENT" ] && [ -z "$TARGET" ]; then
+          echo "Running from shell script outside GitHub"
+          if [ $# -ne 2 ]; then
+            echo "Usage:  $0 [current-tag] [target-tag]"; exit 1
+          else
+            CURRENT="$1"
+            TARGET="$2"
+          fi
+        else
+          TAG=${{ inputs.CURRENT }} >/dev/null 2>&1
+          TYPE=${{ inputs.TARGET }} >/dev/null 2>&1
+        fi
+
         # Abort if dynamic versioning is enabled for the project
         DYNAMIC=$(grep "dynamic = [\"version\"]" pyproject.toml)
         if [ "$DYNAMIC" == "pyproject.toml" ]; then
@@ -28,10 +43,11 @@ runs:
         fi
 
         # Attempt version string substitution for project
-        FILEMATCH=$(grep "version = \"$CURRENT\"" pyproject.toml)
-        if [ "$FILEMATCH" == "pyproject.toml" ]; then
+        if (grep -q "version = \"$CURRENT\"" pyproject.toml); then
           # String found; replace/update the version
           sed -i "s:version = \"$CURRENT\":version = \"$TARGET\":" pyproject.toml
         else
           echo "Error: specified version $CURRENT was NOT found in pyproject.toml"; exit 1
         fi
+
+        #SHELLCODEEND
