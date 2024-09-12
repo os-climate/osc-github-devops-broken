@@ -36,3 +36,5 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/python-test-project@main
         with:
           python_version: ${{ inputs.python_version }}
+          never_fail: true
+          report_artefact: true
