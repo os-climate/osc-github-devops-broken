@@ -8,9 +8,11 @@ inputs:
   CURRENT:
     description: "Current version to replace"
     required: true
+    type: string
   TARGET:
     description: "Target/replacement version"
     required: true
+    type: string
 
 runs:
   using: "composite"
@@ -23,21 +25,25 @@ runs:
 
         #SHELLCODESTART
 
-        set -x
-
         # Allows for testing from a local shell
         if [ -z "$GITHUB_OUTPUT" ]; then
           echo "Running from a shell, NOT workflow"
           export GITHUB_OUTPUT="/dev/null"
-          if [ $# -eq 2 ]; then
+          if [ $# -ne 2 ]; then
+            echo "Error: invalid arguments specified"
+            echo "Usage:  $0 [current-tag] [target-tag]"; exit 1
+          else
             CURRENT="$1"
             TARGET="$2"
-          else
-            echo "Usage:  $0 [current-tag] [target-tag]"; exit 1
           fi
         else
           CURRENT=${{ inputs.CURRENT }}
           TARGET=${{ inputs.TARGET }}
+        fi
+
+        if [ -z "$CURRENT" ] || [ -z "$TARGET" ]; then
+          echo "Error: one or more required inputs NOT received"
+          echo "Check the calling workflow syntax and setup..."; exit 1
         fi
 
         # Attempt version string substitution for project
