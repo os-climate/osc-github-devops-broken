@@ -48,7 +48,7 @@ jobs:
 
       - name: "Get dynamic build version"
         id: dynamic-version
-        uses: os-climate/osc-github-devops/.github/actions/python-build-dynversion@main
+        uses: os-climate/osc-github-devops/.github/actions/python-build-dyn-version@main
 
       - name: "DEVELOPMENT release"
         uses: softprops/action-gh-release@v2
