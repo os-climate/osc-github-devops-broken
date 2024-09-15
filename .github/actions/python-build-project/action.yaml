@@ -54,7 +54,7 @@ runs:
     - name: "Export development build name"
       id: export-development-build
       if: github.ref_name == 'main' &&
-        ${{ steps.dynamic-versioning.outputs }} == 'false'
+        ${{ steps.dynamic-versioning.outputs. }} == 'false'
       shell: bash
       run: |
         # Use synthetic build version number
