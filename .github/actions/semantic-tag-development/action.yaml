@@ -23,18 +23,16 @@ outputs:
     description: "The incremented semantic tag [with prefix] e.g. v1.2.3"
     value: ${{ steps.increment.outputs.tag }}
 
-  ### Return additional values NOT actually generated here
-  # Convenience, prevents a separate call to: repository-tags-fetch
-  CURRENT_TAG:
-    description: "The existing semantic tag to be incremented, same as input"
-    value: ${{ steps.increment.outputs.current_tag }}
-  CURRENT_VTAG:
-    description: "The existing semantic tag to be incremented, same as input"
-    value: ${{ steps.increment.outputs.current_vtag }}
-
 runs:
   using: "composite"
   steps:
+    # Need the full list of tags
+    - name: "Fetch tags"
+      shell: bash
+      run: |
+        echo "Fetching tags..."
+        git fetch --tags
+
     - name: "Enumerate current tag"
       id: current-tag
       uses: os-climate/osc-github-devops/.github/actions/repository-tags-fetch@main
@@ -47,19 +45,21 @@ runs:
 
         #SHELLCODESTART
 
-        # Development tags will have date and time of build appended
-        DATETIME=$(date +'%Y%m%d-%H%M')
-
-        TAG=${{ inputs.TAG }}
-        TYPE=${{ inputs.TYPE }}
-        if [ -z "$TAG" ] && [ -z "$TYPE" ]; then
-          echo "Running from shell script outside GitHub"
+        # Allows for testing from a local shell
+        if [ -z "$GITHUB_OUTPUT" ]; then
+          echo "Running from a shell, NOT workflow"
+          export GITHUB_OUTPUT="/dev/null"
           if [ $# -ne 2 ]; then
-            echo "Usage:  $0 [tag] [increment-type]"; exit 1
+            echo "Error: invalid arguments specified"
+            echo "Usage: $0 [tag] [increment-type major|minor|patch]"
+            exit 1
           else
             TAG="$1"
             TYPE="$2"
           fi
+        else
+          TAG="${{ inputs.TAG }}"
+          TYPE="${{ inputs.TYPE }}"
         fi
 
         # Validate increment type
@@ -113,16 +113,32 @@ runs:
             ;;
         esac
 
-        # Note: Development suffic appended to regular tag/value
-        TAG="$MAJOR.$MINOR.$PATCH-dev.$DATETIME"
-        echo "Development tag: $TAG [v$TAG]"
+        # Start development build number at zero
+        DEV_COUNT=0
+        NEXT_TAG="$MAJOR.$MINOR.$PATCH-dev$DEV_COUNT"
+        echo "Starting from: $NEXT_TAG"
 
-        # Allows for testing from a local shell
-        if [ -n "$GITHUB_OUTPUT" ]; then
-          echo "tag=${TAG}" >> $GITHUB_OUTPUT
-          echo "vtag=v${TAG}" >> $GITHUB_OUTPUT
-          echo "current_tag=${{ inputs.TAG }} >> $GITHUB_OUTPUT
-          echo "current_vtag=v${{ inputs.TAG }} >> $GITHUB_OUTPUT
-        fi
+        # Assume tag is NOT safe to use
+        THIS_TAG_CONFLICTS="true"
+
+        while [ "$THIS_TAG_CONFLICTS" = "true" ]; do
+          MATCH="false"
+          # Development releases start at one
+          DEV_COUNT=$((DEV_COUNT+1))
+          NEXT_TAG="$MAJOR.$MINOR.$PATCH-dev$DEV_COUNT"
+          echo "Checking "v$NEXT_TAG" against repository tags"
+          for REPO_TAG in $(git tag -l); do
+            if [ "v$NEXT_TAG" = "$REPO_TAG" ]; then
+              echo "$NEXT_TAG MATCHED to $REPO_TAG"
+              MATCH="true"
+            fi
+          done
+
+          if [ "$MATCH" = "false" ]; then
+            THIS_TAG_CONFLICTS="false"
+          fi
+        done
+
+        echo "Next available development tag: $NEXT_TAG"
 
         #SHELLCODEEND
