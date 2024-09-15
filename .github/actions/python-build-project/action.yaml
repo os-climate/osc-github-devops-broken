@@ -48,13 +48,13 @@ runs:
     - name: "Generate development build name"
       id: name-development-build
       if: github.ref_name == 'main' &&
-        ${{ steps.dynamic-versioning.outputs.dynamic }} == 'false'
+        ${{ steps.dynamic-versioning.outputs.dynamic_version }} == 'false'
       uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
 
     - name: "Export development build name"
       id: export-development-build
       if: github.ref_name == 'main' &&
-        ${{ steps.dynamic-versioning.outputs. }} == 'false'
+        ${{ steps.dynamic-versioning.outputs.dynamic_version }} == 'false'
       shell: bash
       run: |
         # Use synthetic build version number
