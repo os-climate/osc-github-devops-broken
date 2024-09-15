@@ -5,7 +5,7 @@
 name: "🏷️ Python Project Dynamic Versioning"
 
 outputs:
-  DYNAMIC:
+  DYNAMIC_VERSION:
     description: "Set true if pyproject.toml configured for DYNAMIC versioning"
     value: ${{ steps.project-versioning.outputs.dynamic }}
 
@@ -22,5 +22,5 @@ runs:
           echo "dynamic=true" >> $GITHUB_OUTPUT
         else
           echo "Dynamic pyproject.toml versioning: FALSE"
-          echo "dynamic=false" >> $GITHUB_OUTPUT
+          echo "dynamic_version=false" >> $GITHUB_OUTPUT
         fi
