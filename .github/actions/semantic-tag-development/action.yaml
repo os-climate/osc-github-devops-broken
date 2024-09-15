@@ -140,5 +140,9 @@ runs:
         done
 
         echo "Next available development tag: $NEXT_TAG"
+        echo "tag=$NEXT_TAG" >> "$GITHUB_OUTPUT"
+        echo "vtag=v$NEXT_TAG" >> "$GITHUB_OUTPUT"
+        echo "devtag=$NEXT_TAG" >> "$GITHUB_ENV"
+        echo "devvtag=v$NEXT_TAG" >> "$GITHUB_ENV"
 
         #SHELLCODEEND
