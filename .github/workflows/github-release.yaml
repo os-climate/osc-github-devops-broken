@@ -46,18 +46,9 @@ jobs:
           name: ${{ github.ref_name }}
           path: ${{ env.BUILD_ARTEFACTS }}
 
-      - name: "Check for dynamic versioning"
-        id: dynamic-versioning
-        if: github.ref_name == 'main'
-        uses: os-climate/osc-github-devops/.github/actions/python-versioning-dynamic@main
-
-      - name: "Generate development build name"
-        id: name-development-build
-        if: github.ref_name == 'main' &&
-          steps.dynamic-versioning.outputs.dynamic == 'false'
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
-
-      # ToDo: Tag pushes can be production or development releases
+      - name: "Get dynamic build version"
+        id: dynamic-version
+        uses: os-climate/osc-github-devops/.github/actions/python-build-dynversion@main
 
       - name: "DEVELOPMENT release"
         uses: softprops/action-gh-release@v2
@@ -68,8 +59,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
-          tag_name: ${{ steps.name-development-build.outputs.vtag }}
-          name: "Development/build: ${{ steps.name-development-build.outputs.vtag }}"
+          tag_name: ${{ steps.dynamic-version.outputs.dynamic_version }}
+          name: "Development/build: ${{ steps.dynamic-version.outputs.dynamic_version }}"
           # ToDo: Incorporate release notes, etc.
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
