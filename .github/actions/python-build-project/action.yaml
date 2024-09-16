@@ -59,11 +59,11 @@ runs:
         echo "PDM_BUILD_SCM_VERSION=${{ steps.name-development-build.outputs.build_vtag }}" >> $GITHUB_ENV
         echo $PDM_BUILD_SCM_VERSION > version.txt
 
-    - name: "Enumerate current tag"
+    - name: "Get current repository tag"
       id: current-tag
       if: github.ref_name == 'main' &&
         ${{ steps.dynamic-versioning.outputs.dynamic }} == 'false'
-      uses: os-climate/osc-github-devops/.github/actions/repository-tags-fetch@main
+      uses: os-climate/osc-github-devops/.github/actions/semantic-tag-fetch@main
 
     - name: "Patch version in pyproject.toml"
       id: patch-pyproject-version
@@ -72,7 +72,7 @@ runs:
       uses: os-climate/osc-github-devops/.github/actions/python-versioning-patch@main
       with:
         current: ${{ steps.current-tag.outputs.vtag }}
-        target: ${{ inputs.BUILD_TAG }}
+        target: ${{ inputs.build_tag }}
 
     - name: "Check target/path for build products"
       id: check-target
