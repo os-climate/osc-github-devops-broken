@@ -95,7 +95,7 @@ jobs:
             ERRORS="true"
           fi
           if [ "${{ steps.semantic-tag-validate-junk.outputs.valid }}" != "false" ]; then
-            echo "Errors with: semantic-tag-increment v1.not-valid.3.garbage"
+            echo "Errors with: semantic-tag-production v1.not-valid.3.garbage"
             ERRORS="true"
           fi
           if [ "$ERRORS" = "true" ]; then
@@ -109,26 +109,26 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-fetch@main
 
-      - name: "Action: semantic-tag-increment [patch]"
-        id: semantic-tag-increment-patch
+      - name: "Action: semantic-tag-production [patch]"
+        id: semantic-tag-production-patch
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-production@main
         with:
           tag: "v2.9.6"
           type: "patch"
 
-      - name: "Action: semantic-tag-increment [minor]"
-        id: semantic-tag-increment-minor
+      - name: "Action: semantic-tag-production [minor]"
+        id: semantic-tag-production-minor
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-production@main
         with:
           tag: "v0.1.2"
           type: "minor"
 
-      - name: "Action: semantic-tag-increment [major]"
-        id: semantic-tag-increment-major
+      - name: "Action: semantic-tag-production [major]"
+        id: semantic-tag-production-major
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-production@main
         with:
           tag: "v1.2.3"
           type: "major"
@@ -136,18 +136,18 @@ jobs:
       - name: "Validate Incremented Tags"
         shell: bash
         run: |
-          # Check output from: semantic-tag-increment
+          # Check output from: semantic-tag-production
           ERRORS="false"
-          if [ "${{ steps.semantic-tag-increment-patch.outputs.tag }}" != "2.9.7" ]; then
-            echo "Errors with: semantic-tag-increment [patch]"
+          if [ "${{ steps.semantic-tag-production-patch.outputs.tag }}" != "2.9.7" ]; then
+            echo "Errors with: semantic-tag-production [patch]"
             ERRORS="true"
           fi
-          if [ "${{ steps.semantic-tag-increment-minor.outputs.tag }}" != "0.2.0" ]; then
-            echo "Errors with: semantic-tag-increment [minor]"
+          if [ "${{ steps.semantic-tag-production-minor.outputs.tag }}" != "0.2.0" ]; then
+            echo "Errors with: semantic-tag-production [minor]"
             ERRORS="true"
           fi
-          if [ "${{ steps.semantic-tag-increment-major.outputs.tag }}" != "2.0.0" ]; then
-            echo "Errors with: semantic-tag-increment [major]"
+          if [ "${{ steps.semantic-tag-production-major.outputs.tag }}" != "2.0.0" ]; then
+            echo "Errors with: semantic-tag-production [major]"
             ERRORS="true"
           fi
           if [ "$ERRORS" = "true" ]; then

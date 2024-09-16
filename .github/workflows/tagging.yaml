@@ -56,14 +56,14 @@ jobs:
       - name: "Generate DEVELOPMENT build/tag"
         id: development-tag
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-build@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
         with:
           tag: ${{ steps.repo-tags.outputs.vtag }}
 
       - name: "Generate PRODUCTION build/tag"
         id: production-tag
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-production@main
         with:
           tag: ${{ steps.repo-tags.outputs.vtag }}
 
