@@ -29,7 +29,7 @@ jobs:
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
         with:
-          name: ${{ github.ref_name }}
+          name: ${{ inputs.build_tag }}
           path: ${{ env.BUILD_ARTEFACTS }}
 
       - name: "Check tag matches pyproject.toml"
