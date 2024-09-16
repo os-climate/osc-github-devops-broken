@@ -37,7 +37,7 @@ on:
 
 jobs:
   tagging:
-    name: "Gather Tags/Build Data"
+    name: "Build Naming"
     runs-on: ubuntu-latest
     outputs:
       current_tag: ${{ steps.repo-tags.outputs.current_tag }}
@@ -53,14 +53,14 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-fetch@main
 
-      - name: "Generate tag for DEVELOPMENT builds"
+      - name: "Generate DEVELOPMENT build/tag"
         id: development-tag
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-build@main
         with:
           tag: ${{ steps.repo-tags.outputs.vtag }}
 
-      - name: "Generate tag for PRODUCTION releases"
+      - name: "Generate PRODUCTION build/tag"
         id: production-tag
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
@@ -70,7 +70,7 @@ jobs:
       # ToDo
       #  1. Add type based on labels in pull request
       #  2. Add type based on strings in commit message
-      - name: "Flag build/release type"
+      - name: "Define this build/tag"
         id: this-build
         shell: bash
         run: |
@@ -78,12 +78,16 @@ jobs:
           if [ "$GITHUB_REF_NAME" == "main" ] &&
              [ "$GITHUB_REF_TYPE" == "branch" ] &&
              [ "$GITHUB_EVENT_NAME" == "push" ]; then
-            echo "pre_release=true" >> "$GITHUB_OUTPUT"
-            echo "build_tag=${{ steps.development-tag.outputs.vtag }}" >> "$GITHUB_OUTPUT"
+            PRE_RELEASE="true"
+            BUILD_TAG=${{ steps.development-tag.outputs.vtag }}
           else
-            echo "pre_release=false" >> "$GITHUB_OUTPUT"
-            echo "build_tag=${{ steps.production-tag.outputs.vtag }}" >> "$GITHUB_OUTPUT"
+            PRE_RELEASE="false"
+            BUILD_TAG=${{ steps.production-tag.outputs.vtag }}
           fi
+          echo "pre_release=$PRE_RELEASE"
+          echo "pre_release=$PRE_RELEASE" >> "$GITHUB_OUTPUT"
+          echo "build_tag=$BUILD_TAG"
+          echo "build_tag=$BUILD_TAG" >> "$GITHUB_OUTPUT"
 
       # Only runs if no tags are found, pushes an initial v0.0.0
       - name: "Create initial v0.0.0 tag"
