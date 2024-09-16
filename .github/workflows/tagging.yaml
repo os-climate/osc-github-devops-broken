@@ -19,7 +19,6 @@ on:
       CURRENT_TAG:
         description: "Existing tag from repository"
         value: ${{ jobs.tagging.outputs.current_tag }}
-
       INVALID_TAG:
         description: "Flags if the current repository tag is NOT semantiv"
         value: ${{ jobs.tagging.outputs.invalid_tag }}
