@@ -48,17 +48,6 @@ runs:
       if: github.ref_name == 'main'
       uses: os-climate/osc-github-devops/.github/actions/python-versioning-dynamic@main
 
-    - name: "Export development build name"
-      id: export-development-build
-      if: github.ref_name == 'main' &&
-        ${{ steps.dynamic-versioning.outputs.dynamic_version }} == 'false'
-      shell: bash
-      run: |
-        # Use synthetic build version number
-        echo "PDM_BUILD_SCM_VERSION: ${{ steps.name-development-build.outputs.build_vtag }}"
-        echo "PDM_BUILD_SCM_VERSION=${{ steps.name-development-build.outputs.build_vtag }}" >> $GITHUB_ENV
-        echo $PDM_BUILD_SCM_VERSION > version.txt
-
     - name: "Get current repository tag"
       id: current-tag
       if: github.ref_name == 'main' &&
