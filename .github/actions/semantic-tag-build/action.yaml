@@ -124,9 +124,9 @@ runs:
         done
 
         echo "Build tag/release: $NEXT_TAG [v$NEXT_TAG]"
-        echo "build_tag=$NEXT_TAG" >> "$GITHUB_OUTPUT"
-        echo "build_tag=$NEXT_TAG" >> "$GITHUB_ENV"
-        echo "build_vtag=v$NEXT_TAG" >> "$GITHUB_OUTPUT"
-        echo "build_vtag=v$NEXT_TAG" >> "$GITHUB_ENV"
+        echo "tag=$NEXT_TAG" >> "$GITHUB_OUTPUT"
+        echo "tag=$NEXT_TAG" >> "$GITHUB_ENV"
+        echo "vtag=v$NEXT_TAG" >> "$GITHUB_OUTPUT"
+        echo "vtag=v$NEXT_TAG" >> "$GITHUB_ENV"
 
         #SHELLCODEEND

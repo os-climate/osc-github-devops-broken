@@ -55,7 +55,6 @@ jobs:
 
       - name: "Generate tag for DEVELOPMENT builds"
         id: development-tag
-        if: github.ref_name == 'main' && github.event_name == 'push'
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-build@main
         with:
@@ -63,9 +62,6 @@ jobs:
 
       - name: "Generate tag for PRODUCTION releases"
         id: production-tag
-        if: github.ref_type == 'tag' &&
-          startsWith(github.ref, 'refs/tags/') &&
-          github.event_name == 'push'
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
         with:
@@ -92,8 +88,8 @@ jobs:
       # Only runs if no tags are found, pushes an initial v0.0.0
       - name: "Create initial v0.0.0 tag"
         id: initial-tag
-        if: steps.repo-tags.outputs.invalid &&
-          inputs.CREATE_MISSING
+        if: steps.repo-tags.outputs.invalid == 'true' &&
+          inputs.CREATE_MISSING == 'true'
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
