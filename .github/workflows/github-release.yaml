@@ -8,31 +8,15 @@ name: "📦 Release to GitHub"
 on:
   workflow_call:
     inputs:
-      PRERELEASE:
+      PRE_RELEASE:
         description: "Mark release as pre-release/development version"
         type: boolean
         required: false
         default: false
-      DEVELOPMENT_TAG:
-        description: "Semantic tag for DEVELOPMENT release/build"
+      BUILD_TAG:
+        description: "Semantic tag for this release/build"
         type: string
         required: true
-      PRODUCTION_TAG:
-        description: "Semantic tag for PRODUCTION release/build"
-        type: string
-        required: true
-
-# Two release types supported, based on conditions
-
-### Development Release
-# github.event.pull_request.merged == true &&
-# startsWith(github.ref, 'refs/tags/') != 'true'
-# devtag: ${{ needs.tagging.outputs.dev_tag }}
-
-### Production Release
-# On merge of tag push, create a production release
-# if: github.event.pull_request.merged == true && startsWith(github.ref, 'refs/tags/')
-# tag: ${{ github.ref_name }}
 
 jobs:
   github-release:
@@ -48,50 +32,20 @@ jobs:
           name: ${{ github.ref_name }}
           path: ${{ env.BUILD_ARTEFACTS }}
 
-      # Enable later when build versioning is dynamic
-      # - name: "Get dynamic build version"
-      #   id: dynamic-version
-      #   uses: os-climate/osc-github-devops/.github/actions/python-build-dyn-version@main
-
-      - name: "DEVELOPMENT release"
-        uses: softprops/action-gh-release@v2
-        if:
-          # Development release triggered by a PR merge push
-          github.ref_name == 'main' &&
-          !startsWith(github.ref, 'refs/tags/')
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: true
-          tag_name: ${{ inputs.development_tag }}
-          name: "Development/build: ${{ inputs.development_tag }}"
-          # ToDo: Incorporate release notes, etc.
-          # body_path: ${{ github.workspace }}/CHANGELOG.rst
-          files: |
-            ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
-            ${{ env.BUILD_ARTEFACTS }}/*.whl
-            ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
-
       - name: "Check tag matches pyproject.toml"
-        if: github.ref_type == 'tag' &&
-          startsWith(github.ref, 'refs/tags/') &&
-          github.event_name == 'push'
+        if: inputs.PRE_RELEASE == 'false'
         shell: bash
         run: |
-          # Check tag push matches pyproject.toml
+          # Check tag push matches pyproject.toml metadata
           echo "ToDo: NOT IMPLEMENTED YET"
 
-      - name: "PRODUCTION Release"
+      - name: "GitHub Release"
         uses: softprops/action-gh-release@v2
-        if:
-          # Production releases triggered by a tag push
-          github.ref_type == 'tag' &&
-          startsWith(github.ref, 'refs/tags/') &&
-          github.event_name == 'push'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: false
-          tag_name: ${{ inputs.production_tag }}
-          name: "Release/build: ${{ inputs.production_tag }}"
+          prerelease: ${{ inputs.PRE_RELEASE }}
+          tag_name: ${{ inputs.build_tag }}
+          name: "Build/Release: ${{ inputs.build_tag }}"
           # ToDo: Incorporate release notes, etc.
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |

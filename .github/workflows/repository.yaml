@@ -17,12 +17,14 @@ env:
   BUILD_ARTEFACTS: "dist"
   # Configures publishing to PyPI
   PYPI_PUBLISHING: "true"
-  # Create GitHub releases for all builds, not just production builds
-  GITHUB_PRERELEASE: "true"
-  # Create an initial tag, if missing
-  CREATE_MISSING_TAG: "true"
 
 jobs:
+  tagging:
+    name: "Retrieve/Verify GIT Tags"
+    uses: os-climate/osc-github-devops/.github/workflows/tagging.yaml@main
+    with:
+      create_missing: true
+
   one-password-verify:
     name: "1Password"
     uses: os-climate/osc-github-devops/.github/workflows/one-password-credentials.yaml@main
@@ -63,12 +65,6 @@ jobs:
         id: set
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/github-workflow-metadata@main
-
-  tagging:
-    name: "Retrieve/Verify GIT Tags"
-    uses: os-climate/osc-github-devops/.github/workflows/tagging.yaml@main
-    with:
-      create_missing: true
 
   verify-github-environment:
     name: "Verify GitHub Environment"
@@ -128,6 +124,7 @@ jobs:
     needs:
       - github-workflow-metadata
       - python-project
+      - tagging
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
@@ -140,6 +137,7 @@ jobs:
       # ToDo: can this be sourced as a var from the top of the workflow?
       # env.ARTEFACT_PYTHON is NOT permitted!
       artefact_python: "3.11"
+      build_tag: ${{ needs.tagging.outputs.build_tag }}
 
   python-test:
     name: "Test"
@@ -163,8 +161,8 @@ jobs:
       # Needed both here and in the called workflow
       contents: write
     with:
-      development_tag: ${{ needs.tagging.outputs.development_tag }}
-      production_tag: ${{ needs.tagging.outputs.production_tag }}
+      pre_release: ${{ needs.tagging.outputs.pre_release }}
+      build_tag: ${{ needs.tagging.outputs.build_tag }}
 
   testpypi:
     name: "Test Package Publishing"

@@ -22,15 +22,18 @@ on:
       INVALID_TAG:
         description: "Flags if the current repository tag is NOT semantiv"
         value: ${{ jobs.tagging.outputs.invalid_tag }}
-      BUILD_TYPE::
-        description: "Build type [development|production]"
-        value: ${{ jobs.tagging.outputs.build_type }}
       DEVELOPMENT_TAG:
         description: "Semantic tag for development releases/builds"
         value: ${{ jobs.tagging.outputs.development_tag }}
       PRODUCTION_TAG:
         description: "Semantic tag for production releases/builds"
         value: ${{ jobs.tagging.outputs.production_tag }}
+      PRE_RELEASE:
+        description: "Set true if test/development release"
+        value: ${{ jobs.tagging.outputs.pre_release }}
+      BUILD_TAG:
+        description: "Semantic tag for this release/build"
+        value: ${{ jobs.tagging.outputs.build_tag }}
 
 jobs:
   tagging:
@@ -39,9 +42,10 @@ jobs:
     outputs:
       current_tag: ${{ steps.repo-tags.outputs.current_tag }}
       invalid_tag: ${{ steps.repo-tags.outputs.invalid_tag }}
-      build_type: ${{ steps.build-type.outputs.build_type }}
       development_tag: ${{ steps.development-tag.outputs.development_tag }}
       production_tag: ${{ steps.production-tag.outputs.production_tag }}
+      pre_release: ${{ steps.this-build.outputs.pre_release }}
+      build_tag: ${{ steps.this-build.outputs.build_tag }}
 
     steps:
       - name: "Retrieve/verify tags"
@@ -49,27 +53,13 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-fetch@main
 
-      - name: "Flag build/release type"
-        id: build-type
-        shell: bash
-        run: |
-          # Flag build/release type
-          if [ "$GITHUB_REF_NAME" == "main" ] &&
-             [ "$GITHUB_REF_TYPE" == "branch" ] &&
-             [ "$GITHUB_EVENT_NAME" == "push" ]; then
-            echo "build_type=development" >> "$GITHUB_OUTPUT"
-          else
-            echo "build_type=production" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: "Generate tag for DEVELOPMENT builds"
         id: development-tag
         if: github.ref_name == 'main' && github.event_name == 'push'
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-build@main
         with:
-          tag: ${{ steps.repo-tags.outputs.tag }}
-          # ToDo: add "type based on labels in release"
+          tag: ${{ steps.repo-tags.outputs.vtag }}
 
       - name: "Generate tag for PRODUCTION releases"
         id: production-tag
@@ -79,8 +69,25 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
         with:
-          tag: ${{ steps.repo-tags.outputs.tag }}
-          # ToDo: add "type based on labels in release"
+          tag: ${{ steps.repo-tags.outputs.vtag }}
+
+      # ToDo
+      #  1. Add type based on labels in pull request
+      #  2. Add type based on strings in commit message
+      - name: "Flag build/release type"
+        id: this-build
+        shell: bash
+        run: |
+          # Flag build/release type
+          if [ "$GITHUB_REF_NAME" == "main" ] &&
+             [ "$GITHUB_REF_TYPE" == "branch" ] &&
+             [ "$GITHUB_EVENT_NAME" == "push" ]; then
+            echo "pre_release=true" >> "$GITHUB_OUTPUT"
+            echo "build_tag=${{ steps.development-tag.outputs.vtag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "pre_release=false" >> "$GITHUB_OUTPUT"
+            echo "build_tag=${{ steps.production-tag.outputs.vtag }}" >> "$GITHUB_OUTPUT"
+          fi
 
       # Only runs if no tags are found, pushes an initial v0.0.0
       - name: "Create initial v0.0.0 tag"

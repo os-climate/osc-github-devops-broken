@@ -16,10 +16,10 @@ inputs:
     default: "patch"
 
 outputs:
-  BUILD_TAG:
+  TAG:
     description: "The next semantic tag"
     value: ${{ steps.increment.outputs.next_tag }}
-  BUILD_VTAG:
+  VTAG:
     description: "The next semantic tag with a v prefix"
     value: ${{ steps.increment.outputs.next_vtag }}
 

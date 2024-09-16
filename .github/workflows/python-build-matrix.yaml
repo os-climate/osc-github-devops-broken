@@ -23,6 +23,10 @@ on:
         required: false
         type: string
         default: "dist"
+      BUILD_TAG:
+        description: "Build tag/name"
+        required: true
+        type: string
 
 jobs:
   python-build-matrix:
@@ -51,6 +55,7 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/python-build-project@main
         with:
           python_version: ${{ inputs.python_version }}
+          build_tag: ${{ inputs.build_tag }}
 
       - name: "Validate artefacts with Twine"
         id: python-twine-check
