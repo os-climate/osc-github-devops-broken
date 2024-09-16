@@ -14,14 +14,17 @@ inputs:
     description: "Purge target artefact path prior to builds"
     required: false
     default: false
+  BUILD_TAG:
+    description: "Build tag/name"
+    required: true
 
 outputs:
   DATETIME_STAMP:
     description: "Date/time stamp at build time"
     value: ${{ steps.parameters.outputs.datetime }}
-  BUILD_TYPE:
-    description: "Build [production|development]"
-    value: ${{ steps.perform-build.outputs.publish }}
+  # BUILD_TYPE:
+  #   description: "Build [production|development]"
+  #   value: ${{ steps.perform-build.outputs.publish }}
   SUCCESS:
     description: "Set true if build succeeded"
     value: ${{ steps.perform-build.outputs.success }}
@@ -45,12 +48,6 @@ runs:
       if: github.ref_name == 'main'
       uses: os-climate/osc-github-devops/.github/actions/python-versioning-dynamic@main
 
-    - name: "Generate development build name"
-      id: name-development-build
-      if: github.ref_name == 'main' &&
-        ${{ steps.dynamic-versioning.outputs.dynamic_version }} == 'false'
-      uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
-
     - name: "Export development build name"
       id: export-development-build
       if: github.ref_name == 'main' &&
@@ -58,8 +55,8 @@ runs:
       shell: bash
       run: |
         # Use synthetic build version number
-        echo "PDM_BUILD_SCM_VERSION: ${{ steps.name-development-build.outputs.vtag }}"
-        echo "PDM_BUILD_SCM_VERSION=${{ steps.name-development-build.outputs.vtag }}" >> $GITHUB_ENV
+        echo "PDM_BUILD_SCM_VERSION: ${{ steps.name-development-build.outputs.build_vtag }}"
+        echo "PDM_BUILD_SCM_VERSION=${{ steps.name-development-build.outputs.build_vtag }}" >> $GITHUB_ENV
         echo $PDM_BUILD_SCM_VERSION > version.txt
 
     - name: "Enumerate current tag"
@@ -75,7 +72,7 @@ runs:
       uses: os-climate/osc-github-devops/.github/actions/python-versioning-patch@main
       with:
         current: ${{ steps.current-tag.outputs.vtag }}
-        target: ${{ env.PDM_BUILD_SCM_VERSION }}
+        target: ${{ inputs.BUILD_TAG }}
 
     - name: "Check target/path for build products"
       id: check-target
@@ -133,13 +130,13 @@ runs:
         fi
 
         # Set build type based on artefact naming
-        if test -n "$(find ${{ inputs.artefact_output_path }} -maxdepth 1 -name '**.dev*' -print -quit)"; then
-          echo "Artefact naming indicates development build"
-          echo "build_type=development" >> "$GITHUB_ENV"
-          echo "build_type=development" >> "$GITHUB_OUTPUT"
-        else
-          echo "build_type=production" >> "$GITHUB_ENV"
-          echo "build_type=production" >> "$GITHUB_OUTPUT"
-        fi
+        # if test -n "$(find ${{ inputs.artefact_output_path }} -maxdepth 1 -name '**.dev*' -print -quit)"; then
+        #   echo "Artefact naming indicates development build"
+        #   echo "build_type=development" >> "$GITHUB_ENV"
+        #   echo "build_type=development" >> "$GITHUB_OUTPUT"
+        # else
+        #   echo "build_type=production" >> "$GITHUB_ENV"
+        #   echo "build_type=production" >> "$GITHUB_OUTPUT"
+        # fi
         echo "Build succeeded"
         echo "success=true" >> "$GITHUB_OUTPUT"
