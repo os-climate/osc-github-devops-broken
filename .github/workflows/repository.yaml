@@ -20,7 +20,7 @@ env:
 
 jobs:
   tagging:
-    name: "Retrieve/Verify GIT Tags"
+    name: "GIT Tags"
     uses: os-climate/osc-github-devops/.github/workflows/tagging.yaml@main
     with:
       create_missing: true
