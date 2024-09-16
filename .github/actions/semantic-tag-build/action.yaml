@@ -7,36 +7,25 @@ name: "🏷️ Development Semantic Tag"
 inputs:
   TAG:
     description: "The existing semantic tag to be incremented"
-    required: false
+    required: true
+    type: string
   TYPE:
     description: "Increment to perform [major|minor|patch]"
     required: false
+    type: string
     default: "patch"
 
 outputs:
-  TAG:
-    # A leading non-numeric "v" character will be stripped
-    description: "The incremented semantic tag [purely numeric] e.g. 1.2.3"
-    value: ${{ steps.increment.outputs.tag }}
-  VTAG:
-    # A leading non-numeric "v" character will be stripped
-    description: "The incremented semantic tag [with prefix] e.g. v1.2.3"
-    value: ${{ steps.increment.outputs.tag }}
+  BUILD_TAG:
+    description: "The next semantic tag"
+    value: ${{ steps.increment.outputs.next_tag }}
+  BUILD_VTAG:
+    description: "The next semantic tag with a v prefix"
+    value: ${{ steps.increment.outputs.next_vtag }}
 
 runs:
   using: "composite"
   steps:
-    # Need the full list of tags
-    - name: "Fetch tags"
-      shell: bash
-      run: |
-        echo "Fetching tags..."
-        git fetch --tags
-
-    - name: "Enumerate current tag"
-      id: current-tag
-      uses: os-climate/osc-github-devops/.github/actions/repository-tags-fetch@main
-
     - name: "Create development tag"
       id: increment
       shell: bash
@@ -67,11 +56,6 @@ runs:
             [ ! "$TYPE" = "minor" ] && \
             [ ! "$TYPE" = "patch" ]; then
            echo "Increment type invalid"; exit 1
-        fi
-
-        # If tag was NOT supplied, get the current one from the repository
-        if [ -z $TAG ]; then
-          TAG=${{ steps.current-tag.outputs.vtag }}
         fi
 
         echo "Input tag: $TAG"
@@ -139,10 +123,10 @@ runs:
           fi
         done
 
-        echo "Next available development tag: $NEXT_TAG"
-        echo "tag=$NEXT_TAG" >> "$GITHUB_OUTPUT"
-        echo "vtag=v$NEXT_TAG" >> "$GITHUB_OUTPUT"
-        echo "devtag=$NEXT_TAG" >> "$GITHUB_ENV"
-        echo "devvtag=v$NEXT_TAG" >> "$GITHUB_ENV"
+        echo "Build tag/release: $NEXT_TAG [v$NEXT_TAG]"
+        echo "build_tag=$NEXT_TAG" >> "$GITHUB_OUTPUT"
+        echo "build_tag=$NEXT_TAG" >> "$GITHUB_ENV"
+        echo "build_vtag=v$NEXT_TAG" >> "$GITHUB_OUTPUT"
+        echo "build_vtag=v$NEXT_TAG" >> "$GITHUB_ENV"
 
         #SHELLCODEEND

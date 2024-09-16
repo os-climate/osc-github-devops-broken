@@ -1,0 +1,95 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🏷️ Repository Tagging"
+# Enumerate current tag, generate development/production tags, create initial tag
+
+# yamllint disable-line rule:truthy
+on:
+  workflow_call:
+    inputs:
+      CREATE_MISSING:
+        description: "Create an initial tag if none found in repository"
+        type: boolean
+        required: false
+        default: false
+
+    outputs:
+      CURRENT_TAG:
+        description: "Existing tag from repository"
+        value: ${{ jobs.tagging.outputs.current_tag }}
+
+      INVALID_TAG:
+        description: "Flags if the current repository tag is NOT semantiv"
+        value: ${{ jobs.tagging.outputs.invalid_tag }}
+      BUILD_TYPE::
+        description: "Build type [development|production]"
+        value: ${{ jobs.tagging.outputs.build_type }}
+      DEVELOPMENT_TAG:
+        description: "Semantic tag for development releases/builds"
+        value: ${{ jobs.tagging.outputs.development_tag }}
+      PRODUCTION_TAG:
+        description: "Semantic tag for production releases/builds"
+        value: ${{ jobs.tagging.outputs.production_tag }}
+
+jobs:
+  tagging:
+    name: "Gather Tags/Build Data"
+    runs-on: ubuntu-latest
+    outputs:
+      current_tag: ${{ steps.repo-tags.outputs.current_tag }}
+      invalid_tag: ${{ steps.repo-tags.outputs.invalid_tag }}
+      build_type: ${{ steps.build-type.outputs.build_type }}
+      development_tag: ${{ steps.development-tag.outputs.development_tag }}
+      production_tag: ${{ steps.production-tag.outputs.production_tag }}
+
+    steps:
+      - name: "Retrieve/verify tags"
+        id: repo-tags
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-fetch@main
+
+      - name: "Flag build/release type"
+        id: build-type
+        shell: bash
+        run: |
+          # Flag build/release type
+          if [ "$GITHUB_REF_NAME" == "main" ] &&
+             [ "$GITHUB_REF_TYPE" == "branch" ] &&
+             [ "$GITHUB_EVENT_NAME" == "push" ]; then
+            echo "build_type=development" >> "$GITHUB_OUTPUT"
+          else
+            echo "build_type=production" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: "Generate tag for DEVELOPMENT builds"
+        id: development-tag
+        if: github.ref_name == 'main' && github.event_name == 'push'
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-build@main
+        with:
+          tag: ${{ steps.repo-tags.outputs.tag }}
+          # ToDo: add "type based on labels in release"
+
+      - name: "Generate tag for PRODUCTION releases"
+        id: production-tag
+        if: github.ref_type == 'tag' &&
+          startsWith(github.ref, 'refs/tags/') &&
+          github.event_name == 'push'
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-increment@main
+        with:
+          tag: ${{ steps.repo-tags.outputs.tag }}
+          # ToDo: add "type based on labels in release"
+
+      # Only runs if no tags are found, pushes an initial v0.0.0
+      - name: "Create initial v0.0.0 tag"
+        id: initial-tag
+        if: steps.repo-tags.outputs.invalid &&
+          inputs.CREATE_MISSING
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+          tag_name: v0.0.0

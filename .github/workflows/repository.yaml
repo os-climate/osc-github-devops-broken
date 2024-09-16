@@ -64,22 +64,32 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/github-workflow-metadata@main
 
+  new-tagging:
+    name: "Retrieve/Verify GIT Tags"
+    uses: os-climate/osc-github-devops/.github/workflows/tagging.yaml@main
+
   tagging:
     name: "Retrieve/Verify GIT Tags"
     runs-on: ubuntu-latest
     outputs:
       current: ${{ steps.repository-tags.outputs.tag }}
       invalid: ${{ steps.repository-tags.outputs.invalid }}
-      dev_tag: ${{ steps.get-development.outputs.tag }}
+      next: ${{ steps.next-tag.outputs.tag }}
 
     steps:
       - name: "Retrieve/verify tags"
         id: repository-tags
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/repository-tags-fetch@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-fetch@main
+
+      - name: "Generate next tag"
+        id: next-tag
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
+        with:
+          tag: ${{ steps.repository-tags.outputs.tag }}
 
       - name: "Create initial v0.0.0 tag"
-        id: set-initial-tag
+        id: initial-tag
         # Only runs if no tags are found, pushes an initial v0.0.0
         if: steps.repository-tags.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
         uses: softprops/action-gh-release@v2
@@ -87,12 +97,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
           tag_name: v0.0.0
-
-      - name: "Generate a DEVELOPMENT tag"
-        id: get-development
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
-        with:
-          tag: ${{ steps.repository-tags.outputs.tag }}
 
   verify-github-environment:
     name: "Verify GitHub Environment"

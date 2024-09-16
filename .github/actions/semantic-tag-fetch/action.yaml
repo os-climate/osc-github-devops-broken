@@ -57,7 +57,7 @@ runs:
       with:
         tag: ${{ steps.retrieve.outputs.tag_interim }}
 
-    - name: "Check semantic/validity"
+    - name: "Return current tag"
       id: results
       shell: bash
       run: |
