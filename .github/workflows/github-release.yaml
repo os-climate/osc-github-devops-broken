@@ -13,11 +13,14 @@ on:
         type: boolean
         required: false
         default: false
-      DEVTAG:
-        # Force use of this tag/name for release
-        description: "Semantic tag for release/build"
+      DEVELOPMENT_TAG:
+        description: "Semantic tag for DEVELOPMENT release/build"
         type: string
-        required: false
+        required: true
+      PRODUCTION_TAG:
+        description: "Semantic tag for PRODUCTION release/build"
+        type: string
+        required: true
 
 # Two release types supported, based on conditions
 
@@ -37,8 +40,7 @@ jobs:
     runs-on: "ubuntu-latest"
     permissions:
       contents: write
-    env:
-      tag: ${{ github.event.inputs.tag }}
+
     steps:
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
@@ -46,9 +48,10 @@ jobs:
           name: ${{ github.ref_name }}
           path: ${{ env.BUILD_ARTEFACTS }}
 
-      - name: "Get dynamic build version"
-        id: dynamic-version
-        uses: os-climate/osc-github-devops/.github/actions/python-build-dyn-version@main
+      # Enable later when build versioning is dynamic
+      # - name: "Get dynamic build version"
+      #   id: dynamic-version
+      #   uses: os-climate/osc-github-devops/.github/actions/python-build-dyn-version@main
 
       - name: "DEVELOPMENT release"
         uses: softprops/action-gh-release@v2
@@ -59,8 +62,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
-          tag_name: ${{ steps.dynamic-version.outputs.dynamic_version }}
-          name: "Development/build: ${{ steps.dynamic-version.outputs.dynamic_version }}"
+          tag_name: ${{ inputs.development_tag }}
+          name: "Development/build: ${{ inputs.development_tag }}"
           # ToDo: Incorporate release notes, etc.
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
@@ -87,8 +90,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: false
-          tag_name: ${{ github.ref_name }}
-          name: "Release/build: ${{ github.ref_name }}"
+          tag_name: ${{ inputs.production_tag }}
+          name: "Release/build: ${{ inputs.production_tag }}"
           # ToDo: Incorporate release notes, etc.
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
