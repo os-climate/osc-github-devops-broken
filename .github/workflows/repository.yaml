@@ -159,13 +159,12 @@ jobs:
     needs:
       - python-build
       - tagging
-    # ToDo: Implement explicit development release and build naming
-    # with:
-    #   prerelease: true
-    #   devtag: ${{ needs.tagging.outputs.dev_tag }}
     permissions:
       # Needed both here and in the called workflow
       contents: write
+    with:
+      development_tag: ${{ needs.tagging.outputs.development_tag }}
+      production_tag: ${{ needs.tagging.outputs.production_tag }}
 
   testpypi:
     name: "Test Package Publishing"
