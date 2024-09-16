@@ -64,39 +64,11 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/github-workflow-metadata@main
 
-  new-tagging:
-    name: "Retrieve/Verify GIT Tags"
-    uses: os-climate/osc-github-devops/.github/workflows/tagging.yaml@main
-
   tagging:
     name: "Retrieve/Verify GIT Tags"
-    runs-on: ubuntu-latest
-    outputs:
-      current: ${{ steps.repository-tags.outputs.tag }}
-      invalid: ${{ steps.repository-tags.outputs.invalid }}
-      next: ${{ steps.next-tag.outputs.tag }}
-
-    steps:
-      - name: "Retrieve/verify tags"
-        id: repository-tags
-        # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-fetch@main
-
-      - name: "Generate next tag"
-        id: next-tag
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
-        with:
-          tag: ${{ steps.repository-tags.outputs.tag }}
-
-      - name: "Create initial v0.0.0 tag"
-        id: initial-tag
-        # Only runs if no tags are found, pushes an initial v0.0.0
-        if: steps.repository-tags.outputs.invalid == 'true' && env.CREATE_MISSING_TAG
-        uses: softprops/action-gh-release@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: true
-          tag_name: v0.0.0
+    uses: os-climate/osc-github-devops/.github/workflows/tagging.yaml@main
+    with:
+      create_missing: true
 
   verify-github-environment:
     name: "Verify GitHub Environment"
@@ -257,7 +229,7 @@ jobs:
           prefix: "https://test.pypi.org/project"
           # Use project name, e.g. "/ITR"
           string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
-          suffix: "/${{ needs.tagging.outputs.current }}/"
+          suffix: "/${{ needs.tagging.outputs.current_tag }}/"
 
       - name: "Publish to Test PyPI [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -338,7 +310,7 @@ jobs:
           prefix: "https://pypi.org/project"
           # Use project name, e.g. "/ITR"
           string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
-          suffix: "/${{ needs.tagging.outputs.current }}/"
+          suffix: "/${{ needs.tagging.outputs.current_tag }}/"
 
       - name: "Publish to PyPI [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
