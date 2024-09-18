@@ -47,11 +47,11 @@ runs:
         fi
 
         # Attempt version string substitution for project
-        if (grep -q "version = \"$CURRENT\"" pyproject.toml); then
-          # String found; replace/update the version
-          sed -i "s:version = \"$CURRENT\":version = \"$TARGET\":" pyproject.toml
-        else
-          echo "Error: specified version $CURRENT was NOT found in pyproject.toml"; exit 1
+        sed -i -E "s:^version =.*$:version = \"$TARGET\":" pyproject.toml
+
+        # Check to see if the above succeeded
+        if !(grep -q "version = \"$TARGET\"" pyproject.toml); then
+          echo "Error: failed version substitution in pyproject.toml"; exit 1
         fi
 
         #SHELLCODEEND
