@@ -80,6 +80,11 @@ jobs:
              [ "$GITHUB_EVENT_NAME" == "push" ]; then
             PRE_RELEASE="true"
             BUILD_TAG=${{ steps.development-tag.outputs.vtag }}
+          elif [ "$GITHUB_REF_NAME" == "main" ] &&
+           [ "$GITHUB_REF_TYPE" == "branch" ] &&
+           [ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]; then
+            PRE_RELEASE="true"
+            BUILD_TAG=${{ steps.development-tag.outputs.vtag }}
           else
             PRE_RELEASE="false"
             BUILD_TAG=${{ steps.production-tag.outputs.vtag }}
