@@ -57,6 +57,11 @@ jobs:
         with:
           python-version: ${{ inputs.python_version }}
 
+      - name: "Extract project/repository naming"
+        id: naming
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/python-project-naming@main
+
       - name: "Build Python project"
         id: python-matrix-builds
         uses: os-climate/osc-github-devops/.github/actions/python-build-project@main
@@ -68,18 +73,11 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/python-twine-check@main
 
-      - name: "Capture repository/project name"
-        shell: bash
-        run: |
-          # Capture repository/project name
-          REPOSITORY_NAME=$(basename ${{ github.repository }})
-          echo "repository=$REPOSITORY_NAME" >> "$GITHUB_ENV"
-
       - name: "Upload build artefacts"
         uses: actions/upload-artifact@v4
         if: inputs.python_version == inputs.ARTEFACT_PYTHON
         with:
-          name: ${{ env.repository }}-${{ inputs.build_tag }}
+          name: ${{ env.python_project_name }}-${{ inputs.build_tag }}
           path: ${{ inputs.ARTEFACT_LOCATION }}
 
       # This step optional and must be explicitly requested (pass the relevant input)
