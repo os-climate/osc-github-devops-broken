@@ -161,7 +161,7 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/semantic-tag-development@main
         with:
-          tag: "v2.9.6"
+          tag: "v0.0.7"
           type: "patch"
 
       - name: "Action: semantic-tag-development [minor]"
@@ -185,7 +185,7 @@ jobs:
         run: |
           # Check output from: semantic-tag-development
           ERRORS="false"
-          if [ "${{ steps.semantic-tag-development-patch.outputs.tag }}" != "2.9.7-dev1" ]; then
+          if [ "${{ steps.semantic-tag-development-patch.outputs.tag }}" != "0.0.8-dev2" ]; then
             echo "Errors with: semantic-tag-development [patch]"
             ERRORS="true"
           fi
