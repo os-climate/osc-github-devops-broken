@@ -132,6 +132,8 @@ jobs:
       contents: write
       # Required by SigStore signing action
       id-token: write
+      # Required for attestations
+      attestations: write
     with:
       python_version: ${{ matrix.python-version }}
       # ToDo: can this be sourced as a var from the top of the workflow?
