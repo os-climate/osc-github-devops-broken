@@ -43,6 +43,7 @@ runs:
         if [ -z "$GITHUB_OUTPUT" ]; then
           echo "Running from a shell, NOT workflow"
           export GITHUB_OUTPUT="/dev/null"
+          export GITHUB_ENV="/dev/null"
         else
           STRING_A="${{ inputs.STRING_A }}"
           STRING_B="${{ inputs.STRING_B }}"
