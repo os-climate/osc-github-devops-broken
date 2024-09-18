@@ -62,7 +62,6 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/python-build-project@main
         with:
           build_tag: ${{ inputs.build_tag }}
-          attest: "false"
 
       - name: "Validate artefacts with Twine"
         id: python-twine-check
