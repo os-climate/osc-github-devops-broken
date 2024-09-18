@@ -118,6 +118,11 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/python-versions-matrix@main
 
+      - name: "Extract project/repository naming"
+        id: naming
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/python-project-name@main
+
   python-build:
     name: "Build"
     uses: os-climate/osc-github-devops/.github/workflows/python-build-matrix.yaml@main

@@ -29,6 +29,7 @@ runs:
         if [ -z "$GITHUB_OUTPUT" ]; then
           echo "Running from a shell, NOT workflow"
           export GITHUB_OUTPUT="/dev/null"
+          export GITHUB_ENV="/dev/null"
         else
           TAG=${{ inputs.TAG }}
         fi

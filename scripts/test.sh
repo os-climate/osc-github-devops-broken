@@ -6,7 +6,7 @@
 # Thin wrapper script to test workflow YAML code directly from a shell
 
 set -eu -o pipefail
-DEBUG="true"
+DEBUG="false"
 export DEBUG
 
 # Check script arguments
