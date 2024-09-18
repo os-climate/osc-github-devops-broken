@@ -31,12 +31,11 @@ runs:
           export GITHUB_ENV="/dev/null"
         fi
 
-
         PROJECT_VERSION="${{ steps.fetch.outputs.version }}"
 
         # Get version from pushed tag
         TAG_VERSION="${{ github.ref_name }}"
-        echo "Version from tag push: $TAG_VERSION
+        echo "Version from tag push: $TAG_VERSION"
 
         # Compare the two version strings
         if [ "$TAG_VERSION" = "$PROJECT_VERSION" ]; then
