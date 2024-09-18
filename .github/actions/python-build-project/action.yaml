@@ -25,9 +25,6 @@ outputs:
   # BUILD_TYPE:
   #   description: "Build [production|development]"
   #   value: ${{ steps.perform-build.outputs.publish }}
-  SUCCESS:
-    description: "Set true if build succeeded"
-    value: ${{ steps.perform-build.outputs.success }}
 
 runs:
   using: "composite"
@@ -128,4 +125,25 @@ runs:
         #   echo "build_type=production" >> "$GITHUB_OUTPUT"
         # fi
         echo "Build succeeded"
-        echo "success=true" >> "$GITHUB_OUTPUT"
+
+    - name: "Enumerate artefact names"
+      id: artefact-naming
+      run: |
+        WHL_FILE=$(ls ${{ inputs.ARTEFACT_OUTPUT_PATH }/*.whl)
+        TGZ_FILE=$(ls ${{ inputs.ARTEFACT_OUTPUT_PATH }/*.tar.gz)
+        echo "whl_file=$WHL_FILE" >> GITHUB_OUTPUT
+        echo "tgz_file=$TGZ_FILE" >> GITHUB_OUTPUT
+
+    - name: "Artefact attestation [WHL]"
+      id: attest
+      uses: actions/attest-build-provenance@v1
+      with:
+        # e.g. dist/osc_github_devops-0.0.8.dev1-py3-none-any.whl
+        subject-path: "${{ steps.outputs.artefact-naming.whl_file }}"
+
+    - name: "Artefact attestation [TGZ]"
+      id: attest
+      uses: actions/attest-build-provenance@v1
+      with:
+        # e.g. dist/osc_github_devops-0.0.8.tar.gz
+        subject-path: "${{ steps.outputs.artefact-naming.tgz_file }}"

@@ -36,6 +36,7 @@ jobs:
       contents: write
       # Required by SigStore signing action
       id-token: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -54,7 +55,6 @@ jobs:
         id: python-matrix-builds
         uses: os-climate/osc-github-devops/.github/actions/python-build-project@main
         with:
-          python_version: ${{ inputs.python_version }}
           build_tag: ${{ inputs.build_tag }}
 
       - name: "Validate artefacts with Twine"
