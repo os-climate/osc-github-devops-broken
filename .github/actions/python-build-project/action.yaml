@@ -135,14 +135,14 @@ runs:
         echo "tgz_file=$TGZ_FILE" >> GITHUB_OUTPUT
 
     - name: "Artefact attestation [WHL]"
-      id: attest
+      id: attest-whl
       uses: actions/attest-build-provenance@v1
       with:
         # e.g. dist/osc_github_devops-0.0.8.dev1-py3-none-any.whl
         subject-path: "${{ steps.outputs.artefact-naming.whl_file }}"
 
     - name: "Artefact attestation [TGZ]"
-      id: attest
+      id: attest-tgz
       uses: actions/attest-build-provenance@v1
       with:
         # e.g. dist/osc_github_devops-0.0.8.tar.gz
