@@ -17,6 +17,10 @@ inputs:
   BUILD_TAG:
     description: "Build tag/name"
     required: true
+  ATTEST:
+    description: "Attest/sign packages during build"
+    required: false
+    default: true
 
 outputs:
   DATETIME_STAMP:
@@ -114,16 +118,6 @@ runs:
           pip -q --upgrade install build
           python -m build --outdir ${{ inputs.artefact_output_path }}
         fi
-
-        # Set build type based on artefact naming
-        # if test -n "$(find ${{ inputs.artefact_output_path }} -maxdepth 1 -name '**.dev*' -print -quit)"; then
-        #   echo "Artefact naming indicates development build"
-        #   echo "build_type=development" >> "$GITHUB_ENV"
-        #   echo "build_type=development" >> "$GITHUB_OUTPUT"
-        # else
-        #   echo "build_type=production" >> "$GITHUB_ENV"
-        #   echo "build_type=production" >> "$GITHUB_OUTPUT"
-        # fi
         echo "Build succeeded"
 
     - name: "Capture build artefact names"
@@ -138,6 +132,7 @@ runs:
 
     - name: "Artefact attestation [WHL]"
       id: attest-whl
+      if: inputs.attest == 'true'
       uses: actions/attest-build-provenance@v1
       with:
         # e.g. dist/osc_github_devops-0.0.8.dev1-py3-none-any.whl
@@ -145,6 +140,7 @@ runs:
 
     - name: "Artefact attestation [TGZ]"
       id: attest-tgz
+      if: inputs.attest == 'true'
       uses: actions/attest-build-provenance@v1
       with:
         # e.g. dist/osc_github_devops-0.0.8.tar.gz

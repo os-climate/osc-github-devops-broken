@@ -27,6 +27,11 @@ on:
         description: "Build tag/name"
         required: true
         type: string
+      SIGSTORE_SIGN:
+        description: "Sign build artefacts with Sigstore"
+        required: false
+        type: string
+        default: "false"
 
 jobs:
   python-build-matrix:
@@ -57,6 +62,7 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/python-build-project@main
         with:
           build_tag: ${{ inputs.build_tag }}
+          attest: "false"
 
       - name: "Validate artefacts with Twine"
         id: python-twine-check
@@ -70,9 +76,12 @@ jobs:
           name: ${{ inputs.build_tag }}
           path: ${{ inputs.ARTEFACT_LOCATION }}
 
+      # This step optional and must be explicitly requested (pass the relevant input)
+      #  The reason is that the build action now leverages GitHub attestations
       - name: "Sign packages with SigStore"
         uses: sigstore/gh-action-sigstore-python@v3.0.0
-        if: inputs.python_version == inputs.ARTEFACT_PYTHON
+        if: inputs.python_version == inputs.ARTEFACT_PYTHON &&
+          inputs.SIGSTORE_SIGN == 'true'
         env:
           package-path: ${{ inputs.ARTEFACT_LOCATION }}
         with:
