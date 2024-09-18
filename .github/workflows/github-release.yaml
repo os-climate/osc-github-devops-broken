@@ -29,7 +29,7 @@ jobs:
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
         with:
-          name: ${{ inputs.build_tag }}
+          name: ${{ github.repository }}-${{ inputs.build_tag }}
           path: ${{ env.BUILD_ARTEFACTS }}
 
       - name: "Check tag matches pyproject.toml"
@@ -39,13 +39,13 @@ jobs:
           # Check tag push matches pyproject.toml metadata
           echo "ToDo: NOT IMPLEMENTED YET"
 
-      - name: "GitHub Release"
+      - name: "Create GitHub release"
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: ${{ inputs.PRE_RELEASE }}
           tag_name: ${{ inputs.build_tag }}
-          name: "Build/Release: ${{ inputs.build_tag }}"
+          name: "${{ github.repository }} ${{ inputs.build_tag }}"
           # ToDo: Incorporate release notes, etc.
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
