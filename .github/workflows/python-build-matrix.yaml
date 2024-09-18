@@ -36,6 +36,7 @@ jobs:
       contents: write
       # Required by SigStore signing action
       id-token: write
+      # Required for attestations
       attestations: write
 
     steps:
