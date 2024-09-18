@@ -130,8 +130,8 @@ runs:
       id: artefact-naming
       shell: bash
       run: |
-        WHL_FILE=$(ls ${{ inputs.ARTEFACT_OUTPUT_PATH }/*.whl)
-        TGZ_FILE=$(ls ${{ inputs.ARTEFACT_OUTPUT_PATH }/*.tar.gz)
+        WHL_FILE=$(ls ${{ inputs.ARTEFACT_OUTPUT_PATH }}/*.whl)
+        TGZ_FILE=$(ls ${{ inputs.ARTEFACT_OUTPUT_PATH }}/*.tar.gz)
         echo "whl_file=$WHL_FILE" >> "$GITHUB_OUTPUT"
         echo "tgz_file=$TGZ_FILE" >> "$GITHUB_OUTPUT"
 
