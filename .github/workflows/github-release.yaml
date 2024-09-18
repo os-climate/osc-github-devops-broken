@@ -41,11 +41,10 @@ jobs:
           path: ${{ env.BUILD_ARTEFACTS }}
 
       - name: "Check tag matches pyproject.toml"
-        if: inputs.PRE_RELEASE == 'false'
-        shell: bash
-        run: |
-          # Check tag push matches pyproject.toml metadata
-          echo "ToDo: NOT IMPLEMENTED YET"
+        # Enabled temporarily for testing
+        if: inputs.PRE_RELEASE == 'true'
+        # if: inputs.PRE_RELEASE == 'false'
+        uses: os-climate/osc-github-devops/.github/actions/python-project-version-vs-tag@main
 
       - name: "Create GitHub release"
         uses: softprops/action-gh-release@v2
