@@ -46,6 +46,7 @@ runs:
         if [ -z "$GITHUB_OUTPUT" ]; then
           echo "Running from a shell, NOT workflow"
           export GITHUB_OUTPUT="/dev/null"
+          export GITHUB_ENV="/dev/null"
           if [ $# -ne 4 ]; then
             echo "Usage:  $0 [string] [base64 text] [match substring true|false] [case-insensitive true|false]"
             echo "Error: invalid arguments specified"; exit 1

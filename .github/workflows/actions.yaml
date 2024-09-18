@@ -49,6 +49,30 @@ jobs:
           fetch-tags: true
           # The semantic-tag-fetch action  currently contains a workaround for this behaviour
 
+      - name: "Action: python-project-naming"
+        id: python-project-naming
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/python-project-naming@main
+
+      #- name: "Validate: python-project-naming"
+      #shell: bash
+      #run: |
+      # Check output from: python-project-naming
+      #ERRORS="false"
+      #if [ "${{ steps.semantic-tag-validate-good.outputs.valid }}" != "true" ]; then
+      #  ERRORS="true"
+      #fi
+      ##  echo "Errors with: semantic-tag-validate v1.2.3"
+      #if [ "${{ steps.semantic-tag-validate-junk.outputs.valid }}" != "false" ]; then
+      #  echo "Errors with: semantic-tag-production v1.not-valid.3.garbage"
+      #  ERRORS="true"
+      #fi
+      #if [ "$ERRORS" = "true" ]; then
+      #  echo "ERROR: check semantic tag validation action/code"; exit 1
+      #else
+      #  echo "All tag validation tests passed, no errors found"
+      #fi
+
       - name: "Action: repository-classify-content"
         id: repository-classify-content
         # yamllint disable-line rule:line-length

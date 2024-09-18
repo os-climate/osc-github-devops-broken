@@ -29,6 +29,7 @@ runs:
         if [ -z "$GITHUB_OUTPUT" ]; then
           echo "Running from a shell, NOT workflow"
           export GITHUB_OUTPUT="/dev/null"
+          export GITHUB_ENV="/dev/null"
           if [ $# -ne 2 ]; then
             echo "Error: invalid arguments specified"
             echo "Usage:  $0 [current-tag] [target-tag]"; exit 1

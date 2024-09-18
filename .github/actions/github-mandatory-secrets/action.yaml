@@ -44,6 +44,7 @@ runs:
         if [ -z "$GITHUB_OUTPUT" ]; then
           echo "Running from a shell, NOT workflow"
           export GITHUB_OUTPUT="/dev/null"
+          export GITHUB_ENV="/dev/null"
         fi
 
         # Initial assumption is that secrets do NOT exist
