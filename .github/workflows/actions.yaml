@@ -42,7 +42,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: "Checkout Repository"
+      - name: "Checkout repository"
         uses: actions/checkout@v4
         with:
           # Does not currently work: https://github.com/actions/checkout/issues/1471
