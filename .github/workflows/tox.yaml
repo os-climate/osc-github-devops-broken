@@ -38,7 +38,7 @@ on:
 
 jobs:
   parse-tox-file:
-    name: "Stanza"
+    name: "Parse Stanza"
     runs-on: ubuntu-latest
     outputs:
       stanza: ${{ steps.tox-stanza.outputs.stanza }}
