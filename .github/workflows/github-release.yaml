@@ -10,7 +10,7 @@ on:
     inputs:
       PRE_RELEASE:
         description: "Mark release as pre-release/development version"
-        type: boolean
+        type: string
         required: false
         default: false
       BUILD_TAG:
