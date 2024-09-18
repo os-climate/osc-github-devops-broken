@@ -126,10 +126,11 @@ runs:
         # fi
         echo "Build succeeded"
 
-    - name: "Enumerate artefact names"
+    - name: "Capture build artefact names"
       id: artefact-naming
       shell: bash
       run: |
+        # Capture build artefact names
         WHL_FILE=$(ls ${{ inputs.ARTEFACT_OUTPUT_PATH }}/*.whl)
         TGZ_FILE=$(ls ${{ inputs.ARTEFACT_OUTPUT_PATH }}/*.tar.gz)
         echo "whl_file=$WHL_FILE" >> "$GITHUB_OUTPUT"
@@ -140,11 +141,11 @@ runs:
       uses: actions/attest-build-provenance@v1
       with:
         # e.g. dist/osc_github_devops-0.0.8.dev1-py3-none-any.whl
-        subject-path: "${{ steps.outputs.artefact-naming.whl_file }}"
+        subject-path: "${{ steps.artefact-naming.outputs.whl_file }}"
 
     - name: "Artefact attestation [TGZ]"
       id: attest-tgz
       uses: actions/attest-build-provenance@v1
       with:
         # e.g. dist/osc_github_devops-0.0.8.tar.gz
-        subject-path: "${{ steps.outputs.artefact-naming.tgz_file }}"
+        subject-path: "${{ steps.artefact-naming.outputs.tgz_file }}"
