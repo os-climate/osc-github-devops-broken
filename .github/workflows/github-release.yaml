@@ -26,10 +26,17 @@ jobs:
       contents: write
 
     steps:
+      - name: "Capture repository/project name"
+        shell: bash
+        run: |
+          # Capture repository/project name
+          REPOSITORY_NAME=$(basename ${{ github.repository }})
+          echo "repository=$REPOSITORY_NAME" >> "$GITHUB_ENV"
+
       - name: "⬇ Download build artefacts"
         uses: actions/download-artifact@v4
         with:
-          name: ${{ github.repository }}-${{ inputs.build_tag }}
+          name: ${{ env.repository }}-${{ inputs.build_tag }}
           path: ${{ env.BUILD_ARTEFACTS }}
 
       - name: "Check tag matches pyproject.toml"
@@ -45,7 +52,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: ${{ inputs.PRE_RELEASE }}
           tag_name: ${{ inputs.build_tag }}
-          name: "${{ github.repository }} ${{ inputs.build_tag }}"
+          name: "${{ env.repository }} ${{ inputs.build_tag }}"
           # ToDo: Incorporate release notes, etc.
           # body_path: ${{ github.workspace }}/CHANGELOG.rst
           files: |
