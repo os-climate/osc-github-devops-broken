@@ -1,0 +1,41 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "🐍 Get Project Version from pyproject.toml"
+
+outputs:
+  VERSION:
+    description: "Version string from pyproject.toml"
+    value: ${{ steps.fetch.outputs.project_version }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Get project version from pyproject.toml"
+      id: fetch
+      shell: bash
+      run: |
+        # Check pushed tag against pyproject.toml
+
+        #SHELLCODESTART
+
+        # Allows for testing from a local shell
+        if [ -z "$GITHUB_OUTPUT" ]; then
+          echo "Running from a shell, NOT workflow"
+          export GITHUB_OUTPUT="/dev/null"
+          export GITHUB_ENV="/dev/null"
+        fi
+
+        if [ ! -f pyproject.toml ]; then
+          echo "Error: pyproject.toml file not found"
+          echo "Check that repository is checked out"
+          exit 1
+        fi
+
+        # Extract project version from pyproject.toml
+        PROJECT_VERSION=$(grep -E '^version = ".*"$' pyproject.toml | awk '{print $3}' | sed 's:"::g')
+        echo "Version from pyproject.toml: $PROJECT_VERSION"
+        echo "project_version=$PROJECT_VERSION" >> "$GITHUB_OUTPUT"
+
+        #SHELLCODEEND
