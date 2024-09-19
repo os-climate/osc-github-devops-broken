@@ -38,14 +38,16 @@ runs:
           echo "Running from a shell, NOT workflow"
           export GITHUB_OUTPUT="/dev/null"
           export GITHUB_ENV="/dev/null"
-          if [ $# -ne 2 ]; then
+          if [ $# -ne 3 ]; then
             echo "Error: invalid arguments specified"
             echo "Usage:  $0 [regex] [filename]"; exit 1
           else
-            REGEX="$1"
-            FILENAME="$2"
+            FLAGS="$1"
+            REGEX="$2"
+            FILENAME="$3"
           fi
         else
+          FLAGS=${{ inputs.FLAGS }}
           REGEX=${{ inputs.REGEX }}
           FILENAME=${{ inputs.FILENAME }}
         fi
