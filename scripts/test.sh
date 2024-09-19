@@ -6,14 +6,25 @@
 # Thin wrapper script to test workflow YAML code directly from a shell
 
 set -eu -o pipefail
-DEBUG="false"
-export DEBUG
 
 # Check script arguments
 
-if [ $# -lt 1 ]; then
-    # Provide a Github action/workflow YAML file as argument
-    echo "Usage: $0 [workflow YAML file] [optional arguments to pass to extracted script]"; exit 1
+_verify_args() {
+    if [ $# -lt 1 ]; then
+        # Provide a Github action/workflow YAML file as argument
+        echo "Usage: $0 [workflow YAML file] [optional arguments to pass to extracted script]"; exit 1
+    fi
+}
+
+_verify_args "$@"
+
+# Optionally enable debugging, then shift arguments
+if [ "$1" == "-d" ]; then
+    DEBUG="false"
+    export DEBUG
+    shift
+    # Need to verify arguments again after shifting them
+    _verify_args "$@"
 fi
 
 SOURCE_FILE="$1"
@@ -43,7 +54,7 @@ fi
 
 # Script debugging options
 
-if [ $DEBUG = "true" ]; then
+if [ "$DEBUG" = "true" ]; then
     set -xv
     SHELL_SCRIPT="extracted.sh"
     PATH=".:$PATH"
