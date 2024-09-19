@@ -40,7 +40,7 @@ runs:
           export GITHUB_ENV="/dev/null"
           if [ $# -ne 3 ]; then
             echo "Error: invalid arguments specified"
-            echo "Usage:  $0 [regex] [filename]"; exit 1
+            echo "Usage:  $0 [flags] [regex] [filename]"; exit 1
           else
             FLAGS="$1"
             REGEX="$2"
@@ -63,7 +63,9 @@ runs:
         echo "Command: grep $FLAGS $REGEX $FILENAME"
 
         # Extract the string using grep and regex
+        set -o noglob
         STRING=$(grep "$FLAGS" "$REGEX" "$FILENAME")
+        set +o noglob
 
         echo "String extracted: $STRING"
         # Make string available in the environment
