@@ -66,6 +66,24 @@ jobs:
             echo "Returned project name correct: $PYTHON_PROJECT_NAME"
           fi
 
+      - name: "Action: python-project-name-match-repo-name"
+        id: python-project-name-match-repo-name
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/python-project-name-match-repo-name@main
+
+      - name: "Validate: python-project-name-match-repo-name"
+        shell: bash
+        run: |
+          # Check output from: python-project-name-match-repo-name
+          MATCHES_REPO_NAME="${{ steps.python-project-name-match-repo-name.outputs.MATCHES_REPO_NAME }}"
+          if [ "$MATCHES_REPO_NAME" != "true" ]; then
+            echo "ERROR: Python project name did not match repository name, as expected"
+            echo "MATCHES_REPO_NAME: $MATCHES_REPO_NAME"; exit 1
+          else
+            echo "Project name matched repository name, as expected"
+            echo "MATCHES_REPO_NAME: $MATCHES_REPO_NAME"
+          fi
+
       - name: "Action: repository-classify-content"
         id: repository-classify-content
         # yamllint disable-line rule:line-length
