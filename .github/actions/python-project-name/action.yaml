@@ -28,7 +28,16 @@ runs:
           export GITHUB_ENV="/dev/null"
         fi
 
-        PYTHON_PROJECT_NAME=$(grep -E '^name = ".*"$' pyproject.toml | awk '{print $3}' | sed 's:"::g')
+        if [ -f pyproject.toml ]; then
+          PYTHON_PROJECT_NAME=$(grep -E '^name = ".*"$' pyproject.toml | awk '{print $3}' | sed 's:"::g')
+        fi
+
+        # ToDo: get project name from other files
+        #elif [ -f setup.py ]; then
+        #  PYTHON_PROJECT_NAME=$(grep -E '^name = ".*"$' setup.py | awk '{print $3}' | sed 's:"::g')
+        #else
+        #  echo "Error: neither pyproject.toml not setup.py was found"; exit 1
+        # fi
         echo "PYTHON_PROJECT_NAME: $PYTHON_PROJECT_NAME"
 
         # Make available in the environment
