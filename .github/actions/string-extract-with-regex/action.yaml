@@ -1,0 +1,68 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "Extract string from file"
+description: "Uses grep and a regular expression to extract a string from a file"
+
+inputs:
+  FILENAME:
+    description: "File containing text to extract"
+    required: true
+  REGEX:
+    description: "Regular expression used to extract string"
+    required: true
+
+outputs:
+  EXTRACTED_STRING:
+    description: "The string extracted by the regular expression"
+    value: ${{ steps.extract.outputs.string }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Extract text/string from file"
+      id: extract
+      shell: bash
+      run: |
+        # Extract text/string from file
+
+        #SHELLCODESTART
+
+        # Allows for testing from a local shell
+        if [ -z "$GITHUB_OUTPUT" ]; then
+          echo "Running from a shell, NOT workflow"
+          export GITHUB_OUTPUT="/dev/null"
+          export GITHUB_ENV="/dev/null"
+          if [ $# -ne 2 ]; then
+            echo "Error: invalid arguments specified"
+            echo "Usage:  $0 [regex] [filename]"; exit 1
+          else
+            REGEX="$1"
+            FILENAME="$2"
+          fi
+        else
+          REGEX=${{ inputs.REGEX }}
+          FILENAME=${{ inputs.FILENAME }}
+        fi
+
+        if [ ! -f $FILENAME ]; then
+          echo "Error: file not found [$FILENAME]"; exit 1
+        fi
+
+        echo "Regular expression to use: $REGEX"
+        echo "File to search: $FILENAME"
+
+        echo "Command:"
+        echo "grep -E $REGEX $FILENAME"
+
+        # Extract the string using grep and regex
+        STRING=$(grep -E "$REGEX" "$FILENAME")
+
+        echo "String extracted: $STRING"
+
+        # Make string available in the environment
+        echo "extracted_string=$STRING" >> "$GITHUB_ENV"
+        echo "extracted_string=$STRING" >> "$GITHUB_OUTPUT"
+
+        #SHELLCODEEND
