@@ -47,9 +47,11 @@ runs:
             FILENAME="$3"
           fi
         else
-          FLAGS=${{ inputs.FLAGS }}
-          REGEX=${{ inputs.REGEX }}
-          FILENAME=${{ inputs.FILENAME }}
+          FLAGS="${{ inputs.FLAGS }}"
+          set -o noglob
+          REGEX="${{ inputs.REGEX }}"
+          set +o noglob
+          FILENAME="${{ inputs.FILENAME }}"
         fi
 
         if [ ! -f $FILENAME ]; then
