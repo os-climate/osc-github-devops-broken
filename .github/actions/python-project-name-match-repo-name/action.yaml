@@ -41,7 +41,7 @@ runs:
 
         echo "GITHUB_REPOSITORY_NAME: $GITHUB_REPOSITORY_NAME"
 
-        PYTHON_PROJECT_NAME="${{ env.PYTHON_PROJECT_NAME }}"
+        PYTHON_PROJECT_NAME="${{ steps.python-project-name.outputs.python_project_name }}"
         echo "PYTHON_PROJECT_NAME: $PYTHON_PROJECT_NAME"
 
         if [[ "$GITHUB_REPOSITORY_NAME" == "$PYTHON_PROJECT_NAME" ]]; then
