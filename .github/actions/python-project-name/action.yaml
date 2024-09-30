@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "Python Project Name"
+name: "🐍 Get Python Project Name"
 description: "Returns the name of the Python Project"
 
 outputs:
   PYTHON_PROJECT_NAME:
-    description: "The name of the Python project from pyproject.toml"
+    description: "The name of the Python project from pyproject.toml or setup.py"
     value: ${{ steps.python-project-name.outputs.python_project_name }}
 
 runs:
@@ -29,18 +29,22 @@ runs:
         fi
 
         if [ -f pyproject.toml ]; then
-          PYTHON_PROJECT_NAME=$(grep -E '^name = ".*"$' pyproject.toml | awk '{print $3}' | sed 's:"::g')
+          echo "Extracting project name from pyproject.toml."
+          PYTHON_PROJECT_NAME=$(pdm show --name)
+
+        elif [ -f setup.py ]; then
+          echo "Extracting project name from setup.py."
+          pip install -q --upgrade pip
+          pip install --upgrade -q setuptools
+          PYTHON_PROJECT_NAME=$(python ./setup.py --name)
+
+        else
+          echo "Error: neither pyproject.toml not setup.py was found"; exit 1
         fi
 
-        # ToDo: get project name from other files
-        #elif [ -f setup.py ]; then
-        #  PYTHON_PROJECT_NAME=$(grep -E '^name = ".*"$' setup.py | awk '{print $3}' | sed 's:"::g')
-        #else
-        #  echo "Error: neither pyproject.toml not setup.py was found"; exit 1
-        # fi
         echo "PYTHON_PROJECT_NAME: $PYTHON_PROJECT_NAME"
 
-        # Make available in the environment
+        # Make available in the environment
         echo "python_project_name=$PYTHON_PROJECT_NAME" >> "$GITHUB_ENV"
         echo "python_project_name=$PYTHON_PROJECT_NAME" >> "$GITHUB_OUTPUT"
 
