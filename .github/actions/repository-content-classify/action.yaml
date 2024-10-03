@@ -7,23 +7,32 @@ description: "Scans repository content and identifies further actions"
 
 outputs:
   PYTHON:
-    description: "Repository contains a Python project using pyproject.toml"
+    description: "Repository contains a Python project with file: pyproject.toml"
     value: ${{ steps.classification.outputs.python }}
+  NODEJS:
+    description: "Repository contains a Node.js project with file: package.json"
+    value: ${{ steps.classification.outputs.nodejs }}
+  MAVEN:
+    description: "Repository contains Maven project with file: pom.xml"
+    value: ${{ steps.classification.outputs.maven }}
+  GRADLE:
+    description: "Repository contains Gradle project with file(s): settings.gradle*"
+    value: ${{ steps.classification.outputs.gradle }}
   NOTEBOOKS:
-    description: "Repository contains Python Jupyter Notebooks"
+    description: "Repository contains Jupyter Notebooks with file(s): *.ipynb"
     value: ${{ steps.classification.outputs.notebooks }}
   TOX:
-    description: "Repository contains a TOX configuration"
+    description: "Repository contains a TOX configuration file: tox.ini"
     value: ${{ steps.classification.outputs.tox }}
 
 runs:
   using: "composite"
   steps:
-    - name: "Check content, set output variables"
+    - name: "Check content types, set output values"
       id: classification
       shell: bash
       run: |
-        # Check content, set output variables
+        # Check content types, set output values
 
         #SHELLCODESTART
 
@@ -32,6 +41,29 @@ runs:
           echo "python=true" >> "$GITHUB_OUTPUT"
         else
           echo "python=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        if [ -f package.json ]; then
+          echo "Node.js project metadata found"
+          echo "nodejs=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "nodejs=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        if [ -f pom.xml ]; then
+          echo "Maven project metadata found"
+          echo "maven=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "maven=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        # Check if repository contains Jupyter Notebooks
+        GRADLE=$(find . -name 'settings.gradle*' | wc -l )
+        if [ "$GRADLE" -ne 0 ]; then
+          echo "Gradle configuration found"
+          echo "gradle=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "gradle=false" >> "$GITHUB_OUTPUT"
         fi
 
         if [ -f tox.ini ]; then
