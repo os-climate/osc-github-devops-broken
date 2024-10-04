@@ -13,6 +13,9 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: "Install PDM tooling"
+      uses: pdm-project/setup-pdm@v4
+
     - name: "Capture Python project name"
       id: python-project-name
       shell: bash
