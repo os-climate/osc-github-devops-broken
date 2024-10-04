@@ -40,15 +40,15 @@ runs:
       shell: bash
       run: |
         # Get latest tag
-        TAG_INTERIM=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | sort -r | head -1 || true)
+        TAG_INTERIM=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | sort -rV | head -1 || true)
 
         # If present, strip the leading "v" character
         if [[ "$TAG_INTERIM" == v* ]]; then
           TAG_INTERIM="${TAG_INTERIM:1}"
-          echo "Numeric value: $TAG_INTERIM"
         fi
 
-        # Report the result
+        # Report and record result
+        echo "Latest tag: ${TAG_INTERIM} [v${TAG_INTERIM}]"
         echo "tag_interim=${TAG_INTERIM}" >> $GITHUB_OUTPUT
 
     - name: "Check semantic/validity"
