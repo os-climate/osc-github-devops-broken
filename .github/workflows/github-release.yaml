@@ -57,4 +57,5 @@ jobs:
           files: |
             ${{ env.BUILD_ARTEFACTS }}/*.tar.gz
             ${{ env.BUILD_ARTEFACTS }}/*.whl
+            ${{ env.BUILD_ARTEFACTS }}/*.zip
             ${{ env.BUILD_ARTEFACTS }}/*.sigstore*
