@@ -42,6 +42,17 @@ runs:
         # Get latest tag
         TAG_INTERIM=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | sort -rV | head -1 || true)
 
+        if [ ${{ inputs.TYPE }} = "all" ]; then
+          TAG_INTERIM=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | \
+          sort -rV | head -1 || true)
+        elif [ ${{ inputs.TYPE }} = "production" ]; then
+          TAG_INTERIM=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | \
+          grep -Ev '(dev|alpha|beta|test)' | sort -rV | head -1 || true)
+        elif [ ${{ inputs.TYPE }} = "development" ]; then
+          TAG_INTERIM=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | \
+          grep -E '(dev|alpha|beta|test)' | sort -rV | head -1 || true)
+        fi
+
         # If present, strip the leading "v" character
         if [[ "$TAG_INTERIM" == v* ]]; then
           TAG_INTERIM="${TAG_INTERIM:1}"

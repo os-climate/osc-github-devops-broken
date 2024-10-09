@@ -20,11 +20,13 @@ _verify_args "$@"
 
 # Optionally enable debugging, then shift arguments
 if [ "$1" == "-d" ]; then
-    DEBUG="false"
+    DEBUG="true"
     export DEBUG
     shift
     # Need to verify arguments again after shifting them
     _verify_args "$@"
+else
+    DEBUG="false"
 fi
 
 SOURCE_FILE="$1"
