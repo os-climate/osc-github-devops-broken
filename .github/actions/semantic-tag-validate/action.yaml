@@ -62,9 +62,6 @@ runs:
           OUTCOME="true"
         fi
 
-        # Allows for testing from a local shell
-        if [ -n "$GITHUB_OUTPUT" ]; then
-          echo "semantic=$OUTCOME" >> $GITHUB_OUTPUT
-        fi
+        echo "semantic=$OUTCOME" >> $GITHUB_OUTPUT
 
         #SHELLCODEEND
