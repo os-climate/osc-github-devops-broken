@@ -40,9 +40,8 @@ runs:
       shell: bash
       run: |
         # Get latest tag
-<<<<<<< Updated upstream
         TAG_INTERIM=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | sort -rV | head -1 || true)
-=======
+
         if [ ${{ inputs.TYPE }} = "all" ]; then
           TAG_INTERIM=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | \
           sort -rV | head -1 || true)
@@ -53,7 +52,6 @@ runs:
           TAG_INTERIM=$(git tag -l --sort=committerdate | grep -o '?*.*.*' | \
           grep -E '(dev|alpha|beta|test)' | sort -rV | head -1 || true)
         fi
->>>>>>> Stashed changes
 
         # If present, strip the leading "v" character
         if [[ "$TAG_INTERIM" == v* ]]; then
