@@ -1,0 +1,65 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
+
+name: "Run sed against file"
+description: "Uses sed, flags, and a regular expression against a file"
+
+inputs:
+  FILENAME:
+    description: "File containing text to extract"
+    required: true
+  REGEX:
+    description: "Regular expression to use"
+    required: true
+  FLAGS:
+    description: "Flags to use with grep command"
+    required: false
+    default: "-i"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Run sed against file"
+      id: sed
+      shell: bash
+      run: |
+        # Run sed against file
+
+        #SHELLCODESTART
+
+        # Allows for testing from a local shell
+        if [ -z "$GITHUB_OUTPUT" ]; then
+          echo "Running from a shell, NOT workflow"
+          export GITHUB_OUTPUT="/dev/null"
+          export GITHUB_ENV="/dev/null"
+          if [ $# -ne 3 ]; then
+            echo "Error: invalid arguments specified"
+            echo "Usage:  $0 [flags] [regex] [filename]"; exit 1
+          else
+            FLAGS="$1"
+            REGEX="$2"
+            FILENAME="$3"
+          fi
+        else
+          FLAGS="${{ inputs.FLAGS }}"
+          set -o noglob
+          REGEX="${{ inputs.REGEX }}"
+          set +o noglob
+          FILENAME="${{ inputs.FILENAME }}"
+        fi
+
+        if [ ! -f $FILENAME ]; then
+          echo "Error: file not found [$FILENAME]"; exit 1
+        fi
+
+        echo "Regular expression to use: $REGEX"
+        echo "File to search: $FILENAME"
+        echo "Flags to sed: $FLAGS"
+
+        echo "Command: sed $FLAGS $REGEX $FILENAME"
+
+        # Run the command
+        sed "$FLAGS" "$REGEX" "$FILENAME"
+
+        #SHELLCODEEND
