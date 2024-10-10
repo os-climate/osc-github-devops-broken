@@ -47,7 +47,7 @@ jobs:
         with:
           # Does not currently work: https://github.com/actions/checkout/issues/1471
           fetch-tags: true
-          # The semantic-tag-fetch action  currently contains a workaround for this behaviour
+          # The semantic-tag-current action currently contains a workaround for this behaviour
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
@@ -153,10 +153,10 @@ jobs:
             echo "All tag validation tests passed, no errors found"
           fi
 
-      - name: "Action: semantic-tag-fetch"
-        id: semantic-tag-fetch
+      - name: "Action: semantic-tag-current"
+        id: semantic-tag-current
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-fetch@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-current@main
 
       - name: "Action: semantic-tag-production [patch]"
         id: semantic-tag-production-patch

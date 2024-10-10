@@ -53,7 +53,7 @@ runs:
       id: current-tag
       if: github.ref_name == 'main' &&
         ${{ steps.dynamic-versioning.outputs.dynamic }} == 'false'
-      uses: os-climate/osc-github-devops/.github/actions/semantic-tag-repo@main
+      uses: os-climate/osc-github-devops/.github/actions/semantic-tag-current@main
 
     - name: "Patch version in pyproject.toml"
       id: patch-pyproject-version

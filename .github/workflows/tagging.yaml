@@ -51,7 +51,7 @@ jobs:
       - name: "Retrieve/verify tags"
         id: repo-tags
         # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-fetch@main
+        uses: os-climate/osc-github-devops/.github/actions/semantic-tag-current@main
 
       - name: "Generate DEVELOPMENT build/tag"
         id: development-tag
