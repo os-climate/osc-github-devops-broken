@@ -12,12 +12,6 @@ on:
       - "**"
       - "!.github/**"
 
-env:
-  DEFAULT_PYTHON: "3.10"
-  BUILD_ARTEFACTS: "dist"
-  # Configures publishing to PyPI
-  PYPI_PUBLISHING: "true"
-
 jobs:
   tagging:
     name: "Tags"
@@ -96,27 +90,24 @@ jobs:
 
   parse-tox-configuration:
     name: "TOX"
-    needs:
-      - classify-content
+    needs: classify-content
     if: needs.classify-content.outputs.tox  == 'true'
     uses: os-climate/osc-github-devops/.github/workflows/tox.yaml@main
 
   python-project:
-    name: "Python Content"
-    needs:
-      - classify-content
+    name: "Gather Python Project Metadata"
+    needs: classify-content
     if: needs.classify-content.outputs.python  == 'true'
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.python.outputs.matrixjson }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: "Extract Python versioning"
-        id: python
-        # yamllint disable-line rule:line-length
-        uses: os-climate/osc-github-devops/.github/actions/python-versions-matrix@main
+    uses: os-climate/osc-github-devops/.github/workflows/python-project-setup.yaml@main
+    with:
+      default_python: "3.10"
+    # outputs:
+    #   project_versioning: ${{ steps.python-project.outputs.matrixjson }}
+    #   matrixjson: ${{ steps.python-project.outputs.matrixjson }}
+    #   python_project_name: ${{ steps.python-project.outputs.python_project_name }}
+    #   python_build_name: ${{ steps.python-project.outputs.python_build_name }}
+    #   default_python: ${{ steps.python-project.outputs.default_python }}
+    #   artefact_location: ${{ steps.python-project.outputs.artefact_location }}
 
   python-build:
     name: "Build"
@@ -127,7 +118,7 @@ jobs:
       - tagging
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.python-project.outputs.matrixjson) }}
     permissions:
       contents: write
       # Required by SigStore signing action
@@ -135,10 +126,8 @@ jobs:
       # Required for attestations
       attestations: write
     with:
-      python_version: ${{ matrix.python-version }}
-      # ToDo: can this be sourced as a var from the top of the workflow?
-      # env.ARTEFACT_PYTHON is NOT permitted!
-      python-version: env.default_python
+      python_version: ${{ matrix.python-version }} # Passed in from matrix job
+      default_python: ${{ needs.python-project.outputs.default_python }}
       build_tag: ${{ needs.tagging.outputs.build_tag }}
 
   python-test:
@@ -149,7 +138,7 @@ jobs:
       - python-project
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.python-project.outputs.matrixjson) }}
     with:
       python_version: ${{ matrix.python-version }}
 
@@ -347,7 +336,7 @@ jobs:
     continue-on-error: false
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.python-project.outputs.matrixjson) }}
     # Don't run when pull request is merged, only if Jupyter Notebooks are present
     if: needs.classify-content.outputs.notebooks  == 'true'
 
@@ -410,7 +399,7 @@ jobs:
     continue-on-error: true
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.python-project.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.python-project.outputs.matrixjson) }}
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v4

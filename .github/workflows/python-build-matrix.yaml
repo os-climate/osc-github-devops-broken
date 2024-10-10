@@ -13,7 +13,7 @@ on:
         description: "Python matrix versions to use for test builds (in JSON)"
         required: true
         type: string
-      ARTEFACT_PYTHON:
+      DEFAULT_PYTHON:
         description: "Version used to upload/store artefacts for publishing"
         required: false
         type: string
@@ -77,7 +77,7 @@ jobs:
 
       - name: "Upload build artefacts"
         uses: actions/upload-artifact@v4
-        if: inputs.python_version == inputs.ARTEFACT_PYTHON
+        if: inputs.python_version == inputs.DEFAULT_PYTHON
         with:
           name: ${{ env.python_project_name }}-${{ inputs.build_tag }}
           path: ${{ inputs.ARTEFACT_LOCATION }}
@@ -86,7 +86,7 @@ jobs:
       #  The reason is that the build action now leverages GitHub attestations
       - name: "Sign packages with SigStore"
         uses: sigstore/gh-action-sigstore-python@v3.0.0
-        if: inputs.python_version == inputs.ARTEFACT_PYTHON &&
+        if: inputs.python_version == inputs.DEFAULT_PYTHON &&
           inputs.SIGSTORE_SIGN == 'true'
         env:
           package-path: ${{ inputs.ARTEFACT_LOCATION }}
