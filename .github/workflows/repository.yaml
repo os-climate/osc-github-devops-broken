@@ -53,6 +53,7 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/repository-tags@main
         with:
           create_initial: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
   github-workflow-metadata:
     name: "Gather Workflow Metadata"

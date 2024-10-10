@@ -11,6 +11,9 @@ inputs:
     required: false
     type: string
     default: "true"
+  GITHUB_TOKEN:
+    description: "Required to push new tags to the repository"
+    required: true
 
 outputs:
   CURRENT_TAG:
@@ -90,6 +93,6 @@ runs:
         inputs.create_initial == 'true'
       uses: softprops/action-gh-release@v2
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ inputs.GITHUB_TOKEN }}
         prerelease: true
         tag_name: v0.0.0
