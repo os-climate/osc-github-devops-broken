@@ -14,8 +14,12 @@ inputs:
     description: "Purge target artefact path prior to builds"
     required: false
     default: false
+  CURRENT_TAG:
+    description: "Current/latest tag from the repository"
+    required: true
+    type: string
   BUILD_TAG:
-    description: "Build tag/name"
+    description: "Tag/version for this specific build"
     required: true
     type: string
   ATTEST:
