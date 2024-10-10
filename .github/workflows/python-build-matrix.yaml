@@ -23,8 +23,12 @@ on:
         required: false
         type: string
         default: "dist"
+      CURRENT_TAG:
+        description: "Current/latest tag from the repository"
+        required: true
+        type: string
       BUILD_TAG:
-        description: "Build tag/name"
+        description: "Tag/version for this specific build"
         required: true
         type: string
       SIGSTORE_SIGN:
@@ -67,8 +71,6 @@ jobs:
       - name: "Build Python project"
         id: python-matrix-builds
         uses: os-climate/osc-github-devops/.github/actions/python-project-build@main
-        with:
-          python-version: ${{ inputs.python_version }}
 
       - name: "Validate artefacts with Twine"
         id: python-twine-check

@@ -130,6 +130,7 @@ jobs:
     with:
       python_version: ${{ matrix.python-version }} # Passed in from matrix job
       default_python: ${{ needs.python-project.outputs.default_python }}
+      current_tag: ${{ needs.repo-metadata.outputs.current_tag }}
       build_tag: ${{ needs.repo-metadata.outputs.build_tag }}
 
   python-test:
