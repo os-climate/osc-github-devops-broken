@@ -31,9 +31,6 @@ outputs:
   PRE_RELEASE:
     description: "Set true if this release is a test/development release"
     value: ${{ steps.this-build.outputs.pre_release }}
-  BUILD_TAG:
-    description: "Semantic tag for this release/build"
-    value: ${{ steps.this-build.outputs.build_tag }}
 
 runs:
   using: "composite"

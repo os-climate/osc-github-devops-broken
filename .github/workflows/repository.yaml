@@ -38,7 +38,6 @@ jobs:
       development_tag: ${{ steps.tags.outputs.development_tag }}
       production_tag: ${{ steps.tags.outputs.production_tag }}
       pre_release: ${{ steps.tags.outputs.prerelease_tag }}
-      build_tag: ${{ steps.tags.outputs.build_tag }}
 
     steps:
       - uses: actions/checkout@v4
@@ -130,8 +129,6 @@ jobs:
     with:
       python_version: ${{ matrix.python-version }} # Passed in from matrix job
       default_python: ${{ needs.python-project.outputs.default_python }}
-      current_tag: ${{ needs.repo-metadata.outputs.current_tag }}
-      build_tag: ${{ needs.repo-metadata.outputs.build_tag }}
 
   python-test:
     name: "Test"
@@ -156,7 +153,7 @@ jobs:
       contents: write
     with:
       pre_release: ${{ needs.repo-metadata.outputs.pre_release }}
-      build_tag: ${{ needs.repo-metadata.outputs.build_tag }}
+      build_tag: ${{ needs.python-build.outputs.build_tag }}
 
   testpypi:
     name: "Test Package Publishing"

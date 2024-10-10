@@ -71,9 +71,6 @@ jobs:
       - name: "Build Python project"
         id: python-matrix-builds
         uses: os-climate/osc-github-devops/.github/actions/python-project-build@main
-        with:
-          current:tag: ${{ inputs.current_tag }}
-          build_tag: ${{ inputs.build_tag }}
 
       - name: "Validate artefacts with Twine"
         id: python-twine-check
