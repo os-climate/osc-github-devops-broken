@@ -16,7 +16,7 @@ on:
     branches: ["main", "master"]
 
 env:
-  DEFAULT-PYTHON: "3.11"
+  DEFAULT-PYTHON: "3.10"
   ARTEFACTS: "dist"
   # Configures publishing to PyPI
   PUBLISH: "true"
@@ -233,23 +233,23 @@ jobs:
         shell: bash
         run: |
           # Check output from: semantic-tag-development
-          ERRORS="false"
+          ERRORS='false'
           if [ "${{ steps.semantic-tag-development-patch.outputs.tag }}" != "0.0.5-dev1" ]; then
             echo "Errors with: semantic-tag-development [patch]"
-            ERRORS="true"
+            ERRORS='true'
           fi
           if [ "${{ steps.semantic-tag-development-minor.outputs.tag }}" != "1.9.0-dev1" ]; then
             echo "Errors with: semantic-tag-development [minor]"
-            ERRORS="true"
+            ERRORS='true'
           fi
           if [ "${{ steps.semantic-tag-development-major.outputs.tag }}" != "5.0.0-dev1" ]; then
             echo "Errors with: semantic-tag-development [major]"
-            ERRORS="true"
+            ERRORS='true'
           fi
-          if [ "$ERRORS" = "true" ]; then
+          if [ "$ERRORS" = 'true' ]; then
             echo "ERROR: check tag manipulation action/code"; exit 1
           else
-            echo "All tag check tests passed, no errors found"
+            echo 'All tag check tests passed, no errors found'
           fi
 
       - name: "Action: url-validity-check"
@@ -275,18 +275,18 @@ jobs:
         shell: bash
         run: |
           # Check output from: github-mandatory-labels
-          if [ "${{ steps.github-mandatory-labels.outputs.present }}" = "true" ]; then
+          if [ "${{ steps.github-mandatory-labels.outputs.present }}" = 'true' ]; then
             echo "Labels are reported present:"
             if (gh label list | grep release); then
               exit 0
             fi
-          elif [ "${{ steps.github-mandatory-labels.outputs.created }}" = "true" ]; then
+          elif [ "${{ steps.github-mandatory-labels.outputs.created }}" = 'true' ]; then
             echo "Labels are reported present:"
             if (gh label list | grep release); then
               exit 0
             fi
           else
-            echo "The expected action outputs/labels were NOT found"
+            echo 'The expected action outputs/labels were NOT found'
             gh label list
             exit 1
           fi
@@ -316,7 +316,7 @@ jobs:
         uses: os-climate/osc-github-devops/.github/actions/string-comparison@main
         with:
           string_a: "Mary had a little lamb"
-          string_b: "I don't like eating lamb"
+          string_b: "I do not like eating lamb"
 
       - name: "Action: string-comparison [sub-string match]"
         id: string-comparison-substring
@@ -346,7 +346,7 @@ jobs:
         shell: bash
         run: |
           # Check string-comparison action logic
-          echo "String comparison/action logic appears to be broken"
+          echo 'String comparison/action logic appears to be broken'
           exit 1
 
       - name: "Test TOX stanza [specific/individual stanza]"
@@ -378,5 +378,5 @@ jobs:
         shell: bash
         run: |
           # Check string-comparison action logic
-          echo "Parsing of TOX stanza appears to be broken"
+          echo 'Parsing of TOX stanza appears to be broken'
           exit 1
