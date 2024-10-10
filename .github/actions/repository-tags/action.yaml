@@ -18,7 +18,7 @@ inputs:
 outputs:
   CURRENT_TAG:
     description: "Current/latest tag from repository"
-    value: ${{ steps.repository-tags.outputs.current_tag }}
+    value: ${{ steps.repository-tags.outputs.vtag }}
   TAG_VALIDITY:
     description: "Flags if the current repository tag is NOT semantic"
     value: ${{ steps.repository-tags.outputs.tag_validity }}
