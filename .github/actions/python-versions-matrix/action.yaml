@@ -2,15 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "↗️ Extract Python Versions"
+name: "↗️ Supported Python versions matrix as JSON"
 
 outputs:
   MATRIXJSON:
-    description: "Extract and store Python versions from pyproject.toml as JSON"
+    description: "Parse pyproject.toml and store supported Python versions as JSON"
     value: ${{ steps.parse-metadata.outputs.matrixjson }}
-  PROJECT_VERSIONING:
-    description: "Versioning type from pyproject.toml [static|dynamic]"
-    value: ${{ steps.parse-metadata.outputs.versioning }}
 
 runs:
   using: "composite"
@@ -193,12 +190,3 @@ runs:
         echo "matrixjson=$matrixjson" >> "$GITHUB_OUTPUT"
         echo "Job output:"
         echo "  matrixjson = $matrixjson"
-
-        # Set static or dynamic version flag, based on pyproject.toml directive
-        if (grep -q 'dynamic = \["version"\]' pyproject.toml); then
-          echo "Dynamic versioning set in pyproject.toml"
-          echo "project_versioning=dynamic" >> "$GITHUB_OUTPUT"
-        else
-          echo "Static versioning set in pyproject.toml"
-          echo "project_versioning=static" >> "$GITHUB_OUTPUT"
-        fi
