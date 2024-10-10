@@ -2,7 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🏷️ Retrieve/Validate Tags"
+name: "🏷️ Return Current/Latest Repository Tag"
+
+inputs:
+  TYPE:
+    description: "Return current tag from repository [all|production|development]"
+    required: false
+    type: string
+    default: "all"
 
 outputs:
   TAG:
