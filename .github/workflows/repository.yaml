@@ -109,18 +109,12 @@ jobs:
     uses: os-climate/osc-github-devops/.github/workflows/python-project-setup.yaml@main
     with:
       default_python: "3.10"
-    # outputs:
-    #   project_versioning: ${{ steps.python-project.outputs.matrixjson }}
-    #   matrixjson: ${{ steps.python-project.outputs.matrixjson }}
-    #   python_project_name: ${{ steps.python-project.outputs.python_project_name }}
-    #   python_build_name: ${{ steps.python-project.outputs.python_build_name }}
-    #   default_python: ${{ steps.python-project.outputs.default_python }}
-    #   artefact_location: ${{ steps.python-project.outputs.artefact_location }}
 
   python-build:
     name: "Build"
     uses: os-climate/osc-github-devops/.github/workflows/python-build-matrix.yaml@main
     needs:
+      - repo-metadata
       - github-workflow-metadata
       - python-project
     strategy:
@@ -135,6 +129,7 @@ jobs:
     with:
       python_version: ${{ matrix.python-version }} # Passed in from matrix job
       default_python: ${{ needs.python-project.outputs.default_python }}
+      build_tag: ${{ needs.repo-metadata.outputs.build_tag }}
 
   python-test:
     name: "Test"
