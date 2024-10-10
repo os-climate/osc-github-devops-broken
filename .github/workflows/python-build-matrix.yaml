@@ -61,12 +61,14 @@ jobs:
         id: naming
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/python-project-name@main
+        with:
+          python-version: ${{ inputs.python_version }}
 
       - name: "Build Python project"
         id: python-matrix-builds
         uses: os-climate/osc-github-devops/.github/actions/python-project-build@main
         with:
-          build_tag: ${{ inputs.build_tag }}
+          python-version: ${{ inputs.python_version }}
 
       - name: "Validate artefacts with Twine"
         id: python-twine-check
