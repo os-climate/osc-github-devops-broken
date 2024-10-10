@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🛠️ Tox Environment"
+name: "🛠️ [R] Tox Configuration"
 # Checks for TOX configuration file, parses the stanza, sets useful flags
 
 on:
