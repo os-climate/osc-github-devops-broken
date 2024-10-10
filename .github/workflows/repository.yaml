@@ -38,7 +38,7 @@ jobs:
       development_tag: ${{ steps.tags.outputs.development_tag }}
       production_tag: ${{ steps.tags.outputs.production_tag }}
       pre_release: ${{ steps.tags.outputs.prerelease_tag }}
-      build_tag: ${{ steps.tags.outputs.buikd_tag }}
+      build_tag: ${{ steps.tags.outputs.build_tag }}
 
     steps:
       - uses: actions/checkout@v4
