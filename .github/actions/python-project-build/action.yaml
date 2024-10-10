@@ -17,18 +17,17 @@ inputs:
   BUILD_TAG:
     description: "Build tag/name"
     required: true
+    type: string
   ATTEST:
     description: "Attest/sign packages during build"
     required: false
+    type: string
     default: true
 
 outputs:
   DATETIME_STAMP:
     description: "Date/time stamp at build time"
     value: ${{ steps.parameters.outputs.datetime }}
-  # BUILD_TYPE:
-  #   description: "Build [production|development]"
-  #   value: ${{ steps.perform-build.outputs.publish }}
 
 runs:
   using: "composite"
@@ -43,17 +42,6 @@ runs:
         echo "Build date and time stamp: $datetime"
         echo "datetime=$datetime" >> "$GITHUB_ENV"
         echo "datetime=${datetime}" >> "$GITHUB_OUTPUT"
-
-    - name: "Check for dynamic versioning"
-      id: dynamic-versioning
-      if: github.ref_name == 'main'
-      uses: os-climate/osc-github-devops/.github/actions/python-versioning-dynamic@main
-
-    - name: "Get current repository tag"
-      id: current-tag
-      if: github.ref_name == 'main' &&
-        ${{ steps.dynamic-versioning.outputs.dynamic }} == 'false'
-      uses: os-climate/osc-github-devops/.github/actions/semantic-tag-current@main
 
     - name: "Patch version in pyproject.toml"
       id: patch-pyproject-version

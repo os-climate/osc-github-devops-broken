@@ -42,6 +42,8 @@ runs:
           TARGET=${{ inputs.TARGET }}
         fi
 
+        echo "Search for: $CURRENT  Replace with: $TARGET"
+
         if [ -z "$CURRENT" ] || [ -z "$TARGET" ]; then
           echo "Error: one or more required inputs NOT received"
           echo "Check the calling workflow syntax and setup..."; exit 1
