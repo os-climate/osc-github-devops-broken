@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🧱 Python Build (Matrix)"
+name: "🧱 [R] Python Build (Matrix)"
 # Builds a project for any number of specified Python versions"
 
 on:

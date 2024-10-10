@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2024 The Linux Foundation <https://linuxfoundation.org>
 
-name: "🛠️ Python Project Setup"
+name: "🛠️ [R] Python Project Setup"
 # Extracts Python project metadata"
 
 on:
