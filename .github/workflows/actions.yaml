@@ -51,12 +51,12 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
       - name: "Install PDM tooling"
         uses: pdm-project/setup-pdm@v4
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
       - name: "Action: python-project-naming"
         id: python-project-naming
@@ -234,7 +234,7 @@ jobs:
         run: |
           # Check output from: semantic-tag-development
           ERRORS="false"
-          if [ "${{ steps.semantic-tag-development-patch.outputs.tag }}" != "0.0.8-dev2" ]; then
+          if [ "${{ steps.semantic-tag-development-patch.outputs.tag }}" != "0.0.5-dev1" ]; then
             echo "Errors with: semantic-tag-development [patch]"
             ERRORS="true"
           fi
