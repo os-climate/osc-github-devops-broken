@@ -13,12 +13,6 @@ on:
       - "!.github/**"
 
 jobs:
-  tagging:
-    name: "Tags"
-    uses: os-climate/osc-github-devops/.github/workflows/tagging.yaml@main
-    with:
-      create_missing: true
-
   one-password-verify:
     name: "1Password"
     uses: os-climate/osc-github-devops/.github/workflows/one-password-credentials.yaml@main
@@ -30,21 +24,35 @@ jobs:
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.ONE_PASSWORD_DEVELOPMENT }}
 
-  classify-content:
+  repo-metadata:
     name: "Inspect Repository"
     runs-on: ubuntu-latest
     outputs:
+      # Content metadata
       python: ${{ steps.classify.outputs.python }}
       notebooks: ${{ steps.classify.outputs.notebooks }}
       tox: ${{ steps.classify.outputs.tox }}
+      # Tag metadata
+      current_tag: $ {{ steps.tags.outputs.current_tag }}
+      tag_validity: $ {{ steps.tags.outputs.tag_validity }}
+      development_tag: ${{ steps.tags.outputs.development_tag }}
+      production_tag: ${{ steps.tags.outputs.production_tag }}
+      pre_release: ${{ steps.tags.outputs.prerelease_tag }}
+      build_tag: ${{ steps.tags.outputs.buikd_tag }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Classify content"
+      - name: "Classify repository content"
         id: classify
         # yamllint disable-line rule:line-length
         uses: os-climate/osc-github-devops/.github/actions/repository-content-classify@main
+
+      - name: "Gather repository tag/versioning"
+        id: tags
+        uses: os-climate/osc-github-devops/.github/actions/repository-tags@main
+        with:
+          create_initial: true
 
   github-workflow-metadata:
     name: "Gather Workflow Metadata"
@@ -90,14 +98,14 @@ jobs:
 
   parse-tox-configuration:
     name: "TOX"
-    needs: classify-content
-    if: needs.classify-content.outputs.tox  == 'true'
+    needs: repo-metadata
+    if: needs.repo-metadata.outputs.tox  == 'true'
     uses: os-climate/osc-github-devops/.github/workflows/tox.yaml@main
 
   python-project:
     name: "Gather Python Project Metadata"
-    needs: classify-content
-    if: needs.classify-content.outputs.python  == 'true'
+    needs: repo-metadata
+    if: needs.repo-metadata.outputs.python  == 'true'
     uses: os-climate/osc-github-devops/.github/workflows/python-project-setup.yaml@main
     with:
       default_python: "3.10"
@@ -115,7 +123,6 @@ jobs:
     needs:
       - github-workflow-metadata
       - python-project
-      - tagging
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrixjson) }}
@@ -128,7 +135,6 @@ jobs:
     with:
       python_version: ${{ matrix.python-version }} # Passed in from matrix job
       default_python: ${{ needs.python-project.outputs.default_python }}
-      build_tag: ${{ needs.tagging.outputs.build_tag }}
 
   python-test:
     name: "Test"
@@ -146,19 +152,19 @@ jobs:
     name: "Publish GitHub Release"
     uses: os-climate/osc-github-devops/.github/workflows/github-release.yaml@main
     needs:
+      - repo-metadata
       - python-build
-      - tagging
     permissions:
       # Needed both here and in the called workflow
       contents: write
     with:
-      pre_release: ${{ needs.tagging.outputs.pre_release }}
-      build_tag: ${{ needs.tagging.outputs.build_tag }}
+      pre_release: ${{ needs.repo-metadata.outputs.pre_release }}
+      build_tag: ${{ needs.repo-metadata.outputs.build_tag }}
 
   testpypi:
     name: "Test Package Publishing"
     needs:
-      - tagging
+      - repo-metadata
       - github-workflow-metadata
       - python-build
     # Only test publishing on merge of pull requests or tag pushes
@@ -217,7 +223,7 @@ jobs:
           prefix: "https://test.pypi.org/project"
           # Use project name, e.g. "/ITR"
           string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
-          suffix: "/${{ needs.tagging.outputs.current_tag }}/"
+          suffix: "/${{ needs.repo-metadata.outputs.current_tag }}/"
 
       - name: "Publish to Test PyPI [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -259,7 +265,7 @@ jobs:
       startsWith(github.ref, 'refs/tags/') || contains(github.event.head_commit.message, '[release]')
       # github.ref_name != 'main' &&
       # github.ref_name != 'master'
-    needs: [tagging, python-build, github-workflow-metadata, testpypi]
+    needs: [repo-metadata, python-build, github-workflow-metadata, testpypi]
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -298,7 +304,7 @@ jobs:
           prefix: "https://pypi.org/project"
           # Use project name, e.g. "/ITR"
           string: "/${{ needs.github-workflow-metadata.outputs.repository }}"
-          suffix: "/${{ needs.tagging.outputs.current_tag }}/"
+          suffix: "/${{ needs.repo-metadata.outputs.current_tag }}/"
 
       - name: "Publish to PyPI [Trusted Publishing]"
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -330,7 +336,7 @@ jobs:
   notebooks:
     name: "Jupyter/Notebooks"
     needs:
-      - classify-content
+      - repo-metadata
       - python-project
     runs-on: "ubuntu-latest"
     continue-on-error: false
@@ -338,7 +344,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.python-project.outputs.matrixjson) }}
     # Don't run when pull request is merged, only if Jupyter Notebooks are present
-    if: needs.classify-content.outputs.notebooks  == 'true'
+    if: needs.repo-metadata.outputs.notebooks  == 'true'
 
     steps:
       - uses: actions/checkout@v4
@@ -392,9 +398,9 @@ jobs:
   security:
     name: "Security/Audit"
     needs:
-      - classify-content
+      - repo-metadata
       - python-project
-    if: needs.classify-content.outputs.python  == 'true'
+    if: needs.repo-metadata.outputs.python  == 'true'
     runs-on: "ubuntu-latest"
     continue-on-error: true
     strategy:
