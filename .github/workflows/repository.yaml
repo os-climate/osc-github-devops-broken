@@ -33,7 +33,7 @@ jobs:
       notebooks: ${{ steps.classify.outputs.notebooks }}
       tox: ${{ steps.classify.outputs.tox }}
       # Tag metadata
-      current_tag: $ {{ steps.tags.outputs.current_tag }}
+      current_tag: $ {{ steps.tags.outputs.vtag }}
       tag_validity: $ {{ steps.tags.outputs.tag_validity }}
       development_tag: ${{ steps.tags.outputs.development_tag }}
       production_tag: ${{ steps.tags.outputs.production_tag }}
