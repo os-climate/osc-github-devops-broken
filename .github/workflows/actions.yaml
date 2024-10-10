@@ -51,12 +51,12 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: 3.10
 
       - name: "Install PDM tooling"
         uses: pdm-project/setup-pdm@v4
         with:
-          python-version: "3.11"
+          python-version: 3.10
 
       - name: "Action: python-project-naming"
         id: python-project-naming
