@@ -100,7 +100,7 @@ jobs:
     if: needs.classify-content.outputs.python  == 'true'
     uses: os-climate/osc-github-devops/.github/workflows/python-project-setup.yaml@main
     with:
-      default_python: 3.10
+      default_python: "3.10"
     # outputs:
     #   project_versioning: ${{ steps.python-project.outputs.matrixjson }}
     #   matrixjson: ${{ steps.python-project.outputs.matrixjson }}
