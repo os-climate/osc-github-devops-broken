@@ -386,3 +386,57 @@ jobs:
           # Check string-comparison action logic
           echo 'Parsing of TOX stanza appears to be broken'
           exit 1
+
+      # Test action: path-check
+      - name: "Action: path test [valid file]"
+        id: path-check-file
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/path-check@main
+        with:
+          check_path: "tests/resource/test-file"
+
+      - name: "Action: path test [valid folder]"
+        id: path-check-folder
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/path-check@main
+        with:
+          check_path: "tests/resource/test-folder"
+
+      - name: "Action: path test [valid symlink to file]"
+        id: path-check-symlink-file
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/path-check@main
+        with:
+          check_path: "tests/resource/test-valid-file-symlink"
+
+      - name: "Action: path test [valid symlink to folder]"
+        id: path-check-symlink-folder
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/path-check@main
+        with:
+          check_path: "tests/resource/test-valid-folder-symlink"
+
+      - name: "Action: path test [invalid symlink]"
+        id: path-check-invalid-symlink
+        # yamllint disable-line rule:line-length
+        uses: os-climate/osc-github-devops/.github/actions/path-check@main
+        with:
+          check_path: "tests/resource/test-valid-folder-symlink"
+
+      # Report errors: path-check
+      - name: "Error with path tests (files/folders/symlinks)"
+        id: path-check-errors
+        shell: bash
+        if: steps.path-check-file.outputs.type != 'file' ||
+          steps.path-check-file.outputs.symlink != 'false' ||
+          steps.path-check-folder.outputs.type != 'folder' ||
+          steps.path-check-folder.outputs.symlink != 'false' ||
+          steps.path-check-symlink-file.outputs.file != 'file' ||
+          steps.path-check-symlink-file.outputs.symlink != 'true' ||
+          steps.path-check-symlink-folder.outputs.folder != 'folder' ||
+          steps.path-check-symlink-folder.outputs.symlink != 'true' ||
+          steps.path-check-invalid-symlink.outputs.folder != 'invalid' ||
+          steps.path-check-invalid-symlink.outputs.symlink != 'true'
+        run: |
+          # Report errors with path tests
+          echo "One or more path checks failed validation"; exit 1
